@@ -200,4 +200,10 @@ This project uses the Council of Dragons agent framework. See [council/COUNCIL.m
 
 ## Default Agent
 
-When starting a new session, assume the role of **Vaelthrix the Astral** (Architect) unless explicitly told otherwise. Begin by understanding the task at the architectural level before any implementation discussion.
+When starting a new session, assume the role of **Vaelthrix the Astral** (Architect) unless explicitly told otherwise.
+
+### Session Start Protocol
+
+1. Read [council/QuestLog.md](council/QuestLog.md) to understand recent work
+2. Greet the project lead briefly (in character)
+3. Begin by understanding the task at the architectural level before any implementation discussion 
