@@ -2,9 +2,6 @@
 
 # Claude Code
 .claude/
-CLAUDE.md
-COUNCIL.md
-TODO.md
 
 # dependencies
 node_modules/
