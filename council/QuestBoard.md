@@ -8,9 +8,9 @@
 
 ## Priority Order
 
-1. **Initialize React Native project** (Tarnoth) — Foundation for all development
-2. **Configure SQLite and file system** (Tarnoth) — Data layer dependencies
-3. **Configure react-native-track-player** (Tarnoth) — Audio playback foundation
+1. **Implement database initialization** (Pyrrhaxis) — Initialize SQLite on app start
+2. **Implement core stores** (Pyrrhaxis) — TrackStore, TagStore, ButtonStore, PlayerStore
+3. **Implement track import** (Pyrrhaxis) — File picker and metadata extraction
 
 ---
 
@@ -34,7 +34,13 @@
 
 ### 🔴 Pyrrhaxis the Red — Code
 
-*Blocked until project initialization complete.*
+- [ ] **Implement database initialization** — Create tables on app start, handle migrations
+- [ ] **Implement useTrackStore** — CRUD operations for tracks
+- [ ] **Implement useTagStore** — CRUD operations for tags, track-tag associations
+- [ ] **Implement useButtonStore** — CRUD operations for buttons
+- [ ] **Implement usePlayerStore** — Playback state, volume control
+- [ ] **Implement track import service** — File picker, metadata extraction
+- [ ] **Implement tag pool selection** — Random unplayed track selection for tag buttons
 
 ### 🪽 Seraphelle the Silver — UI/UX
 
@@ -55,11 +61,11 @@
 
 ### 🟠 Tarnoth the Bronze — DevOps & Tooling
 
-- [ ] **Initialize React Native project** — Expo or bare RN, TypeScript, project structure
-- [ ] **Initialize Git repository** — .gitignore, initial commit
-- [ ] **Configure ESLint and Prettier** — Code style enforcement
-- [ ] **Install and configure expo-sqlite** — Database layer
-- [ ] **Install and configure expo-file-system** — File access for audio import
-- [ ] **Install and configure react-native-track-player** — Audio playback
-- [ ] **Install and configure Zustand** — State management
-- [ ] **Create initial folder structure** — src/, components/, stores/, db/, etc.
+- [x] **Initialize React Native project** — Expo with tabs template, TypeScript enabled
+- [x] **Initialize Git repository** — .gitignore, initial commit
+- [x] **Configure ESLint and Prettier** — Code style enforcement
+- [x] **Install and configure expo-sqlite** — Database layer ready
+- [x] **Install and configure expo-file-system** — File access ready
+- [x] **Install and configure react-native-track-player** — Audio playback ready
+- [x] **Install and configure Zustand** — State management ready
+- [x] **Create initial folder structure** — src/, types, db, stores, constants, utils
