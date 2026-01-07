@@ -124,14 +124,16 @@ export async function setTagsForTrack(trackId: string, tagIds: string[]): Promis
   const db = getDatabase();
   const now = new Date().toISOString();
 
-  // Remove all existing associations
-  await db.runAsync('DELETE FROM track_tags WHERE track_id = ?', [trackId]);
+  await db.withTransactionAsync(async () => {
+    // Remove all existing associations
+    await db.runAsync('DELETE FROM track_tags WHERE track_id = ?', [trackId]);
 
-  // Add new associations
-  for (const tagId of tagIds) {
-    await db.runAsync(
-      `INSERT INTO track_tags (track_id, tag_id, created_at) VALUES (?, ?, ?)`,
-      [trackId, tagId, now]
-    );
-  }
+    // Add new associations
+    for (const tagId of tagIds) {
+      await db.runAsync(
+        `INSERT INTO track_tags (track_id, tag_id, created_at) VALUES (?, ?, ?)`,
+        [trackId, tagId, now]
+      );
+    }
+  });
 }

@@ -9,6 +9,7 @@ import TrackPlayer, {
   State,
   AppKilledPlaybackBehavior,
 } from 'react-native-track-player';
+import type { EmitterSubscription } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import type { Track } from '../../types';
 import { Audio } from '../../constants/audio';
@@ -18,6 +19,9 @@ export { Event, State } from 'react-native-track-player';
 
 /** Player initialization state */
 let isPlayerInitialized = false;
+
+/** Stored event subscriptions for cleanup */
+let eventSubscriptions: EmitterSubscription[] = [];
 
 /**
  * Error codes for playback failures
@@ -149,12 +153,28 @@ export async function destroyPlayer(): Promise<void> {
   }
 
   try {
+    // Remove event listeners before reset
+    removeEventListeners();
+
     await TrackPlayer.reset();
     isPlayerInitialized = false;
     currentTrackRef = null;
+    onPlaybackStateChange = null;
+    onPlaybackError = null;
   } catch (error) {
     console.error('Error destroying player:', error);
   }
+}
+
+/**
+ * Removes all registered event listeners.
+ * Called by destroyPlayer() and before re-registering.
+ */
+function removeEventListeners(): void {
+  for (const subscription of eventSubscriptions) {
+    subscription.remove();
+  }
+  eventSubscriptions = [];
 }
 
 /**
@@ -418,28 +438,42 @@ export function registerPlaybackErrorCallback(callback: PlaybackErrorCallback): 
  * Sets up internal event listeners for react-native-track-player
  */
 function registerEventListeners(): void {
+  // Clear any existing subscriptions first (safety for hot reload)
+  removeEventListeners();
+
   // Playback state changes
-  TrackPlayer.addEventListener(Event.PlaybackState, async (event) => {
-    const isPlaying = event.state === State.Playing;
-    onPlaybackStateChange?.(isPlaying, currentTrackRef);
-  });
+  const stateSubscription = TrackPlayer.addEventListener(
+    Event.PlaybackState,
+    async (event) => {
+      const isPlaying = event.state === State.Playing;
+      onPlaybackStateChange?.(isPlaying, currentTrackRef);
+    }
+  );
 
   // Track ends
-  TrackPlayer.addEventListener(Event.PlaybackQueueEnded, () => {
-    currentTrackRef = null;
-    onPlaybackStateChange?.(false, null);
-  });
+  const queueEndedSubscription = TrackPlayer.addEventListener(
+    Event.PlaybackQueueEnded,
+    () => {
+      currentTrackRef = null;
+      onPlaybackStateChange?.(false, null);
+    }
+  );
 
   // Playback errors
-  TrackPlayer.addEventListener(Event.PlaybackError, (event) => {
-    const error: PlaybackError = {
-      code: 'playback_error',
-      userMessage: 'An error occurred during playback.',
-      details: event.message,
-      track: currentTrackRef ?? undefined,
-    };
-    onPlaybackError?.(error);
-  });
+  const errorSubscription = TrackPlayer.addEventListener(
+    Event.PlaybackError,
+    (event) => {
+      const error: PlaybackError = {
+        code: 'playback_error',
+        userMessage: 'An error occurred during playback.',
+        details: event.message,
+        track: currentTrackRef ?? undefined,
+      };
+      onPlaybackError?.(error);
+    }
+  );
+
+  eventSubscriptions = [stateSubscription, queueEndedSubscription, errorSubscription];
 }
 
 /**

@@ -196,7 +196,7 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
   },
 
   resolveAllButtons: async () => {
-    const { buttons, resolveButton } = get();
-    return Promise.all(buttons.map(resolveButton));
+    const rows = await buttonQueries.getAllButtonsResolved();
+    return rows.map(buttonQueries.rowToButtonResolved);
   },
 }));

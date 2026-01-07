@@ -10,6 +10,27 @@ import * as tagQueries from '../db/queries/tags';
 import * as trackTagQueries from '../db/queries/trackTags';
 
 /**
+ * Adjusts tag counts in memory for optimistic updates.
+ * Used to avoid full database reloads on every association change.
+ */
+function adjustTagCount(
+  tags: TagWithCount[],
+  tagId: string,
+  trackCountDelta: number,
+  unplayedCountDelta: number
+): TagWithCount[] {
+  return tags.map((tag) =>
+    tag.id === tagId
+      ? {
+          ...tag,
+          trackCount: Math.max(0, tag.trackCount + trackCountDelta),
+          unplayedCount: Math.max(0, tag.unplayedCount + unplayedCountDelta),
+        }
+      : tag
+  );
+}
+
+/**
  * Tag store interface
  *
  * @remarks For UI:
@@ -124,21 +145,64 @@ export const useTagStore = create<TagStore>((set, get) => ({
   },
 
   addTagToTrack: async (trackId, tagId) => {
-    await trackTagQueries.addTagToTrack(trackId, tagId);
-    // Reload tags to update counts
-    await get().loadTags();
+    // Optimistically update counts (assume track is unplayed)
+    set((state) => ({
+      tags: adjustTagCount(state.tags, tagId, 1, 1),
+    }));
+
+    try {
+      await trackTagQueries.addTagToTrack(trackId, tagId);
+    } catch (error) {
+      // Rollback on error
+      await get().loadTags();
+      throw error;
+    }
   },
 
   removeTagFromTrack: async (trackId, tagId) => {
-    await trackTagQueries.removeTagFromTrack(trackId, tagId);
-    // Reload tags to update counts
-    await get().loadTags();
+    // Optimistically update counts (assume track was unplayed)
+    set((state) => ({
+      tags: adjustTagCount(state.tags, tagId, -1, -1),
+    }));
+
+    try {
+      await trackTagQueries.removeTagFromTrack(trackId, tagId);
+    } catch (error) {
+      // Rollback on error
+      await get().loadTags();
+      throw error;
+    }
   },
 
   setTagsForTrack: async (trackId, tagIds) => {
-    await trackTagQueries.setTagsForTrack(trackId, tagIds);
-    // Reload tags to update counts
-    await get().loadTags();
+    // Get previous tags to calculate deltas
+    const previousTags = await trackTagQueries.getTagsForTrack(trackId);
+    const previousTagIds = new Set(previousTags.map((t) => t.id));
+    const newTagIds = new Set(tagIds);
+
+    // Calculate which tags were added/removed
+    const addedTagIds = tagIds.filter((id) => !previousTagIds.has(id));
+    const removedTagIds = [...previousTagIds].filter((id) => !newTagIds.has(id));
+
+    // Optimistically update counts
+    set((state) => {
+      let updatedTags = state.tags;
+      for (const id of addedTagIds) {
+        updatedTags = adjustTagCount(updatedTags, id, 1, 1);
+      }
+      for (const id of removedTagIds) {
+        updatedTags = adjustTagCount(updatedTags, id, -1, -1);
+      }
+      return { tags: updatedTags };
+    });
+
+    try {
+      await trackTagQueries.setTagsForTrack(trackId, tagIds);
+    } catch (error) {
+      // Rollback on error
+      await get().loadTags();
+      throw error;
+    }
   },
 
   getTagsForTrack: async (trackId) => {
