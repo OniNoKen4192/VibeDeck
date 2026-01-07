@@ -64,11 +64,13 @@ export interface ButtonResolved extends Button {
   // For tag buttons
   tag?: Tag;
   availableTracks?: number; // unplayed count
+  totalTracks?: number; // total tracks (for empty tag detection)
   // For direct buttons
   track?: Track;
   // Computed
   displayColor: string; // resolved from button.color ?? tag.color ?? default
-  isDisabled: boolean; // e.g., direct button with deleted track
+  isDisabled: boolean; // e.g., direct button with deleted track, or tag with no tracks
+  isEmpty?: boolean; // true if tag button has zero tracks assigned
 }
 
 // Session state types

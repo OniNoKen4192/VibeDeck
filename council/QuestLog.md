@@ -220,3 +220,37 @@
   - Polished empty state with grid icon, hint text pointing to Library/Tags tabs
   - Added fade-in animation when board loads
   - All accessibility labels already present from initial BoardButton implementation
+
+---
+
+## 2026-01-07
+
+- [x] **Review CODE_REVIEW.md** (Vaelthrix)
+  - Provided architectural guidance on remediation approach
+  - Prioritized issues by severity and testing impact
+
+- [x] **Design database transaction patterns** (Vaelthrix)
+  - Standard wrapper for multi-step operations
+  - Pattern applied to reorderButtons and other atomic operations
+
+- [x] **Code Review Remediation Phase 1** (Pyrrhaxis)
+  - CR-01: Added database transactions — `reorderButtons` wrapped in transaction
+  - CR-02: Fixed N+1 query in resolveAllButtons — `getAllButtonsResolved()` batch query added
+  - CR-03: Used secure UUID generation — Now uses `expo-crypto.randomUUID()`
+  - CR-04: Fixed player memory leak — Event listeners cleaned up in `destroyPlayer()`
+  - CR-05: Optimized tag store updates — Optimistic updates with rollback
+  - CR-06: Handled volume persistence errors — Try-catch with rollback
+  - CR-08: Fixed button position race — `insertButtonAtomic()` added
+  - CR-11: Added seek bounds checking — Position clamped
+  - CR-14: Added input validation — Tag name validation added
+  - All 8 critical issues resolved, unblocking QA testing
+
+- [x] **Code Review Remediation Phase 1.5** (Pyrrhaxis)
+  - CR-45: Fixed insertButtonAtomic silent failure — Now throws on SELECT failure
+  - CR-46: Fixed seekTo Infinity fallback — Returns early when duration unknown
+  - Auto-Reset Tag Pools — "Music must flow" feature implemented
+    - `selectTrackForTag()` now auto-resets pool when exhausted
+    - Added `poolEmpty` flag to distinguish "no tracks" from "all played"
+    - Added `total_tracks` to batch query for empty tag detection
+    - `ButtonResolved.isEmpty` flag for UI to gray out empty tag buttons
+  - Phase 1.5 complete — ready for human testing!

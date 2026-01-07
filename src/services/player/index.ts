@@ -325,15 +325,23 @@ export async function stop(): Promise<void> {
 /**
  * Seeks to a position in the current track.
  *
- * @param positionMs - Position in milliseconds
+ * @param positionMs - Position in milliseconds (will be clamped to valid range)
  *
  * @remarks For UI: Wire to scrubber/progress bar interactions.
+ * Will no-op if no track is loaded or duration is unknown.
  */
 export async function seekTo(positionMs: number): Promise<void> {
   if (!isPlayerInitialized) return;
 
+  // Cannot seek if no track or duration unknown
+  if (!currentTrackRef?.durationMs) {
+    console.warn('Cannot seek: no track loaded or duration unknown');
+    return;
+  }
+
   try {
-    await TrackPlayer.seekTo(positionMs / 1000);
+    const clampedMs = Math.max(0, Math.min(currentTrackRef.durationMs, positionMs));
+    await TrackPlayer.seekTo(clampedMs / 1000);
   } catch (error) {
     console.error('Error seeking:', error);
   }

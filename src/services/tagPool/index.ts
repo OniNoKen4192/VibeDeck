@@ -12,20 +12,26 @@ import * as trackQueries from '../../db/queries/tracks';
  *
  * @remarks For UI: Check `track` presence to determine if playback can proceed.
  * Use `remainingCount` to show "X tracks remaining" on the button.
- * When `poolExhausted` is true, consider prompting user to reset played flags.
+ *
+ * With auto-reset enabled:
+ * - `poolExhausted` is now mainly for logging (pool auto-resets)
+ * - `poolEmpty` indicates tag has ZERO tracks — button should be disabled
  */
 export interface SelectionResult {
-  /** The randomly selected track, or null if pool is empty */
+  /** The randomly selected track, or null if tag has no tracks */
   track: Track | null;
-  /** Number of unplayed tracks remaining AFTER this selection (0 if pool was exhausted) */
+  /** Number of unplayed tracks remaining AFTER this selection */
   remainingCount: number;
-  /** True if no tracks were available for selection */
+  /** True if pool was exhausted (now auto-resets, so mainly for logging) */
   poolExhausted: boolean;
+  /** True if tag has ZERO tracks associated — button should be disabled */
+  poolEmpty: boolean;
 }
 
 /**
  * Selects a random unplayed track for a tag button.
- * Automatically marks the selected track as played.
+ * Automatically resets the pool if exhausted (music must flow).
+ * Marks the selected track as played.
  *
  * @param tagId - The tag ID to select from
  * @param markPlayed - Function to mark track as played (from useTrackStore)
@@ -33,12 +39,15 @@ export interface SelectionResult {
  *
  * @remarks For UI (Seraphelle): This is the main function for tag button behavior.
  *
+ * **"The music must flow."** — At a sporting event, silence is the worst outcome.
+ * This function auto-resets the pool when exhausted, so pressing a tag button
+ * always produces music (as long as the tag has tracks).
+ *
  * Flow when user presses a tag button:
  * 1. Call this function with the button's tagId
- * 2. If result.track is null, show "No tracks available" feedback
- * 3. If result.track exists, start playback
+ * 2. If result.poolEmpty is true, tag has NO tracks — show disabled state
+ * 3. If result.track exists, start playback (always the case if !poolEmpty)
  * 4. Update button UI with result.remainingCount
- * 5. If result.poolExhausted, consider showing "Pool empty, reset?" prompt
  *
  * @example
  * ```typescript
@@ -51,16 +60,13 @@ export interface SelectionResult {
  *     useTrackStore.getState().markPlayed
  *   );
  *
- *   if (!result.track) {
- *     showToast('No unplayed tracks in this category');
+ *   if (result.poolEmpty) {
+ *     // Tag has no tracks — button should already be disabled
  *     return;
  *   }
  *
- *   // Start playback
- *   await playerStore.playTrack(result.track);
- *
- *   // Update button's remaining count display
- *   // (handled automatically if button reads from store)
+ *   // Start playback (track is always present if !poolEmpty)
+ *   await playerStore.playTrack(result.track!);
  * };
  * ```
  */
@@ -69,15 +75,37 @@ export async function selectTrackForTag(
   markPlayed: (trackId: string) => Promise<void>
 ): Promise<SelectionResult> {
   // Get all unplayed tracks for this tag
-  const unplayedTracks = await trackTagQueries.getUnplayedTracksForTag(tagId);
+  let unplayedTracks = await trackTagQueries.getUnplayedTracksForTag(tagId);
 
-  // Pool is empty
+  // Pool exhausted — check if tag has any tracks at all
   if (unplayedTracks.length === 0) {
-    return {
-      track: null,
-      remainingCount: 0,
-      poolExhausted: true,
-    };
+    const allTracks = await trackTagQueries.getTracksForTag(tagId);
+
+    // Tag has NO tracks — true empty state
+    if (allTracks.length === 0) {
+      return {
+        track: null,
+        remainingCount: 0,
+        poolExhausted: true,
+        poolEmpty: true,
+      };
+    }
+
+    // Tag has tracks but all played — auto-reset and continue
+    // "The music must flow"
+    await trackTagQueries.resetPlayedFlagsForTag(tagId);
+    unplayedTracks = await trackTagQueries.getUnplayedTracksForTag(tagId);
+
+    // Verify reset worked — guard against silent database failure
+    if (unplayedTracks.length === 0) {
+      console.error('Failed to reset played flags for tag', tagId);
+      return {
+        track: null,
+        remainingCount: 0,
+        poolExhausted: true,
+        poolEmpty: false, // We know tracks exist, reset just failed
+      };
+    }
   }
 
   // Select random track from pool
@@ -94,6 +122,7 @@ export async function selectTrackForTag(
     track: selectedTrack,
     remainingCount,
     poolExhausted: false,
+    poolEmpty: false,
   };
 }
 

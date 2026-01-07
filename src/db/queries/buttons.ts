@@ -101,6 +101,46 @@ export async function insertButton(button: Button): Promise<void> {
   );
 }
 
+/**
+ * Inserts a button with atomic position assignment.
+ * Position is calculated as MAX(position)+1 within the same INSERT statement,
+ * eliminating race conditions when multiple buttons are added simultaneously.
+ *
+ * @returns The assigned position
+ */
+export async function insertButtonAtomic(
+  button: Omit<Button, 'position'>
+): Promise<number> {
+  const db = getDatabase();
+
+  await db.runAsync(
+    `INSERT INTO buttons (id, name, type, tag_id, track_id, position, persistent, color, created_at, updated_at)
+     SELECT ?, ?, ?, ?, ?, COALESCE(MAX(position), -1) + 1, ?, ?, ?, ?
+     FROM buttons`,
+    [
+      button.id,
+      button.name,
+      button.type,
+      button.tagId,
+      button.trackId,
+      button.persistent ? 1 : 0,
+      button.color,
+      button.createdAt,
+      button.updatedAt,
+    ]
+  );
+
+  // Get the position that was assigned
+  const result = await db.getFirstAsync<{ position: number }>(
+    'SELECT position FROM buttons WHERE id = ?',
+    [button.id]
+  );
+  if (result === null || result.position === undefined) {
+    throw new Error(`Failed to retrieve position for button ${button.id}`);
+  }
+  return result.position;
+}
+
 export async function updateButton(id: string, updates: Partial<Omit<Button, 'id' | 'createdAt'>>): Promise<void> {
   const db = getDatabase();
   const fields: string[] = [];
@@ -196,6 +236,7 @@ interface ButtonResolvedRow {
   track_updated_at: string | null;
   // Computed
   available_tracks: number | null;
+  total_tracks: number | null;
 }
 
 /**
@@ -232,13 +273,19 @@ export async function getAllButtonsResolved(): Promise<ButtonResolvedRow[]> {
       tr.played as track_played,
       tr.created_at as track_created_at,
       tr.updated_at as track_updated_at,
-      -- Available tracks count (for tag buttons)
+      -- Available tracks count (unplayed, for tag buttons)
       (
         SELECT COUNT(*)
         FROM track_tags tt2
         JOIN tracks tr2 ON tt2.track_id = tr2.id
         WHERE tt2.tag_id = b.tag_id AND tr2.played = 0
-      ) as available_tracks
+      ) as available_tracks,
+      -- Total tracks count (for empty tag detection)
+      (
+        SELECT COUNT(*)
+        FROM track_tags tt3
+        WHERE tt3.tag_id = b.tag_id
+      ) as total_tracks
     FROM buttons b
     LEFT JOIN tags t ON b.tag_id = t.id
     LEFT JOIN tracks tr ON b.track_id = tr.id
@@ -266,6 +313,7 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
   let tag: Tag | undefined;
   let track: Track | undefined;
   let isDisabled = false;
+  let isEmpty = false;
 
   if (button.type === 'tag' && button.tagId) {
     if (row.tag_name !== null) {
@@ -276,6 +324,11 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
         createdAt: row.tag_created_at!,
         updatedAt: row.tag_updated_at!,
       };
+      // Tag exists but has zero tracks — disable button
+      if (row.total_tracks === 0) {
+        isDisabled = true;
+        isEmpty = true;
+      }
     } else {
       isDisabled = true; // Tag was deleted
     }
@@ -306,7 +359,9 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
     tag,
     track,
     availableTracks: row.available_tracks ?? undefined,
+    totalTracks: row.total_tracks ?? undefined,
     displayColor,
     isDisabled,
+    isEmpty,
   };
 }
