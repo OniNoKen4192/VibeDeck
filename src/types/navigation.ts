@@ -1,5 +1,7 @@
 /**
- * Navigation type definitions for Expo Router
+ * @file types/navigation.ts
+ * @description Navigation type definitions for Expo Router.
+ * Defines route parameters for root stack and tab navigators.
  */
 
 export type RootStackParamList = {

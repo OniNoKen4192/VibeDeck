@@ -4,6 +4,46 @@
 
 ---
 
+## Core Principles
+
+### Privacy by Design
+
+**VibeDeck is a fully offline, local-only application.**
+
+- **No network calls.** The app must never transmit any data off the device.
+- **No telemetry.** No analytics, crash reporting, or usage tracking of any kind.
+- **No external services.** No cloud storage, no remote APIs, no CDNs.
+- **No silent data collection.** If feedback is ever desired, it will be through explicit, user-initiated surveys where the user can see exactly what is being shared.
+
+This is not a guideline — it is an architectural constraint. Any code that opens a network connection is a violation and must be rejected during review.
+
+**Allowed external integrations:**
+- Local file system (reading user's audio files)
+- Local audio output devices (speakers, Bluetooth)
+- System file picker (for imports)
+
+**Forbidden:**
+- `fetch()`, `XMLHttpRequest`, WebSocket, or any network API
+- Third-party SDKs that phone home (analytics, crash reporters, ad networks)
+- Cloud storage integrations
+- Remote configuration or feature flags
+
+### File Storage Strategy
+
+**Content URIs over direct paths.** On Android, we use the Storage Access Framework (SAF) which returns `content://` URIs rather than filesystem paths like `/storage/...`. This is required for Android 11+ scoped storage compliance.
+
+**Reference, don't copy.** Audio files remain in their original location. We store a URI pointer, not a copy of the file. This avoids storage bloat and keeps imports fast.
+
+**Implications:**
+- The `filePath` field in `Track` holds a content URI, not a filesystem path
+- Must take persistable URI permissions at import time
+- Files can become unavailable if user moves/deletes them externally
+- Player must handle missing files gracefully (show error, don't crash)
+
+See [Chatterwind_recommendations.md](Chatterwind_recommendations.md) for validation requirements.
+
+---
+
 ## Folder Structure
 
 ```

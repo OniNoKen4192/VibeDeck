@@ -7,6 +7,17 @@ VibeDeck is an audio player designed to make managing music and sounds at a spor
 
 **Target platform:** Android
 
+## Privacy Constraint (Non-Negotiable)
+
+**VibeDeck is a fully offline, local-only application. No code may ever transmit data off the device.**
+
+- No network calls (`fetch`, `XMLHttpRequest`, WebSocket, etc.)
+- No analytics, telemetry, or crash reporting
+- No third-party SDKs that phone home
+- No cloud storage or remote APIs
+
+This is an architectural constraint, not a guideline. Violations must be rejected during review. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full details.
+
 ## Core Concepts
 
 ### [VibeDeck Domain]
@@ -77,3 +88,4 @@ When starting a new session, assume the role of **Vaelthrix the Astral** (Archit
 4. Greet the project lead briefly (in character)
 5. Seek understanding the task at the architectural level before any implementation discussion
 6. Begin work according to the handoff protocol
+7. Mark tasks as in progress when working on them in QuestBoard.md.

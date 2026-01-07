@@ -19,6 +19,14 @@
   - Created ARCHITECTURE.md
   - Defined layer responsibilities and data flow
 
+- [x] **Design navigation structure** (Vaelthrix)
+  - Tab navigator with Board, Library, Tags
+  - Stack modals for detail/edit screens
+
+- [x] **Design state management architecture** (Vaelthrix)
+  - Zustand store interfaces for Track, Tag, Button, Player
+  - Data flow patterns documented
+
 - [x] **Initialize React Native project** (Tarnoth)
   - Used create-expo-app with tabs template
   - Expo SDK 54, React 19, TypeScript enabled
@@ -46,3 +54,169 @@
   - src/constants — Colors, layout, audio constants
   - src/utils — UUID, time formatting utilities
   - Commit: a17eb07
+
+---
+
+## 2026-01-03
+
+- [x] **Implement database initialization** (Pyrrhaxis)
+  - Created `src/db/init.ts` with initDatabase(), getDatabase(), closeDatabase()
+  - Handles schema versioning via PRAGMA user_version
+  - Enables foreign keys on connection
+
+- [x] **Implement database query functions** (Pyrrhaxis)
+  - `src/db/queries/tracks.ts` — CRUD for tracks, played flag management
+  - `src/db/queries/tags.ts` — CRUD for tags with track counts
+  - `src/db/queries/trackTags.ts` — Track-tag associations, tag pool queries
+  - `src/db/queries/buttons.ts` — CRUD for buttons, position management
+  - `src/db/queries/settings.ts` — Key-value settings persistence
+
+- [x] **Implement useTrackStore** (Pyrrhaxis)
+  - Track CRUD operations with Zustand
+  - Played flag management (markPlayed, resetAllPlayed)
+  - Syncs state with SQLite persistence
+
+- [x] **Implement useTagStore** (Pyrrhaxis)
+  - Tag CRUD with automatic count updates
+  - Track-tag association management
+  - Tag pool queries for button playback
+
+- [x] **Implement useButtonStore** (Pyrrhaxis)
+  - Separate addTagButton/addDirectButton for type safety
+  - Button reordering with position management
+  - resolveButton() for UI-ready button data with color inheritance
+
+- [x] **Implement usePlayerStore** (Pyrrhaxis)
+  - Playback state (currentTrack, isPlaying)
+  - Volume persistence across sessions
+  - Output device tracking
+
+---
+
+## 2026-01-04
+
+- [x] **Review file system access patterns** (Chatterwind)
+  - Created Chatterwind_recommendations.md
+  - Validated no network code, SQL injection protection
+  - Documented validation requirements for import service
+  - Architectural decisions: Content URIs, reference-in-place
+
+---
+
+## 2026-01-05
+
+- [x] **Implement track import service** (Pyrrhaxis)
+  - Created `src/services/import/` with validation, metadata, and picker logic
+  - File existence validation via expo-file-system
+  - Extension whitelist check against Audio.supportedFormats
+  - Path sanitization (no traversal, max length 1024)
+  - Metadata extraction from filename patterns ("Artist - Title.mp3")
+  - Document picker integration with MIME type filtering
+  - Batch import with progress callback support
+
+- [x] **Implement tag pool selection** (Pyrrhaxis)
+  - Created `src/services/tagPool/` for random track selection
+  - `selectTrackForTag()` — Random unplayed track with auto-mark-played
+  - Pool exhaustion detection with `poolExhausted` flag
+  - `getTagCounts()` for efficient total/unplayed count queries
+  - `resetPoolForTag()` and `resetAllPools()` for pool refill
+
+- [x] **Add UI documentation to stores** (Pyrrhaxis)
+  - Enhanced JSDoc comments on all four stores
+  - Added usage examples for Seraphelle's UI implementation
+  - Documented data flow patterns and component integration
+
+- [x] **Review import service implementation** (Chatterwind)
+  - Verified all safety checklist items from Chatterwind_recommendations.md
+  - File existence, extension whitelist, path sanitization, max length: COMPLIANT
+  - Privacy constraint verified: no network calls present
+  - Architectural decisions documented: content URIs supported, reference-in-place
+  - One deferred item: player service must handle missing files at playback
+
+- [x] **Design button board layout** (Seraphelle)
+  - Created comprehensive UI_DESIGN.md specification
+  - 3-column responsive grid (2-4 columns based on screen width)
+  - Button anatomy: Tag buttons with count badge, Direct buttons with music icon
+  - Touch targets: 100px min height, 44px accessibility minimum
+  - Grid spacing: 12px gaps, 16px screen padding
+
+- [x] **Design color system** (Seraphelle)
+  - Finalized dark theme palette with indigo primary
+  - Defined 5 button states: Default, Pressed, Playing, Exhausted, Disabled
+  - Tag color palette with accessibility contrast ratios
+  - Yellow exception: requires dark text for 4.5:1 contrast
+  - Added utility functions: `getButtonTextColor()`, `darkenColor()`
+
+- [x] **Update Layout constants** (Seraphelle)
+  - Added responsive breakpoints (360px, 480px)
+  - Added spacing scale (xs through 2xl)
+  - Added playback control dimensions
+  - Added animation timing constants
+
+- [x] **Implement player service** (Pyrrhaxis)
+  - Created `src/services/player/` with react-native-track-player integration
+  - `initializePlayer()` / `destroyPlayer()` for lifecycle management
+  - `playTrack()` with file existence validation (Chatterwind's requirement)
+  - `pause()`, `resume()`, `stop()`, `seekTo()`, `setVolume()` for playback control
+  - Graceful error handling: `file_not_found`, `playback_error`, `not_initialized` codes
+  - Event callbacks: `registerPlaybackStateCallback()`, `registerPlaybackErrorCallback()`
+  - State sync pattern documented for usePlayerStore integration
+  - Comprehensive JSDoc with UI integration examples for Seraphelle
+
+- [x] **Build UI components** (Seraphelle)
+  - Created `src/components/` with 8 components per UI_DESIGN.md
+  - `BoardButton` — Core button with all 5 states (default, pressed, playing, exhausted, disabled)
+  - `CountBadge` — Animated unplayed count badge with bounce on change
+  - `TypeIndicator` — Visual bar distinguishing tag buttons
+  - `ButtonBoard` — Responsive grid (2-4 columns) with proper spacing
+  - `PlaybackControls` — Stop button + volume slider combination
+  - `StopButton` — Emergency stop with press animation
+  - `VolumeSlider` — Custom pan-gesture slider with 44px touch target
+  - `NowPlaying` — Track info bar with pulsing speaker icon
+  - All components follow accessibility guidelines (touch targets, labels, contrast)
+
+- [x] **Add file headers to source files** (Wrixle)
+  - Added `@file` and `@description` JSDoc headers to all 36 `.ts`/`.tsx` files in `src/`
+  - Standardized format: `@file path/filename.ext` + `@description` one-liner
+  - Added `@see` references for UI components pointing to docs/UI_DESIGN.md
+
+- [x] **Document project setup instructions** (Wrixle)
+  - Created comprehensive README.md for developer onboarding
+  - Prerequisites: Node.js, npm, Git, Android Studio / Expo Go
+  - Getting started: clone, install, run commands
+  - Available scripts table, project structure overview
+  - Tech stack summary, code quality tools, troubleshooting section
+  - Links to all project documentation
+
+- [x] **BoardScreen layout with placeholder handlers** (Seraphelle)
+  - Created `app/(tabs)/index.tsx` as main Board screen
+  - Integrated ButtonBoard, PlaybackControls, NowPlaying components
+  - Mock data with 6 buttons demonstrating all states (default, playing, exhausted, disabled)
+  - Placeholder handlers for button press, long press, stop, volume
+  - Loading state with spinner, empty state with guidance text
+  - Updated tab navigation: Board, Library, Tags with proper icons and styling
+  - Created placeholder Library and Tags screens for future implementation
+
+- [x] **Wire BoardScreen to stores and player** (Pyrrhaxis)
+  - Connected `app/_layout.tsx` with app initialization sequence
+  - Database, player, and all stores initialized on mount with proper cleanup
+  - `AppReadyContext` for downstream components to check readiness
+  - Replaced mock data with `useButtonStore.resolveAllButtons()`
+  - Wired playback to `react-native-track-player` via player service
+  - Tag button press: calls `selectTrackForTag()` for random unplayed track selection
+  - Direct button press: plays specific track via `playTrack()`
+  - Stop and volume handlers connected to player service and store
+  - Playback callbacks registered for state sync (play/pause/end events)
+  - Button grid refreshes after played flag changes to update counts
+
+- [x] **BoardScreen visual polish** (Seraphelle)
+  - Created `src/components/Toast.tsx` for error/feedback notifications
+  - Toast types: error (red), warning (amber), success (green), info (indigo)
+  - Slide-in animation with auto-dismiss after 3 seconds
+  - Integrated Toast into BoardScreen for playback error display
+  - Added haptic feedback via expo-haptics for button interactions
+  - Light impact on button press, medium on stop, error notification on failures
+  - Pool exhausted feedback: shake animation + warning toast + haptic
+  - Polished empty state with grid icon, hint text pointing to Library/Tags tabs
+  - Added fade-in animation when board loads
+  - All accessibility labels already present from initial BoardButton implementation

@@ -1,8 +1,7 @@
 /**
- * Database initialization and exports
+ * @file db/index.ts
+ * @description Database module exports for schema, initialization, and query functions.
  */
 
 export { SCHEMA_VERSION, CREATE_TABLES_SQL } from './schema';
-
-// Database instance will be initialized by Pyrrhaxis
-// export { db, initDatabase } from './init';
+export { getDatabase, initDatabase, closeDatabase } from './init';

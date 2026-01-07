@@ -1,10 +1,9 @@
 /**
- * Zustand store exports
- * Implementation by Pyrrhaxis
+ * @file stores/index.ts
+ * @description Re-exports all Zustand stores for state management.
  */
 
-// export { useTrackStore } from './useTrackStore';
-// export { useTagStore } from './useTagStore';
-// export { useButtonStore } from './useButtonStore';
-// export { usePlayerStore } from './usePlayerStore';
-// export { useSettingsStore } from './useSettingsStore';
+export { useTrackStore } from './useTrackStore';
+export { useTagStore } from './useTagStore';
+export { useButtonStore } from './useButtonStore';
+export { usePlayerStore } from './usePlayerStore';

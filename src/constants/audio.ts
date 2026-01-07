@@ -1,5 +1,6 @@
 /**
- * Audio-related constants
+ * @file constants/audio.ts
+ * @description Audio-related constants including supported formats and volume defaults.
  */
 
 export const Audio = {

@@ -6,11 +6,17 @@
 
 ---
 
+## Project State
+
+**Human Test Ready:** No — Test environment not yet configured
+
+---
+
 ## Priority Order
 
-1. **Implement database initialization** (Pyrrhaxis) — Initialize SQLite on app start
-2. **Implement core stores** (Pyrrhaxis) — TrackStore, TagStore, ButtonStore, PlayerStore
-3. **Implement track import** (Pyrrhaxis) — File picker and metadata extraction
+1. **BoardScreen QA pass** (Kazzrath) — Test interactions, edge cases, played-flag logic
+2. **Build Library screen** (Seraphelle) — Track list with import functionality
+3. **Build Tags screen** (Seraphelle) — Tag management UI
 
 ---
 
@@ -26,46 +32,28 @@
 
 ### ✨ Vaelthrix the Astral — Architecture
 
-- [x] **Define MVP scope and specification** — Completed. See [docs/MVP_SPEC.md](../docs/MVP_SPEC.md)
-- [x] **Define data model** — Completed. See [docs/DATAMODEL.md](../docs/DATAMODEL.md)
-- [x] **Design folder structure** — Completed. See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
-- [x] **Design navigation structure** — Completed. See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
-- [x] **Design state management architecture** — Completed. See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
+*No pending tasks.*
 
 ### 🔴 Pyrrhaxis the Red — Code
 
-- [ ] **Implement database initialization** — Create tables on app start, handle migrations
-- [ ] **Implement useTrackStore** — CRUD operations for tracks
-- [ ] **Implement useTagStore** — CRUD operations for tags, track-tag associations
-- [ ] **Implement useButtonStore** — CRUD operations for buttons
-- [ ] **Implement usePlayerStore** — Playback state, volume control
-- [ ] **Implement track import service** — File picker, metadata extraction
-- [ ] **Implement tag pool selection** — Random unplayed track selection for tag buttons
+*No pending tasks.*
 
 ### 🪽 Seraphelle the Silver — UI/UX
-
-- [ ] **Design button board layout** — Grid spacing, touch targets, visual hierarchy
-- [ ] **Design color system** — Finalize palette, button states, accessibility
+- [ ] **Build Library screen** — Track list, import button, track details
+- [ ] **Build Tags screen** — Tag CRUD, tag-track association UI
 
 ### 🔵 Kazzrath the Blue — QA
 
-*Blocked until implementation begins.*
+- [ ] **BoardScreen QA pass** — Test interactions, edge cases, played-flag logic
 
 ### 🟡 Chatterwind the Brass — Safety
 
-- [ ] **Review file system access patterns** — Ensure safe handling of imported audio files
+*No pending tasks.*
 
 ### 🟤 Wrixle the Copper — Documentation
 
-- [ ] **Document project setup instructions** — README for dev environment setup
+*No pending tasks.*
 
 ### 🟠 Tarnoth the Bronze — DevOps & Tooling
 
-- [x] **Initialize React Native project** — Expo with tabs template, TypeScript enabled
-- [x] **Initialize Git repository** — .gitignore, initial commit
-- [x] **Configure ESLint and Prettier** — Code style enforcement
-- [x] **Install and configure expo-sqlite** — Database layer ready
-- [x] **Install and configure expo-file-system** — File access ready
-- [x] **Install and configure react-native-track-player** — Audio playback ready
-- [x] **Install and configure Zustand** — State management ready
-- [x] **Create initial folder structure** — src/, types, db, stores, constants, utils
+- [ ] **Set up human test environment** — Configure BlueStacks, physical device, or emulator for manual testing

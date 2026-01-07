@@ -1,6 +1,6 @@
 /**
- * SQLite schema definitions for VibeDeck
- * Codified by Vaelthrix the Astral
+ * @file db/schema.ts
+ * @description SQLite schema definitions for VibeDeck database tables and indexes.
  */
 
 export const SCHEMA_VERSION = 1;

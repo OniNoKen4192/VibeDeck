@@ -77,6 +77,25 @@ These files require extra care when modifying:
 
 ---
 
+## File Header Standard
+
+All `.ts` and `.tsx` files in `src/` should have a JSDoc header at the top:
+
+```typescript
+/**
+ * @file filename.ts
+ * @description Brief explanation of the file's purpose
+ */
+```
+
+**Guidelines:**
+- Keep descriptions to one sentence when possible
+- Focus on *what* the file does, not *how*
+- New files must include the header
+- Existing files should have headers added during documentation sweeps
+
+---
+
 ## Pre-Push Checklist
 
 Before pushing to remote:

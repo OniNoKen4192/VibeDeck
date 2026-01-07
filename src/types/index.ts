@@ -1,6 +1,7 @@
 /**
- * VibeDeck Core Entity Types
- * Codified by Vaelthrix the Astral
+ * @file types/index.ts
+ * @description Core entity type definitions for VibeDeck domain objects.
+ * Defines Track, Tag, Button, and derived UI types used throughout the application.
  */
 
 // Core entity types

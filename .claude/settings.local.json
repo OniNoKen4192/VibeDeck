@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(dir /b \"n:\\\\VibeDeck\\\\.eslint*\" \"n:\\\\VibeDeck\\\\.prettier*\")",
+      "Bash(dir:*)"
+    ]
+  }
+}

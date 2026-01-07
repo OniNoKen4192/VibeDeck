@@ -1,5 +1,6 @@
 /**
- * Time/duration formatting utilities
+ * @file utils/time.ts
+ * @description Time and duration formatting utilities for display and timestamps.
  */
 
 /**

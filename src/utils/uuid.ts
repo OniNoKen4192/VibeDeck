@@ -1,5 +1,6 @@
 /**
- * UUID generation utility
+ * @file utils/uuid.ts
+ * @description UUID v4 generation utility for creating unique entity identifiers.
  */
 
 export function generateUUID(): string {
