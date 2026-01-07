@@ -84,8 +84,20 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   setVolume: async (volume) => {
     const clamped = Math.max(0, Math.min(100, volume));
+    const previousVolume = get().volume;
+
+    // Optimistic update
     set({ volume: clamped });
-    await settingsQueries.setSetting(VOLUME_KEY, clamped.toString());
+
+    try {
+      await settingsQueries.setSetting(VOLUME_KEY, clamped.toString());
+    } catch (error) {
+      // Rollback on persistence failure
+      set({ volume: previousVolume });
+      console.error('Failed to persist volume setting:', error);
+      // Re-throw so caller can show user feedback if desired
+      throw error;
+    }
   },
 
   setOutputDevice: (deviceId) => {

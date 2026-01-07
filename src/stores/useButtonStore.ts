@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import type { Button, ButtonType, ButtonResolved, Tag, Track } from '../types';
 import { generateUUID } from '../utils/uuid';
+import { validateButtonName } from '../utils/validation';
 import { DEFAULT_BUTTON_COLOR } from '../constants/colors';
 import * as buttonQueries from '../db/queries/buttons';
 import * as tagQueries from '../db/queries/tags';
@@ -79,12 +80,32 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
   },
 
   addTagButton: async (name, tagId, persistent = false, color = null) => {
+    // Validate button name
+    const validation = validateButtonName(name);
+    if (!validation.isValid) {
+      throw new Error(validation.error);
+    }
+
     const now = new Date().toISOString();
-    const position = await buttonQueries.getNextPosition();
+    const id = generateUUID();
+    const trimmedName = name.trim();
+
+    // Use atomic insert to prevent position race conditions
+    const position = await buttonQueries.insertButtonAtomic({
+      id,
+      name: trimmedName,
+      type: 'tag',
+      tagId,
+      trackId: null,
+      persistent,
+      color,
+      createdAt: now,
+      updatedAt: now,
+    });
 
     const button: Button = {
-      id: generateUUID(),
-      name,
+      id,
+      name: trimmedName,
       type: 'tag',
       tagId,
       trackId: null,
@@ -95,18 +116,37 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
       updatedAt: now,
     };
 
-    await buttonQueries.insertButton(button);
     set((state) => ({ buttons: [...state.buttons, button] }));
     return button;
   },
 
   addDirectButton: async (name, trackId, persistent = false, color = null) => {
+    // Validate button name
+    const validation = validateButtonName(name);
+    if (!validation.isValid) {
+      throw new Error(validation.error);
+    }
+
     const now = new Date().toISOString();
-    const position = await buttonQueries.getNextPosition();
+    const id = generateUUID();
+    const trimmedName = name.trim();
+
+    // Use atomic insert to prevent position race conditions
+    const position = await buttonQueries.insertButtonAtomic({
+      id,
+      name: trimmedName,
+      type: 'direct',
+      tagId: null,
+      trackId,
+      persistent,
+      color,
+      createdAt: now,
+      updatedAt: now,
+    });
 
     const button: Button = {
-      id: generateUUID(),
-      name,
+      id,
+      name: trimmedName,
       type: 'direct',
       tagId: null,
       trackId,
@@ -117,12 +157,20 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
       updatedAt: now,
     };
 
-    await buttonQueries.insertButton(button);
     set((state) => ({ buttons: [...state.buttons, button] }));
     return button;
   },
 
   updateButton: async (id, updates) => {
+    // Validate button name if provided
+    if (updates.name !== undefined) {
+      const validation = validateButtonName(updates.name);
+      if (!validation.isValid) {
+        throw new Error(validation.error);
+      }
+      updates = { ...updates, name: updates.name.trim() };
+    }
+
     const now = new Date().toISOString();
     await buttonQueries.updateButton(id, { ...updates, updatedAt: now });
     set((state) => ({

@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import type { Tag, TagWithCount, Track } from '../types';
 import { generateUUID } from '../utils/uuid';
+import { validateTagName } from '../utils/validation';
 import * as tagQueries from '../db/queries/tags';
 import * as trackTagQueries from '../db/queries/trackTags';
 
@@ -103,10 +104,17 @@ export const useTagStore = create<TagStore>((set, get) => ({
   },
 
   addTag: async (name, color = null) => {
+    // Validate tag name
+    const validation = validateTagName(name);
+    if (!validation.isValid) {
+      throw new Error(validation.error);
+    }
+
     const now = new Date().toISOString();
+    const trimmedName = name.trim();
     const tag: Tag = {
       id: generateUUID(),
-      name,
+      name: trimmedName,
       color,
       createdAt: now,
       updatedAt: now,
@@ -128,6 +136,15 @@ export const useTagStore = create<TagStore>((set, get) => ({
   },
 
   updateTag: async (id, updates) => {
+    // Validate tag name if provided
+    if (updates.name !== undefined) {
+      const validation = validateTagName(updates.name);
+      if (!validation.isValid) {
+        throw new Error(validation.error);
+      }
+      updates = { ...updates, name: updates.name.trim() };
+    }
+
     const now = new Date().toISOString();
     await tagQueries.updateTag(id, { ...updates, updatedAt: now });
     set((state) => ({

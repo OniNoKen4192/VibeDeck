@@ -6,6 +6,26 @@
 
 ## Core Principles
 
+### The Music Must Flow
+
+**VibeDeck must never leave the user in silence during a game.**
+
+At a sporting event, the parent running the soundboard is already juggling a hundred things. The worst possible outcome is pressing a button and hearing nothing. VibeDeck is designed to prioritize continuous audio playback over strict pool management.
+
+**Behavioral guarantees:**
+
+1. **Tag buttons with tracks always play.** If the unplayed pool is exhausted, it auto-resets and continues. The user never sees "no tracks available" if tracks exist.
+
+2. **Empty tags are visually distinct.** Tag buttons with zero tracks are grayed out and disabled — the user can see at a glance that they need to add tracks.
+
+3. **Errors don't stop the show.** If a track file is missing, skip it and try the next. Log the error, but keep playing.
+
+4. **Responsive over accurate.** Badge counts may be slightly stale (optimistic updates), but button presses respond instantly. Accuracy self-corrects on reload.
+
+This is a UX principle, not just an implementation detail. Any feature that could result in "button pressed, nothing happened" must be carefully evaluated.
+
+---
+
 ### Privacy by Design
 
 **VibeDeck is a fully offline, local-only application.**

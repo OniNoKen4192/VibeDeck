@@ -56,14 +56,17 @@ export function BoardButton({
     ? Colors.textMuted
     : getButtonTextColor(backgroundColor);
 
+  // Exhausted buttons should not accept presses (visual feedback only)
+  const isInteractive = !isDisabled && !isExhausted;
+
   const handlePressIn = useCallback(() => {
-    if (isDisabled) return;
+    if (!isInteractive) return;
     Animated.timing(scaleAnim, {
       toValue: Layout.pressScale,
       duration: Layout.pressDuration,
       useNativeDriver: true,
     }).start();
-  }, [isDisabled, scaleAnim]);
+  }, [isInteractive, scaleAnim]);
 
   const handlePressOut = useCallback(() => {
     Animated.timing(scaleAnim, {
@@ -74,11 +77,12 @@ export function BoardButton({
   }, [scaleAnim]);
 
   const handlePress = useCallback(() => {
-    if (isDisabled) return;
+    if (!isInteractive) return;
     onPress?.(button);
-  }, [isDisabled, onPress, button]);
+  }, [isInteractive, onPress, button]);
 
   const handleLongPress = useCallback(() => {
+    // Allow long press even on exhausted buttons (for context menu/edit)
     if (isDisabled) return;
     onLongPress?.(button);
   }, [isDisabled, onLongPress, button]);

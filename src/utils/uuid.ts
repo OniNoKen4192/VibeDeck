@@ -3,11 +3,12 @@
  * @description UUID v4 generation utility for creating unique entity identifiers.
  */
 
+import * as Crypto from 'expo-crypto';
+
+/**
+ * Generates a cryptographically secure UUID v4.
+ * Uses expo-crypto for secure random bytes instead of Math.random().
+ */
 export function generateUUID(): string {
-  // Simple UUID v4 implementation
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return Crypto.randomUUID();
 }

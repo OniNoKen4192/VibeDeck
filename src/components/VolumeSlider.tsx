@@ -4,7 +4,7 @@
  * @see docs/UI_DESIGN.md
  */
 
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -16,6 +16,9 @@ import {
 } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Layout } from '../constants/layout';
+
+/** Minimum time between value change callbacks (ms) */
+const THROTTLE_MS = 16;
 
 interface VolumeSliderProps {
   /** Current volume 0-100 */
@@ -34,46 +37,66 @@ export function VolumeSlider({
   onSlidingComplete,
   disabled = false,
 }: VolumeSliderProps) {
-  const [sliderWidth, setSliderWidth] = useState(200);
+  const [sliderWidth, setSliderWidth] = useState(0);
   const sliderRef = useRef<View>(null);
   const currentValueRef = useRef(value);
+  const lastCallTimeRef = useRef(0);
 
   // Update ref when value changes
   currentValueRef.current = value;
 
   const calculateValue = useCallback(
     (pageX: number, startX: number): number => {
+      // Guard against division by zero (CR-16)
+      if (sliderWidth === 0) return value;
+
       const position = pageX - startX;
       const percentage = Math.max(0, Math.min(1, position / sliderWidth));
       return Math.round(percentage * 100);
     },
-    [sliderWidth]
+    [sliderWidth, value]
   );
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => !disabled,
-      onMoveShouldSetPanResponder: () => !disabled,
-      onPanResponderGrant: (evt: GestureResponderEvent) => {
-        if (disabled) return;
-        sliderRef.current?.measureInWindow((x) => {
-          const newValue = calculateValue(evt.nativeEvent.pageX, x);
-          onValueChange(newValue);
-        });
-      },
-      onPanResponderMove: (evt: GestureResponderEvent) => {
-        if (disabled) return;
-        sliderRef.current?.measureInWindow((x) => {
-          const newValue = calculateValue(evt.nativeEvent.pageX, x);
-          onValueChange(newValue);
-        });
-      },
-      onPanResponderRelease: () => {
-        if (disabled) return;
-        onSlidingComplete?.(currentValueRef.current);
-      },
-    })
-  ).current;
+  // Throttled value change handler (CR-18)
+  const throttledOnValueChange = useCallback(
+    (newValue: number) => {
+      const now = Date.now();
+      if (now - lastCallTimeRef.current >= THROTTLE_MS) {
+        lastCallTimeRef.current = now;
+        onValueChange(newValue);
+      }
+    },
+    [onValueChange]
+  );
+
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => !disabled && sliderWidth > 0,
+        onMoveShouldSetPanResponder: () => !disabled && sliderWidth > 0,
+        onPanResponderGrant: (evt: GestureResponderEvent) => {
+          if (disabled || sliderWidth === 0) return;
+          sliderRef.current?.measureInWindow((x) => {
+            const newValue = calculateValue(evt.nativeEvent.pageX, x);
+            // Don't throttle initial touch
+            lastCallTimeRef.current = Date.now();
+            onValueChange(newValue);
+          });
+        },
+        onPanResponderMove: (evt: GestureResponderEvent) => {
+          if (disabled || sliderWidth === 0) return;
+          sliderRef.current?.measureInWindow((x) => {
+            const newValue = calculateValue(evt.nativeEvent.pageX, x);
+            throttledOnValueChange(newValue);
+          });
+        },
+        onPanResponderRelease: () => {
+          if (disabled) return;
+          onSlidingComplete?.(currentValueRef.current);
+        },
+      }),
+    [disabled, sliderWidth, calculateValue, onValueChange, throttledOnValueChange, onSlidingComplete]
+  );
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setSliderWidth(event.nativeEvent.layout.width);
