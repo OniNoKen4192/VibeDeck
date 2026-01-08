@@ -374,10 +374,10 @@
   - Created `index.js` — Custom entry point with service registration before React
   - Updated `package.json` to use custom entry point
   - Added initialization guard for "already initialized" case (hot reload, app restart)
-  - Commit: pending
+  - Commit: 3ab6c99
 
 - [x] **HT-008/009: URI decoding in metadata** (Pyrrhaxis)
   - Added `decodeURIComponent()` to `extractFileName()` in validation.ts
   - Content URIs from Android document picker now properly decoded
   - Artist/title pattern matching now works on decoded filenames
-  - Commit: pending
+  - Commit: 3ab6c99
