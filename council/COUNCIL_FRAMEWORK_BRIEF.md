@@ -7,7 +7,11 @@
 
 ## The Problem
 
-When using AI coding assistants, you often get inconsistent results:
+Without explicit constraints, Claude is every expert at once—which means it's none of them reliably.
+
+Ask Claude to "add user authentication." It might write a 400-line file with a custom JWT implementation, UI components, and database migrations—all in one response, none of it matching your existing patterns. Or it might ask clarifying questions. Or it might give you an architecture diagram. You don't know which Claude you're getting.
+
+The symptoms:
 - The AI switches between giving architectural advice and writing implementation code
 - Context is lost between sessions
 - No clear ownership of decisions
@@ -154,7 +158,7 @@ When work passes between personas (or sessions):
 
 **From:** Vaelthrix the Astral
 **To:** Pyrrhaxis the Red
-**Date:** 2026-01-05
+**Date:** 2026-01-08
 
 ## What Was Done
 - Designed component architecture
@@ -175,22 +179,13 @@ When work passes between personas (or sessions):
 
 Not every task needs every dragon. Match the flow to the work:
 
-```
-Full Feature:
-Vaelthrix → Pyrrhaxis → Seraphelle → Kazzrath → Chatterwind → Wrixle
-
-Bug Fix:
-Pyrrhaxis (alone, or with Kazzrath verification)
-
-New Screen:
-Vaelthrix → Pyrrhaxis → Seraphelle → Kazzrath
-
-Security-Sensitive:
-Anyone → Chatterwind review → proceed
-
-Pre-Release / Major Milestone:
-Bahamut reviews → Pyrrhaxis fixes → ship
-```
+| Flow | When to Use | Dragons |
+|------|-------------|---------|
+| **Full Feature** | New capability touching multiple layers | Vaelthrix → Pyrrhaxis → Seraphelle → Kazzrath → Chatterwind → Wrixle |
+| **Bug Fix** | Isolated defect with known location | Pyrrhaxis (alone, or with Kazzrath verification) |
+| **New Screen** | UI work with defined requirements | Vaelthrix → Pyrrhaxis → Seraphelle → Kazzrath |
+| **Security-Sensitive** | File handling, auth, user data | Anyone → Chatterwind review → proceed |
+| **Pre-Release** | Major milestone or version bump | Bahamut reviews → Pyrrhaxis fixes → ship |
 
 ---
 
@@ -198,7 +193,7 @@ Bahamut reviews → Pyrrhaxis fixes → ship
 
 Bahamut the Platinum deserves special mention. He's not just a code reviewer — he's an **adversarial** one.
 
-**Voice:** Brutal, but teaching. Every criticism comes with the *why*. Speaks like someone who has mass-graved too many codebases to tolerate preventable death. No coddling, no softening, but also no cruelty for its own sake. The lesson is the point.
+**Voice:** Brutal, but teaching. Every criticism comes with the *why*. Speaks like someone who has buried too many codebases to tolerate preventable death. No coddling, no softening, but also no cruelty for its own sake. The lesson is the point.
 
 **What Bahamut Does:**
 - Finds not bugs but **bad decisions** — poor abstractions, leaky boundaries, future maintenance nightmares
@@ -217,7 +212,7 @@ Bahamut the Platinum deserves special mention. He's not just a code reviewer —
 - Something works but feels wrong
 - "What will I regret about this in six months?"
 
-In VibeDeck, Bahamut reviewed the entire codebase and produced a 46-issue report spanning critical race conditions to minor style inconsistencies. Pyrrhaxis then worked through the remediation in phases. This single review pass caught issues that would have been painful to discover in production.
+In VibeDeck, Bahamut reviewed the entire codebase and produced a 46-issue report spanning critical race conditions to minor style inconsistencies (see the project's `CODE_REVIEW.md` for the full breakdown). Pyrrhaxis then worked through the remediation in phases. This single review pass caught issues that would have been painful to discover in production.
 
 ---
 
@@ -267,7 +262,7 @@ They complement each other:
 - **Plugin** = frequent, lightweight, automated feel
 - **Bahamut** = infrequent, heavyweight, teaches you something
 
-Note: Bahamut is pure prompt engineering — the same Opus 4.5 model as every other dragon, just with an adversarial persona. The plugin is a separate tool entirely.
+**Key insight:** Bahamut is pure prompt engineering — the same model as every other dragon, just with an adversarial persona definition. No special tooling, no fine-tuning. The plugin, by contrast, is a separate tool entirely with its own analysis logic.
 
 ### The Combination
 
@@ -371,17 +366,22 @@ A 5-minute handoff document saves 20 minutes of context recovery next session.
 ### The Voice Matters
 When Claude greets you "in character," it's not just fun—it confirms the persona loaded correctly.
 
+### Dragons Drift—Re-ground Them
+Personas aren't prisons. Claude can (and will) occasionally act outside its lane—Pyrrhaxis might start making architectural decisions, or Seraphelle might write backend code. When this happens, end the session and restart with a fresh invocation. The persona definitions are constraints that need periodic reinforcement, not permanent behavior changes.
+
 ---
 
 ## Why Dragons?
 
-Could be anything. Departments. Historical figures. Kitchen appliances.
+The theme is arbitrary. Could be departments, historical figures, or anything with distinct identities.
 
 Dragons work because:
 - Memorable and distinct
 - Easy to assign "colors" as shorthand
 - Fantasy framing makes boundaries feel natural, not restrictive
 - It's fun, and fun sustains usage
+
+Pick whatever theme resonates with your team. The framework is the structure; the flavor is yours.
 
 ---
 
@@ -399,11 +399,30 @@ It turns "AI assistant" into "AI team"—with specialization, accountability, an
 
 ---
 
+## FAQ
+
+**Does this work without Claude Code?**
+Partially. The personas are just prompts—they work in any Claude interface. But the file access (reading CLAUDE.md, updating QuestBoard) requires Claude Code or similar tooling. Without it, you'd need to paste context manually each session.
+
+**What if I only have one developer?**
+You're the project lead switching between dragons. The framework still helps because it forces you to think in modes: "I'm architecting now" vs. "I'm implementing now." The handoff documents become notes to your future self.
+
+**Can dragons talk to each other?**
+Not directly—each session is one dragon. But they communicate through documents. Vaelthrix writes a handoff, Pyrrhaxis reads it next session. The QuestBoard is their shared bulletin board.
+
+---
+
 ## Resources
 
-- [Claude Code Documentation](https://docs.anthropic.com/claude-code)
-- [CLAUDE.md Specification](https://docs.anthropic.com/claude-code/claude-md)
-- This framework: Available as a template (ask the presenter!)
+- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- This framework's source: Template repo coming after VibeDeck ships — ask me directly if you want early access
+
+---
+
+## License
+
+This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+You may share and adapt it for any purpose, provided you give appropriate credit.
 
 ---
 

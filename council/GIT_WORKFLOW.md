@@ -67,10 +67,13 @@ These files require extra care when modifying:
 > For detailed handoff memo conventions, see [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md).
 
 ### When a dragon completes work:
-1. Ensure all changes are committed with dragon attribution
-2. Update `council/QuestBoard.md` (move task to QuestLog)
-3. Run `git status` to confirm clean working tree
-4. If passing work to another dragon, create a handoff memo in `council/handoffs/`
+1. **Do NOT commit.** Hand off to project lead for code review first.
+2. Summarize changes and await project lead approval
+3. Only commit when explicitly told to do so by project lead
+4. Use dragon attribution in commit message
+5. Update `council/QuestBoard.md` (move task to QuestLog)
+6. If passing work to another dragon, create a handoff memo in `council/handoffs/`
+7. If done with a handoff, move to the appropriate handoffs archive folder [\council\archive\handoffs\(year-month)]
 
 ### When a dragon begins work:
 1. Run `git status` and `git log -3 --oneline` to orient
