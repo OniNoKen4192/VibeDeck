@@ -98,7 +98,7 @@
 
 ## Code Review Reference
 
-All issues tracked in [CODE_REVIEW.md](CODE_REVIEW.md).
+All issues tracked in [CODE_REVIEW.md](qa/CODE_REVIEW.md).
 
 | Severity | Count | Fixed | Remaining |
 |----------|-------|-------|-----------|
@@ -116,4 +116,4 @@ All issues tracked in [CODE_REVIEW.md](CODE_REVIEW.md).
 - Board infrastructure complete (Phase 1 + 1.5 fixes done)
 - ✅ Library & Tags screens complete — human testing can begin
 - Code Review Phase 2 (high severity) should proceed in parallel with QA
-- Reference: [CODE_REVIEW.md](CODE_REVIEW.md), [REMEDIATION_PLAN.md](REMEDIATION_PLAN.md)
+- Reference: [CODE_REVIEW.md](qa/CODE_REVIEW.md), [REMEDIATION_PLAN.md](qa/REMEDIATION_PLAN.md)
