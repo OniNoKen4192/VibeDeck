@@ -8,7 +8,7 @@
 
 ## Project State
 
-**Human Test Ready:** 🟡 PENDING HT Round 4 — HT-008, HT-009, HT-011 fixed, awaiting verification
+**Human Test Ready:** ✅ READY — HT-013 fixed, Human Testing Round 4 can proceed
 
 **Build History:**
 - 2026-01-07: Failed — Expo Go incompatible with native modules
@@ -29,10 +29,11 @@
 6. ~~**HT-006: Board screen reactivity** (Pyrrhaxis) — High, board doesn't refresh on button changes~~ ✅ COMPLETE
 7. ~~**HT-005: Volume slider identity** (Seraphelle) — Low, add speaker icon~~ ✅ COMPLETE
 8. ~~**Human Testing Round 3** — Verify HT-005 through HT-007 fixes~~ ✅ COMPLETE (3/3 pass, 4 new bugs)
-9. **🚨 HT-011: TrackPlayer service + initialization** (Pyrrhaxis) — CRITICAL, app crashes
-10. **HT-008/009: URI decoding in metadata** (Pyrrhaxis) — High, tracks unidentifiable
-11. **Human Testing Round 4** — Verify HT-008 through HT-011 fixes
-12. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
+9. ~~**🚨 HT-011: TrackPlayer service + initialization** (Pyrrhaxis) — CRITICAL, app crashes~~ ✅ VERIFIED
+10. ~~**🚨 HT-013: expo-file-system import path regression** (Pyrrhaxis) — CRITICAL, blocks import~~ ✅ COMPLETE
+11. ~~**HT-008/009: URI decoding in metadata** (Pyrrhaxis) — High, tracks unidentifiable~~ ✅ COMPLETE (commit 3ab6c99)
+12. **Human Testing Round 4** — Verify HT-008, HT-009, HT-013 fixes
+13. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
 
 ---
 
@@ -57,6 +58,7 @@
 
 - [x] **🚨 HT-007: expo-file-system migration** — ✅ Migrated to `File` class API (commit 249f459)
 - [x] **HT-006: Board screen reactivity** — ✅ Subscribed to button store changes (commit 249f459)
+- [x] **🚨 HT-013: expo-file-system import path regression** — ✅ Corrected import path to `/next` (commit b467c28)
 
 #### Phase 2: High Severity (Before Beta)
 

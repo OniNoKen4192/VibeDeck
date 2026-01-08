@@ -381,3 +381,10 @@
   - Content URIs from Android document picker now properly decoded
   - Artist/title pattern matching now works on decoded filenames
   - Commit: 3ab6c99
+
+- [x] **HT-013: expo-file-system import path regression** (Pyrrhaxis)
+  - Corrected import path from `'expo-file-system'` to `'expo-file-system/next'`
+  - Updated `src/services/import/validation.ts:6`
+  - Updated `src/services/player/index.ts:13`
+  - Regression from HT-007 migration — `File` class lives in `/next` submodule
+  - Commit: b467c28
