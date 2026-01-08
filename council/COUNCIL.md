@@ -221,6 +221,8 @@ Vaelthrix (specs) → Pyrrhaxis (builds) → Seraphelle (skins) → Kazzrath (te
 
 Not every feature needs every dragon. Small bug? Pyrrhaxis alone. New screen? Vaelthrix → Pyrrhaxis → Seraphelle → Kazzrath.
 
+For cross-session handoffs, create a memo in `council/handoffs/`. See [HANDOFF_PROTOCOL.md](HANDOFF_PROTOCOL.md) for naming conventions and templates.
+
 ## Conflict Resolution
 
 | Domain | Final Authority |
