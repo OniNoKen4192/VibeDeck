@@ -76,8 +76,10 @@ export function VolumeSlider({
         onMoveShouldSetPanResponder: () => !disabled && sliderWidth > 0,
         onPanResponderGrant: (evt: GestureResponderEvent) => {
           if (disabled || sliderWidth === 0) return;
+          // Capture pageX synchronously before async callback (React recycles synthetic events)
+          const pageX = evt.nativeEvent.pageX;
           sliderRef.current?.measureInWindow((x) => {
-            const newValue = calculateValue(evt.nativeEvent.pageX, x);
+            const newValue = calculateValue(pageX, x);
             // Don't throttle initial touch
             lastCallTimeRef.current = Date.now();
             onValueChange(newValue);
@@ -85,8 +87,10 @@ export function VolumeSlider({
         },
         onPanResponderMove: (evt: GestureResponderEvent) => {
           if (disabled || sliderWidth === 0) return;
+          // Capture pageX synchronously before async callback (React recycles synthetic events)
+          const pageX = evt.nativeEvent.pageX;
           sliderRef.current?.measureInWindow((x) => {
-            const newValue = calculateValue(evt.nativeEvent.pageX, x);
+            const newValue = calculateValue(pageX, x);
             throttledOnValueChange(newValue);
           });
         },

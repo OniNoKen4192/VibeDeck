@@ -8,23 +8,30 @@
 
 ## Project State
 
-**Human Test Ready:** ✅ Library & Tags screens complete — Ready for QA
+**Human Test Ready:** ✅ UNBLOCKED — HT-001 through HT-004 fixed (2026-01-08)
+
+**Build History:**
+- 2026-01-07: Failed — Expo Go incompatible with native modules
+- 2026-01-08: Failed — `react-native-worklets` required New Architecture, but `react-native-track-player` incompatible with it
+- 2026-01-08: ✅ **SUCCESS** — Removed unused `react-native-reanimated` + `react-native-worklets`, set `newArchEnabled=false`
+
+**Resolution:** The template included `react-native-reanimated` (unused) which pulled in `react-native-worklets` (requires New Arch). Removing both allowed track-player to work with Old Architecture.
 
 ---
 
 ## Priority Order
 
-1. **Full flow QA pass** (Kazzrath) — Ready to begin
-2. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes (parallel work)
-3. **Human test environment setup** (Tarnoth) — BlueStacks/emulator config
+1. ~~**🚨 Configure development build** (Tarnoth) — BLOCKING all testing~~ ✅ RESOLVED (Vaelthrix)
+2. ~~**Full flow QA pass** (Kazzrath) — Import → Tag → Button → Play~~ ✅ COMPLETE
+3. ~~**🚨 Human Testing Bug Fixes** (Pyrrhaxis) — HT-001 through HT-004~~ ✅ COMPLETE
+4. **Human Testing Round 2** — Verify HT fixes on device
+5. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
 
 ---
 
 ## In Progress
 
-### 🔴 Pyrrhaxis the Crimson — Code
-
-*No tasks in progress*
+*No tasks currently in progress*
 
 ---
 
@@ -54,11 +61,11 @@
 
 ### 🔵 Kazzrath the Blue — QA
 
-> ✅ Unblocked — Library & Tags screens complete
+> ✅ QA Pass Complete — See [QA_REPORT_2026-01-08.md](QA_REPORT_2026-01-08.md)
 
-- [ ] **Full flow QA pass** — Import → Tag → Button → Play
-- [ ] **BoardScreen edge cases** — Test interactions, played-flag logic, auto-reset
-- [ ] **Verify Phase 1 fixes** — Regression testing for critical fixes
+- [x] **Full flow QA pass** — Import → Tag → Button → Play ✅
+- [x] **BoardScreen edge cases** — Test interactions, played-flag logic, auto-reset ✅
+- [x] **Verify Phase 1 fixes** — Regression testing for critical fixes ✅
 
 ### 🟡 Chatterwind the Brass — Safety
 
@@ -72,7 +79,7 @@
 
 ### 🟠 Tarnoth the Bronze — DevOps & Tooling
 
-- [ ] **Set up human test environment** — Configure BlueStacks, physical device, or emulator
+- [x] **🚨 Configure development build** — ✅ Resolved by Vaelthrix (removed reanimated/worklets, disabled New Arch)
 - [ ] **Configure automated test framework** — Jest + React Native Testing Library
 
 ---

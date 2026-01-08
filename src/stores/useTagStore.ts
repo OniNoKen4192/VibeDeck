@@ -9,6 +9,7 @@ import { generateUUID } from '../utils/uuid';
 import { validateTagName } from '../utils/validation';
 import * as tagQueries from '../db/queries/tags';
 import * as trackTagQueries from '../db/queries/trackTags';
+import { useButtonStore } from './useButtonStore';
 
 /**
  * Adjusts tag counts in memory for optimistic updates.
@@ -160,6 +161,8 @@ export const useTagStore = create<TagStore>((set, get) => ({
 
   deleteTag: async (id) => {
     await tagQueries.deleteTag(id);
+    // Cascade to button store — remove orphaned buttons from in-memory state
+    await useButtonStore.getState().removeButtonsForTag(id);
     set((state) => ({
       tags: state.tags.filter((t) => t.id !== id),
     }));

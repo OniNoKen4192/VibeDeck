@@ -306,3 +306,41 @@
   - Reset `isPreviewPlaying` in `handleDeleteTrack` after `playerStop()`
   - Prevents stale preview state when user deletes a track being previewed
   - Added `isPreviewPlaying` to useCallback dependency array
+
+---
+
+## 2026-01-08
+
+- [x] **Full flow QA pass** (Kazzrath)
+  - Verified Import → Tag → Button → Play flow is architecturally complete
+  - Document picker, validation, metadata extraction all functional
+  - Tag creation, editing, deletion, and association working
+  - Button creation (auto on tag, manual from track detail) verified
+  - Playback with tag pool selection and direct buttons working
+  - Full report: [QA_REPORT_2026-01-08.md](QA_REPORT_2026-01-08.md)
+
+- [x] **BoardScreen edge cases QA** (Kazzrath)
+  - Played-flag logic verified (markPlayed callback integration)
+  - Auto-reset "music must flow" feature working correctly
+  - Exhausted button handling (visual feedback, no-op on press)
+  - Empty tag detection (isEmpty flag, button disabled)
+  - Same-button toggle, interrupt behavior all correct
+
+- [x] **Verify Phase 1 critical fixes** (Kazzrath)
+  - CR-01: Database transactions ✅ (setTagsForTrack wrapped)
+  - CR-02: N+1 query fix ✅ (getAllButtonsResolved batch query)
+  - CR-03: Secure UUID ✅ (expo-crypto.randomUUID)
+  - CR-04: Player memory leak fix ✅ (eventSubscriptions cleanup)
+  - CR-05: Tag store optimistic updates ✅ (adjustTagCount helper)
+  - CR-06: Volume persistence error handling ✅ (rollback on failure)
+  - CR-08: Button position race condition ✅ (insertButtonAtomic)
+  - CR-11: Seek bounds checking ✅ (clamped to duration)
+  - CR-14: Input validation ✅ (validateTagName, validateButtonName)
+  - CR-45: insertButtonAtomic error propagation ✅
+  - CR-46: seekTo Infinity fallback ✅ (early return)
+
+- [x] **Human Testing Bug Fixes** (Pyrrhaxis)
+  - HT-004: Fixed content:// URI rejection — Strip URI scheme before path traversal check
+  - HT-002: Fixed VolumeSlider crash — Capture pageX synchronously before async measureInWindow
+  - HT-003: Fixed tag modal keyboard flicker — Use `behavior="padding"` on Android
+  - HT-001: Fixed orphaned buttons on tag deletion — Cross-store cascade via removeButtonsForTag

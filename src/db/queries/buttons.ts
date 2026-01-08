@@ -190,6 +190,11 @@ export async function deleteButton(id: string): Promise<void> {
   await db.runAsync('DELETE FROM buttons WHERE id = ?', [id]);
 }
 
+export async function deleteButtonsByTagId(tagId: string): Promise<void> {
+  const db = getDatabase();
+  await db.runAsync('DELETE FROM buttons WHERE tag_id = ?', [tagId]);
+}
+
 export async function reorderButtons(orderedIds: string[]): Promise<void> {
   const db = getDatabase();
   const now = new Date().toISOString();
@@ -316,6 +321,8 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
   let isEmpty = false;
 
   if (button.type === 'tag' && button.tagId) {
+    // Invariant: If tag_name is non-null from LEFT JOIN, all NOT NULL
+    // columns (created_at, updated_at) are guaranteed present per schema.ts
     if (row.tag_name !== null) {
       tag = {
         id: button.tagId,
@@ -333,6 +340,8 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
       isDisabled = true; // Tag was deleted
     }
   } else if (button.type === 'direct' && button.trackId) {
+    // Invariant: If track_file_path is non-null from LEFT JOIN, all NOT NULL
+    // columns (file_name, created_at, updated_at) are guaranteed present per schema.ts
     if (row.track_file_path !== null) {
       track = {
         id: button.trackId,

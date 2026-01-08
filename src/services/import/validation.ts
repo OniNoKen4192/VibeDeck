@@ -47,7 +47,9 @@ export async function validateFilePath(filePath: string): Promise<ValidationResu
   }
 
   // Check for path traversal attempts (security)
-  if (filePath.includes('..') || filePath.includes('//')) {
+  // Strip URI scheme before checking to allow content:// URIs from Android document picker
+  const pathWithoutScheme = filePath.replace(/^[a-z]+:\/\//i, '');
+  if (pathWithoutScheme.includes('..') || pathWithoutScheme.includes('//')) {
     return { isValid: false, error: 'Invalid file path format' };
   }
 

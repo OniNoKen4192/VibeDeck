@@ -53,6 +53,8 @@ interface ButtonStore {
   updateButton: (id: string, updates: Partial<Pick<Button, 'name' | 'persistent' | 'color'>>) => Promise<void>;
   /** Delete a button from the board. */
   deleteButton: (id: string) => Promise<void>;
+  /** Remove all buttons associated with a tag. Used for cascade on tag deletion. */
+  removeButtonsForTag: (tagId: string) => Promise<void>;
   /** Reorder buttons. Pass array of IDs in desired order. */
   reorderButtons: (orderedIds: string[]) => Promise<void>;
 
@@ -184,6 +186,13 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
     await buttonQueries.deleteButton(id);
     set((state) => ({
       buttons: state.buttons.filter((b) => b.id !== id),
+    }));
+  },
+
+  removeButtonsForTag: async (tagId) => {
+    await buttonQueries.deleteButtonsByTagId(tagId);
+    set((state) => ({
+      buttons: state.buttons.filter((b) => b.tagId !== tagId),
     }));
   },
 
