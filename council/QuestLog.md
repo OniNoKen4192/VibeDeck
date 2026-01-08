@@ -344,3 +344,16 @@
   - HT-002: Fixed VolumeSlider crash — Capture pageX synchronously before async measureInWindow
   - HT-003: Fixed tag modal keyboard flicker — Use `behavior="padding"` on Android
   - HT-001: Fixed orphaned buttons on tag deletion — Cross-store cascade via removeButtonsForTag
+
+- [x] **HT-007: expo-file-system migration** (Pyrrhaxis)
+  - Migrated from deprecated `getInfoAsync` to new `File` class API
+  - Updated `src/services/import/validation.ts` — File existence check now uses `new File(path).exists`
+  - Updated `src/services/player/index.ts` — Pre-playback validation uses `File` class
+  - Content URIs handled transparently by new API
+  - Commit: 249f459
+
+- [x] **HT-006: Board screen reactivity** (Pyrrhaxis)
+  - Board screen now subscribes to `useButtonStore.buttons` changes
+  - Added `storeButtons` dependency to loadResolvedButtons effect in `app/(tabs)/index.tsx`
+  - Creating/deleting tags now immediately updates the Board grid
+  - Commit: 249f459

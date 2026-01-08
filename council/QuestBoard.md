@@ -8,7 +8,7 @@
 
 ## Project State
 
-**Human Test Ready:** ⏸️ BLOCKED — HT-007 (expo-file-system deprecation) breaks import flow
+**Human Test Ready:** ✅ READY — HT-005, HT-006, HT-007 fixes complete, awaiting Round 3 verification
 
 **Build History:**
 - 2026-01-07: Failed — Expo Go incompatible with native modules
@@ -25,8 +25,8 @@
 2. ~~**Full flow QA pass** (Kazzrath) — Import → Tag → Button → Play~~ ✅ COMPLETE
 3. ~~**🚨 Human Testing Bug Fixes** (Pyrrhaxis) — HT-001 through HT-004~~ ✅ COMPLETE
 4. ~~**Human Testing Round 2** — Verify HT fixes on device~~ ✅ COMPLETE (2/4 pass, 2 blocked)
-5. **🚨 HT-007: expo-file-system migration** (Pyrrhaxis) — CRITICAL, blocks import
-6. **HT-006: Board screen reactivity** (Pyrrhaxis) — High, board doesn't refresh on button changes
+5. ~~**🚨 HT-007: expo-file-system migration** (Pyrrhaxis) — CRITICAL, blocks import~~ ✅ COMPLETE
+6. ~~**HT-006: Board screen reactivity** (Pyrrhaxis) — High, board doesn't refresh on button changes~~ ✅ COMPLETE
 7. ~~**HT-005: Volume slider identity** (Seraphelle) — Low, add speaker icon~~ ✅ COMPLETE
 8. **Human Testing Round 3** — Verify HT-005 through HT-007 fixes
 9. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
@@ -35,7 +35,7 @@
 
 ## In Progress
 
-*No tasks currently in progress — HT-006 and HT-007 fixes complete, awaiting commit*
+*No tasks currently in progress*
 
 ---
 
@@ -47,10 +47,10 @@
 
 ### 🔴 Pyrrhaxis the Crimson — Code
 
-#### Human Testing Fixes (BLOCKING)
+#### Human Testing Fixes
 
-- [ ] **🚨 HT-007: expo-file-system migration** — Migrate from deprecated `getInfoAsync` to new `File` class API. See [handoff](handoffs/HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-08_ht007-ht006.md)
-- [ ] **HT-006: Board screen reactivity** — Subscribe to button store changes. See [handoff](handoffs/HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-08_ht007-ht006.md)
+- [x] **🚨 HT-007: expo-file-system migration** — ✅ Migrated to `File` class API (commit 249f459)
+- [x] **HT-006: Board screen reactivity** — ✅ Subscribed to button store changes (commit 249f459)
 
 #### Phase 2: High Severity (Before Beta)
 
@@ -77,7 +77,7 @@
 - [x] **BoardScreen edge cases** — Test interactions, played-flag logic, auto-reset ✅
 - [x] **Verify Phase 1 fixes** — Regression testing for critical fixes ✅
 - [x] **Human Testing Round 2** — HT-002 ✅, HT-003 ✅, HT-004 blocked, HT-001 blocked
-- [ ] **Human Testing Round 3** — Verify HT-005, HT-006, HT-007 fixes (awaiting Pyrrhaxis)
+- [ ] **Human Testing Round 3** — Verify HT-005, HT-006, HT-007 fixes (ready for testing)
 
 ### 🟡 Chatterwind the Brass — Safety
 
