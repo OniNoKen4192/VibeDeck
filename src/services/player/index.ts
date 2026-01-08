@@ -10,7 +10,7 @@ import TrackPlayer, {
   AppKilledPlaybackBehavior,
 } from 'react-native-track-player';
 import type { EmitterSubscription } from 'react-native';
-import { File } from 'expo-file-system';
+import { File } from 'expo-file-system/next';
 import type { Track } from '../../types';
 import { Audio } from '../../constants/audio';
 

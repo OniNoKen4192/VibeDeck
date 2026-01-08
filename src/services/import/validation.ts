@@ -3,7 +3,7 @@
  * @description File validation utilities for track import including safety checks.
  */
 
-import { File } from 'expo-file-system';
+import { File } from 'expo-file-system/next';
 import { Audio } from '../../constants/audio';
 
 /** Maximum allowed path length to prevent memory/UI issues */
