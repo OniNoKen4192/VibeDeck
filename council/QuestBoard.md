@@ -8,44 +8,23 @@
 
 ## Project State
 
-**Human Test Ready:** ✅ Yes — Phase 1.5 complete!
+**Human Test Ready:** ✅ Library & Tags screens complete — Ready for QA
 
 ---
 
 ## Priority Order
 
-1. ~~**Phase 1.5: Quick Fixes** (Pyrrhaxis)~~ ✅ Complete
-2. **BoardScreen QA pass** (Kazzrath) — Ready now!
-3. **Build Library screen** (Seraphelle) — Unblocked, can proceed
-4. **Build Tags screen** (Seraphelle) — Depends on Library screen
-5. **Code Review Remediation Phase 2** (Pyrrhaxis) — High severity fixes for beta
-
----
-
-## Blocking Issues
-
-> From [CODE_REVIEW.md](CODE_REVIEW.md) — Bahamut's audit dated 2026-01-07
-
-**Remaining blockers for human testing (Phase 1.5):**
-- ~~CR-45: insertButtonAtomic silent failure~~ ✅
-- ~~CR-46: seekTo Infinity fallback~~ ✅
-- ~~Auto-Reset Tag Pools~~ ✅
-
-**Phase 1.5 complete — ready for human testing!**
+1. **Full flow QA pass** (Kazzrath) — Ready to begin
+2. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes (parallel work)
+3. **Human test environment setup** (Tarnoth) — BlueStacks/emulator config
 
 ---
 
 ## In Progress
 
-<!-- Move tasks here when actively working on them -->
+### 🔴 Pyrrhaxis the Crimson — Code
 
-*None — Phase 1.5 complete!*
-
-### Remediation Plan
-
-**Reference:** [REMEDIATION_PLAN.md](REMEDIATION_PLAN.md)
-
-Plan updated with new fixes (CR-45, CR-46) and Auto-Reset Tag Pools feature.
+*No tasks in progress*
 
 ---
 
@@ -53,15 +32,9 @@ Plan updated with new fixes (CR-45, CR-46) and Auto-Reset Tag Pools feature.
 
 ### ✨ Vaelthrix the Astral — Architecture
 
-- [ ] **Design pagination strategy** — For Library screen scalability
+*No pending tasks*
 
 ### 🔴 Pyrrhaxis the Crimson — Code
-
-#### Phase 1.5: Follow-up Fixes (From Bahamut's Re-review) ✅ COMPLETE
-
-- [x] **CR-45: insertButtonAtomic silent failure** — Throw error instead of returning 0
-- [x] **CR-46: seekTo Infinity fallback** — Return early when duration unknown
-- [x] **Auto-Reset Tag Pools** — "Music must flow" feature
 
 #### Phase 2: High Severity (Before Beta)
 
@@ -73,21 +46,19 @@ Plan updated with new fixes (CR-45, CR-46) and Auto-Reset Tag Pools feature.
 
 ### 🪽 Seraphelle the Silver — UI/UX
 
-> ✅ Unblocked — Phase 1 complete, Board infrastructure stable
-
-- [ ] **Build Library screen** — Track list, import button, track details
-- [ ] **Build Tags screen** — Tag CRUD, tag-track association UI
+- [x] **Build Library screen** — ✅ Complete (track list, import, search, selection mode, track detail modal)
+- [x] **Build Tags screen** — ✅ Complete (tag list, create/edit modal, color picker, delete confirmation)
 - [ ] **Empty tag button UI** — Gray out buttons with no tracks (part of Auto-Reset feature)
 - [ ] **CR-17: Fix CountBadge NaN handling** — Add Number.isFinite check
 - [ ] **CR-26: Add picker cancellation feedback** — User notification on cancel
 
 ### 🔵 Kazzrath the Blue — QA
 
-> Ready after Phase 1.5 completes
+> ✅ Unblocked — Library & Tags screens complete
 
-- [ ] **BoardScreen QA pass** — Test interactions, edge cases, played-flag logic
+- [ ] **Full flow QA pass** — Import → Tag → Button → Play
+- [ ] **BoardScreen edge cases** — Test interactions, played-flag logic, auto-reset
 - [ ] **Verify Phase 1 fixes** — Regression testing for critical fixes
-- [ ] **Test Auto-Reset behavior** — Verify "music must flow" works correctly
 
 ### 🟡 Chatterwind the Brass — Safety
 
@@ -123,7 +94,7 @@ All issues tracked in [CODE_REVIEW.md](CODE_REVIEW.md).
 
 ## Notes
 
-- Phase 1.5 (3 quick fixes) in progress — last blockers before human testing.
-- QA can begin preliminary testing once Phase 1.5 is done.
-- Seraphelle can proceed with UI work — Board infrastructure is stable.
-- Auto-Reset Tag Pools is a new feature, not a bug fix — "music must flow" principle.
+- Board infrastructure complete (Phase 1 + 1.5 fixes done)
+- ✅ Library & Tags screens complete — human testing can begin
+- Code Review Phase 2 (high severity) should proceed in parallel with QA
+- Reference: [CODE_REVIEW.md](CODE_REVIEW.md), [REMEDIATION_PLAN.md](REMEDIATION_PLAN.md)

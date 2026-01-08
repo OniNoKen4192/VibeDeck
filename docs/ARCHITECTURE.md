@@ -357,4 +357,42 @@ See `src/services/playback/tagPool.ts` for implementation.
 
 ---
 
+## Pagination Strategy
+
+The Library screen uses **FlatList virtualization with full in-memory data**.
+
+### Rationale
+
+- Typical user has 20-50 tracks; MVP doesn't need cursor pagination
+- FlatList renders only visible rows (~15 at a time)
+- Client-side search filtering is fast for <1000 items
+- SQLite handles the full dataset trivially
+
+### FlatList Configuration
+
+| Prop | Value | Rationale |
+|------|-------|-----------|
+| `initialNumToRender` | 15 | Cover screen + buffer |
+| `maxToRenderPerBatch` | 10 | Smooth scroll |
+| `windowSize` | 5 | 5 screens in memory |
+| `getItemLayout` | Fixed 72px | Skip measurement |
+
+### Search Implementation
+
+- Debounce search input (150ms)
+- Filter in JavaScript via `useMemo`
+- Falls back to SQLite `LIKE` query if needed later
+
+### Future Upgrade Path
+
+If VibeDeck ever needs 5000+ tracks:
+1. Add `LIMIT/OFFSET` to queries
+2. Store tracks `hasMore` flag
+3. FlatList `onEndReached` triggers `loadMore()`
+4. Search moves to SQLite-side
+
+This is a non-breaking change — store interface stays the same.
+
+---
+
 *Approved by: [Pending Project Lead approval]*

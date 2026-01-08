@@ -243,7 +243,7 @@
   - CR-08: Fixed button position race — `insertButtonAtomic()` added
   - CR-11: Added seek bounds checking — Position clamped
   - CR-14: Added input validation — Tag name validation added
-  - All 8 critical issues resolved, unblocking QA testing
+  - All 8 critical issues resolved
 
 - [x] **Code Review Remediation Phase 1.5** (Pyrrhaxis)
   - CR-45: Fixed insertButtonAtomic silent failure — Now throws on SELECT failure
@@ -253,4 +253,56 @@
     - Added `poolEmpty` flag to distinguish "no tracks" from "all played"
     - Added `total_tracks` to batch query for empty tag detection
     - `ButtonResolved.isEmpty` flag for UI to gray out empty tag buttons
-  - Phase 1.5 complete — ready for human testing!
+  - Board infrastructure complete, awaiting Library/Tags screens for full testing
+
+- [x] **Design Library & Tags screens** (Seraphelle)
+  - Updated UI_DESIGN.md with comprehensive specifications
+  - Library screen: header, search bar, track rows, selection mode, bulk actions, empty state
+  - Tags screen: header, tag rows, create/edit modal, color picker, empty state
+  - Track Detail modal: track info, tag chip picker, preview, add to board, delete
+  - Bulk Tag modal: apply single tag to multiple selected tracks
+  - Delete confirmation dialogs for destructive actions
+  - UX decisions: chip picker for tags, long-press for selection mode, deletable tags
+
+- [x] **Build Library screen** (Seraphelle)
+  - Created `src/components/library/` with 6 components per UI_DESIGN.md
+  - `TrackRow` — Track display with preview button, tag dots, selection checkbox
+  - `SearchBar` — 150ms debounced search with clear button
+  - `LibraryHeader` — Title + Import button with loading state
+  - `SelectionHeader` — Selection count + Cancel for bulk mode
+  - `BulkActionBar` — Add Tag / Delete buttons for bulk operations
+  - `EmptyLibrary` — First-run empty state with import CTA
+  - Created `src/components/modals/` with 4 modal components
+  - `TrackDetailModal` — View/edit track with tag chip picker
+  - `TagChipPicker` — Toggle tags on/off with filled/outline chips
+  - `BulkTagModal` — Apply single tag to multiple tracks
+  - `DeleteConfirmation` — Destructive action confirmation dialog
+  - Wired `app/(tabs)/library.tsx` with all stores and player service
+  - FlatList virtualization per ARCHITECTURE.md (15 initial, windowSize 5)
+  - Selection mode with haptic feedback, bulk tag/delete actions
+  - Track import via document picker with progress feedback
+
+- [x] **Design pagination strategy** (Vaelthrix)
+  - Decision: FlatList virtualization with full in-memory data
+  - Typical user has 20-50 tracks; cursor pagination unnecessary for MVP
+  - FlatList config: initialNumToRender=15, windowSize=5, getItemLayout for fixed 72px rows
+  - Search: 150ms debounce, client-side filter via useMemo
+  - Documented upgrade path if 5000+ tracks ever needed
+
+- [x] **Build Tags screen** (Seraphelle)
+  - Created `src/components/tags/` with 5 components per UI_DESIGN.md
+  - `TagRow` — Tag display with color dot, name, track count, chevron
+  - `TagsHeader` — Title + New button
+  - `EmptyTags` — First-run empty state with create CTA
+  - `ColorPicker` — 8-color palette picker with selection ring
+  - `TagModal` — Create/edit form with name input, color picker, delete option
+  - Wired `app/(tabs)/tags.tsx` with tag store and button store
+  - Auto-creates board button when new tag is created
+  - Haptic feedback on tag row press
+  - Validation for tag names (required, max 50 chars)
+  - Delete confirmation with track count warning
+
+- [x] **Fix preview state on track deletion** (Pyrrhaxis)
+  - Reset `isPreviewPlaying` in `handleDeleteTrack` after `playerStop()`
+  - Prevents stale preview state when user deletes a track being previewed
+  - Added `isPreviewPlaying` to useCallback dependency array

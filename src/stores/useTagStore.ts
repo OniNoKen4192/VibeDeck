@@ -87,6 +87,10 @@ interface TagStore {
   // Helpers
   /** Get single tag by ID. Use for resolving tag in button display. */
   getTagById: (id: string) => TagWithCount | undefined;
+
+  // Bulk operations
+  /** Add a tag to multiple tracks. Reloads counts after completion. */
+  addTagToTracks: (trackIds: string[], tagId: string) => Promise<void>;
 }
 
 export const useTagStore = create<TagStore>((set, get) => ({
@@ -242,5 +246,14 @@ export const useTagStore = create<TagStore>((set, get) => ({
 
   getTagById: (id) => {
     return get().tags.find((t) => t.id === id);
+  },
+
+  addTagToTracks: async (trackIds, tagId) => {
+    // Perform all DB operations
+    for (const trackId of trackIds) {
+      await trackTagQueries.addTagToTrack(trackId, tagId);
+    }
+    // Reload tags to get accurate counts (avoids optimistic update drift)
+    await get().loadTags();
   },
 }));
