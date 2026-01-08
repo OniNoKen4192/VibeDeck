@@ -6,10 +6,25 @@
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Layout } from '../constants/layout';
 import { StopButton } from './StopButton';
 import { VolumeSlider } from './VolumeSlider';
+
+/**
+ * Returns the appropriate volume icon name based on current volume level.
+ * - 0%: muted
+ * - 1-33%: low
+ * - 34-66%: medium
+ * - 67-100%: high
+ */
+function getVolumeIconName(volume: number): keyof typeof Ionicons.glyphMap {
+  if (volume === 0) return 'volume-mute';
+  if (volume <= 33) return 'volume-low';
+  if (volume <= 66) return 'volume-medium';
+  return 'volume-high';
+}
 
 interface PlaybackControlsProps {
   /** Current volume 0-100 */
@@ -34,6 +49,12 @@ export function PlaybackControls({
   return (
     <View style={styles.container}>
       <StopButton onPress={onStop} disabled={!isPlaying} />
+      <Ionicons
+        name={getVolumeIconName(volume)}
+        size={Layout.tabIconSize}
+        color={Colors.textSecondary}
+        accessibilityLabel={`Volume ${volume} percent`}
+      />
       <View style={styles.sliderContainer}>
         <VolumeSlider
           value={volume}

@@ -27,7 +27,7 @@
 4. ~~**Human Testing Round 2** — Verify HT fixes on device~~ ✅ COMPLETE (2/4 pass, 2 blocked)
 5. **🚨 HT-007: expo-file-system migration** (Pyrrhaxis) — CRITICAL, blocks import
 6. **HT-006: Board screen reactivity** (Pyrrhaxis) — High, board doesn't refresh on button changes
-7. **HT-005: Volume slider identity** (Seraphelle) — Low, add speaker icon
+7. ~~**HT-005: Volume slider identity** (Seraphelle) — Low, add speaker icon~~ ✅ COMPLETE
 8. **Human Testing Round 3** — Verify HT-005 through HT-007 fixes
 9. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
 
@@ -64,7 +64,7 @@
 
 - [x] **Build Library screen** — ✅ Complete (track list, import, search, selection mode, track detail modal)
 - [x] **Build Tags screen** — ✅ Complete (tag list, create/edit modal, color picker, delete confirmation)
-- [ ] **HT-005: Volume slider identity** — Add speaker icon to clarify purpose. See [handoff](handoffs/HANDOFF_Vaelthrix_to_Seraphelle_2026-01-08_ht005-volume-ui.md)
+- [x] **HT-005: Volume slider identity** — ✅ Added speaker icon (muted/low/medium/high) to PlaybackControls
 - [ ] **Empty tag button UI** — Gray out buttons with no tracks (part of Auto-Reset feature)
 - [ ] **CR-17: Fix CountBadge NaN handling** — Add Number.isFinite check
 - [ ] **CR-26: Add picker cancellation feedback** — User notification on cancel
