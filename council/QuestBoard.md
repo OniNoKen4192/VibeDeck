@@ -8,7 +8,7 @@
 
 ## Project State
 
-**Human Test Ready:** ✅ READY — HT-005, HT-006, HT-007 fixes complete, awaiting Round 3 verification
+**Human Test Ready:** 🟡 PENDING HT Round 4 — HT-008, HT-009, HT-011 fixed, awaiting verification
 
 **Build History:**
 - 2026-01-07: Failed — Expo Go incompatible with native modules
@@ -28,14 +28,20 @@
 5. ~~**🚨 HT-007: expo-file-system migration** (Pyrrhaxis) — CRITICAL, blocks import~~ ✅ COMPLETE
 6. ~~**HT-006: Board screen reactivity** (Pyrrhaxis) — High, board doesn't refresh on button changes~~ ✅ COMPLETE
 7. ~~**HT-005: Volume slider identity** (Seraphelle) — Low, add speaker icon~~ ✅ COMPLETE
-8. **Human Testing Round 3** — Verify HT-005 through HT-007 fixes
-9. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
+8. ~~**Human Testing Round 3** — Verify HT-005 through HT-007 fixes~~ ✅ COMPLETE (3/3 pass, 4 new bugs)
+9. **🚨 HT-011: TrackPlayer service + initialization** (Pyrrhaxis) — CRITICAL, app crashes
+10. **HT-008/009: URI decoding in metadata** (Pyrrhaxis) — High, tracks unidentifiable
+11. **Human Testing Round 4** — Verify HT-008 through HT-011 fixes
+12. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
 
 ---
 
 ## In Progress
 
-*No tasks currently in progress*
+### 🔴 Pyrrhaxis the Crimson — Code
+
+- [x] **🚨 HT-011: TrackPlayer service + initialization** — ✅ Fixed (playbackService.ts, index.js, init guard)
+- [x] **HT-008/009: URI decoding in metadata** — ✅ Fixed (decodeURIComponent in extractFileName)
 
 ---
 
@@ -71,13 +77,14 @@
 
 ### 🔵 Kazzrath the Blue — QA
 
-> ✅ HT Round 2 Complete — See [QA_REPORT_HT_ROUND2.md](QA_REPORT_HT_ROUND2.md)
+> ✅ HT Round 3 Complete — See [qa/QA_REPORT_HT_ROUND3.md](qa/QA_REPORT_HT_ROUND3.md)
 
 - [x] **Full flow QA pass** — Import → Tag → Button → Play ✅
 - [x] **BoardScreen edge cases** — Test interactions, played-flag logic, auto-reset ✅
 - [x] **Verify Phase 1 fixes** — Regression testing for critical fixes ✅
 - [x] **Human Testing Round 2** — HT-002 ✅, HT-003 ✅, HT-004 blocked, HT-001 blocked
-- [ ] **Human Testing Round 3** — Verify HT-005, HT-006, HT-007 fixes (ready for testing)
+- [x] **Human Testing Round 3** — HT-005 ✅, HT-006 ✅, HT-007 ✅ (4 new bugs: HT-008 to HT-011)
+- [ ] **Human Testing Round 4** — Verify HT-008 through HT-011 fixes
 
 ### 🟡 Chatterwind the Brass — Safety
 

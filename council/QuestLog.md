@@ -357,3 +357,27 @@
   - Added `storeButtons` dependency to loadResolvedButtons effect in `app/(tabs)/index.tsx`
   - Creating/deleting tags now immediately updates the Board grid
   - Commit: 249f459
+
+- [x] **Human Testing Round 3** (Kazzrath)
+  - Verified HT-005: Speaker icon on volume slider — PASS
+  - Verified HT-006: Board reactivity on tag changes — PASS
+  - Verified HT-007: Track import with new File API — PASS
+  - Discovered 4 new bugs during testing:
+    - HT-008: Track title shows URL-encoded content URI (High)
+    - HT-009: Artist not extracted from filename (Medium)
+    - HT-010: Duration not populated on import (Medium)
+    - HT-011: App crash on volume slider — missing TrackPlayer service (Critical)
+  - Full report: [qa/QA_REPORT_HT_ROUND3.md](qa/QA_REPORT_HT_ROUND3.md)
+
+- [x] **HT-011: TrackPlayer service + initialization** (Pyrrhaxis)
+  - Created `src/services/player/playbackService.ts` — Background service for remote events
+  - Created `index.js` — Custom entry point with service registration before React
+  - Updated `package.json` to use custom entry point
+  - Added initialization guard for "already initialized" case (hot reload, app restart)
+  - Commit: pending
+
+- [x] **HT-008/009: URI decoding in metadata** (Pyrrhaxis)
+  - Added `decodeURIComponent()` to `extractFileName()` in validation.ts
+  - Content URIs from Android document picker now properly decoded
+  - Artist/title pattern matching now works on decoded filenames
+  - Commit: pending

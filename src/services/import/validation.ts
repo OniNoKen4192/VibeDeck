@@ -112,8 +112,17 @@ export function getFileExtension(filePath: string): string | null {
  * in the import preview before user confirms.
  */
 export function extractFileName(filePath: string): string {
+  // Decode URI-encoded characters first (content:// URIs from Android picker)
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(filePath);
+  } catch {
+    // If decoding fails (malformed URI), use as-is
+    decoded = filePath;
+  }
+
   // Handle both forward and back slashes
-  const segments = filePath.split(/[/\\]/);
+  const segments = decoded.split(/[/\\]/);
   const fileName = segments[segments.length - 1] || 'Unknown';
 
   // Remove query params if present (content URIs)

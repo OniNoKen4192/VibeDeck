@@ -139,6 +139,14 @@ export async function initializePlayer(): Promise<boolean> {
     isPlayerInitialized = true;
     return true;
   } catch (error) {
+    // Handle case where native player already exists (app restart, hot reload)
+    if (error instanceof Error && error.message?.includes('already been initialized')) {
+      console.log('[Player] Native player already initialized, reusing');
+      isPlayerInitialized = true;
+      // Re-register event listeners since JS context is fresh
+      registerEventListeners();
+      return true;
+    }
     console.error('Failed to initialize player:', error);
     return false;
   }
