@@ -10,7 +10,7 @@ import TrackPlayer, {
   AppKilledPlaybackBehavior,
 } from 'react-native-track-player';
 import type { EmitterSubscription } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import type { Track } from '../../types';
 import { Audio } from '../../constants/audio';
 
@@ -193,8 +193,8 @@ export function isReady(): boolean {
  */
 async function validateTrackFile(track: Track): Promise<boolean> {
   try {
-    const info = await FileSystem.getInfoAsync(track.filePath);
-    return info.exists && !info.isDirectory;
+    const file = new File(track.filePath);
+    return file.exists;
   } catch {
     return false;
   }

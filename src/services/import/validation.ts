@@ -3,7 +3,7 @@
  * @description File validation utilities for track import including safety checks.
  */
 
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import { Audio } from '../../constants/audio';
 
 /** Maximum allowed path length to prevent memory/UI issues */
@@ -64,15 +64,13 @@ export async function validateFilePath(filePath: string): Promise<ValidationResu
   }
 
   // Check file existence
-  // Note: For content URIs, expo-file-system handles them correctly
+  // Note: For content URIs, expo-file-system File class handles them transparently
   try {
-    const info = await FileSystem.getInfoAsync(filePath);
-    if (!info.exists) {
+    const file = new File(filePath);
+    if (!file.exists) {
       return { isValid: false, error: 'File not found' };
     }
-    if (info.isDirectory) {
-      return { isValid: false, error: 'Path is a directory, not a file' };
-    }
+    // File class .exists returns false for directories, so no separate check needed
   } catch {
     return { isValid: false, error: 'Unable to access file' };
   }

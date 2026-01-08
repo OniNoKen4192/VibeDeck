@@ -33,6 +33,7 @@ import { selectTrackForTag } from '../../src/services/tagPool';
 export default function BoardScreen() {
   // Store connections
   const resolveAllButtons = useButtonStore((state) => state.resolveAllButtons);
+  const storeButtons = useButtonStore((state) => state.buttons); // Subscribe to button changes
   const currentTrack = usePlayerStore((state) => state.currentTrack);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const volume = usePlayerStore((state) => state.volume);
@@ -98,7 +99,7 @@ export default function BoardScreen() {
     }
   }, [isLoading, fadeAnim]);
 
-  // Load and resolve buttons
+  // Load and resolve buttons (re-run when store buttons change)
   useEffect(() => {
     async function loadResolvedButtons() {
       setIsLoading(true);
@@ -113,7 +114,7 @@ export default function BoardScreen() {
     }
 
     loadResolvedButtons();
-  }, [resolveAllButtons]);
+  }, [resolveAllButtons, storeButtons]);
 
   // Register playback callbacks
   useEffect(() => {
