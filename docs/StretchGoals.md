@@ -15,3 +15,4 @@
    - Direct buttons: visual dimming + warning badge, toast on tap
    - No modals or interruptions during game day
 10. Track `fileStatus` field (`valid` | `missing` | `unchecked`) for persistent validation state
+11. React Native New Architecture (TurboModules) — Re-enable when `react-native-track-player` adds compatibility

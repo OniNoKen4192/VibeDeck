@@ -43,6 +43,7 @@ VibeDeck is a **game-day audio tool** for sports parents. The button board is th
 | Waveform visualization | Nice-to-have, not essential |
 | Import from streaming services | Licensing complexity |
 | Search within library | Tag filtering sufficient for MVP |
+| React Native New Architecture | `react-native-track-player` not yet compatible; re-enable when library is updated |
 
 ---
 
