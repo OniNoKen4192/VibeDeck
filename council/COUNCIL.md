@@ -262,6 +262,33 @@ All three must clear for release.
 
 ---
 
+## Council Vocabulary
+
+These terms define the Council's project management rhythm. Use them consistently across all documentation and handoffs.
+
+| Term | Definition |
+|------|------------|
+| **Development Cycle** | Everything represented on one QuestBoard — a bounded scope of work from start to completion. |
+| **Version** | The output of a completed QuestBoard. A shippable, coherent increment of the product. |
+| **QuestBoard** | Frozen scope + live execution. Once a cycle begins, items are worked — not added. New ideas go to StretchGoals. |
+| **QuestLog** | Immutable historical archive. Completed tasks with commit hashes, timestamps, and outcomes. Never edited retroactively. |
+| **StretchGoals** | Idea capture / pressure valve. Future possibilities that don't interrupt active development. Not scheduled, not committed. |
+| **Handoff** | Structured context transfer between dragons or sessions. Lives in `council/handoffs/` with standardized naming. |
+
+### The Rhythm
+
+```
+StretchGoals (ideas accumulate)
+     ↓ (scope freeze)
+QuestBoard (active work)
+     ↓ (completion)
+QuestLog (archived history) + Version (shippable output)
+```
+
+New ideas during a cycle go to StretchGoals, not QuestBoard. This protects focus and prevents scope creep.
+
+---
+
 ## Notes for the Project Lead
 
 - You can override any dragon. They advise, you decide.

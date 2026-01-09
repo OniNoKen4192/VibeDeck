@@ -1,3 +1,9 @@
+# StretchGoals
+
+> **Idea capture / pressure valve.** Future possibilities that don't interrupt active development.
+> Items here are not scheduled or committed. See [Council Vocabulary](../council/COUNCIL.md#council-vocabulary).
+
+
 1. Set and Save volume levels per track
 2. Set start time per track
 3. Set Duration per track
@@ -16,3 +22,18 @@
    - No modals or interruptions during game day
 10. Track `fileStatus` field (`valid` | `missing` | `unchecked`) for persistent validation state
 11. React Native New Architecture (TurboModules) — Re-enable when `react-native-track-player` adds compatibility
+12. Import Summary feedback — Basic toast/modal showing "N imported / M skipped" after batch import
+
+
+
+
+UI/UX
+
+1. Pause button
+2. Volume icon as mute button
+3. larger stop button
+4. Reset Tracks played
+5. Start New Game ( Same as Reset Tracks played. Dialog displayed if app has been closed for more than x minutes?)
+6. Persisted buttons (i.e. Goal Horn)
+
+
