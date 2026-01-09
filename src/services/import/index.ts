@@ -137,7 +137,8 @@ export async function pickAndImportTracks(
       onProgress(i + 1, files.length, file.name || 'Unknown');
     }
 
-    const importResult = await importFromPath(filePath, addTrack);
+    // HT-014: Pass file.name for content:// URI handling in validation and metadata
+    const importResult = await importFromPath(filePath, addTrack, file.name);
     results.push(importResult);
   }
 
@@ -155,6 +156,7 @@ export async function pickAndImportTracks(
  *
  * @param filePath - The file path or content URI to import
  * @param addTrack - Function to add track to store
+ * @param fileName - Optional display filename (required for content:// URIs)
  * @returns Import result with success/failure status
  *
  * @remarks For UI: Use this for programmatic imports where you
@@ -162,10 +164,11 @@ export async function pickAndImportTracks(
  */
 export async function importFromPath(
   filePath: string,
-  addTrack: (track: Omit<Track, 'id' | 'played' | 'createdAt' | 'updatedAt'>) => Promise<Track>
+  addTrack: (track: Omit<Track, 'id' | 'played' | 'createdAt' | 'updatedAt'>) => Promise<Track>,
+  fileName?: string
 ): Promise<ImportResult> {
-  // Validate the file
-  const validation = await validateFilePath(filePath);
+  // HT-014 fix (Kazzrath QA): Pass fileName for content:// URI extension checking
+  const validation = await validateFilePath(filePath, fileName);
   if (!validation.isValid) {
     return {
       success: false,
@@ -174,8 +177,8 @@ export async function importFromPath(
     };
   }
 
-  // Extract metadata
-  const metadata = await extractMetadata(filePath);
+  // HT-008/009 fix (Kazzrath QA): Pass fileName for content:// URI metadata extraction
+  const metadata = await extractMetadata(filePath, fileName);
 
   // Add to library
   try {

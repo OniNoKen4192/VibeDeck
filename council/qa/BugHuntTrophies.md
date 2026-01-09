@@ -5,6 +5,42 @@
 
 ---
 
+## 2026-01-09
+
+### HT-014: The Opaque Identifier
+**Severity:** Critical (BLOCKING)
+**Hunter:** Kazzrath the Blue
+**Weapon:** Parameter threading
+
+Android's document picker returns content URIs with opaque document IDs — `msf%3A33` instead of `Darude - Sandstorm.mp3`. The `getFileExtension()` function faithfully extracted `.documents/document/msf%3a33` and declared it unsupported.
+
+The fix: thread the picker's `file.name` through validation and metadata extraction, using it instead of the URI path when dealing with content:// URIs.
+
+```typescript
+const extensionSource = filePath.startsWith('content://') && fileName ? fileName : filePath;
+```
+
+**Lesson:** Content URIs are addresses, not descriptions. Always carry the human-readable name separately.
+
+---
+
+### HT-008/009: The Masked Tracks
+**Severity:** High
+**Hunter:** Kazzrath the Blue
+**Weapon:** Same as HT-014 (parameter threading)
+
+Tracks appeared in the library as `msf:33` — the opaque document ID stripped of its URI encoding. The metadata extractor parsed the content URI path expecting a filename pattern like `Artist - Title.mp3`.
+
+The fix: pass `displayFileName` from the picker through to `extractMetadata()`, using it for title and artist parsing.
+
+```typescript
+const fileName = displayFileName || extractFileName(filePath);
+```
+
+**Lesson:** When the path lies, carry the truth in your pocket.
+
+---
+
 ## 2026-01-08
 
 ### HT-004: The URI Gatekeeper
@@ -77,6 +113,7 @@ await useButtonStore.getState().removeButtonsForTag(id);
 | Hunter | Kills | Critical | High | Medium | Low |
 |--------|-------|----------|------|--------|-----|
 | Pyrrhaxis | 4 | 0 | 2 | 2 | 0 |
+| Kazzrath | 2 | 1 | 1 | 0 | 0 |
 
 ---
 

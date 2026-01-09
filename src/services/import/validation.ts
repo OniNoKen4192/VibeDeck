@@ -25,6 +25,7 @@ export interface ValidationResult {
  * Checks existence, extension, path safety, and length.
  *
  * @param filePath - The file path or content URI to validate
+ * @param fileName - Optional display filename (required for content:// URIs to check extension)
  * @returns ValidationResult indicating if the file can be imported
  *
  * @remarks For UI (Seraphelle): Call this before showing import confirmation.
@@ -32,7 +33,7 @@ export interface ValidationResult {
  *
  * @example
  * ```typescript
- * const result = await validateFilePath(selectedFile);
+ * const result = await validateFilePath(selectedFile, displayName);
  * if (!result.isValid) {
  *   showToast(result.error);
  *   return;
@@ -40,7 +41,10 @@ export interface ValidationResult {
  * // Proceed with import
  * ```
  */
-export async function validateFilePath(filePath: string): Promise<ValidationResult> {
+export async function validateFilePath(
+  filePath: string,
+  fileName?: string
+): Promise<ValidationResult> {
   // Check path length
   if (filePath.length > MAX_PATH_LENGTH) {
     return { isValid: false, error: 'File path is too long' };
@@ -54,7 +58,10 @@ export async function validateFilePath(filePath: string): Promise<ValidationResu
   }
 
   // Validate file extension against allowed formats
-  const ext = getFileExtension(filePath);
+  // HT-014: For content:// URIs, the path contains opaque IDs (e.g., "msf%3A33")
+  // instead of the real filename — use the provided fileName from picker
+  const extensionSource = filePath.startsWith('content://') && fileName ? fileName : filePath;
+  const ext = getFileExtension(extensionSource);
   if (!ext || !Audio.supportedFormats.includes(ext)) {
     const supported = Audio.supportedFormats.join(', ');
     return {
@@ -64,16 +71,21 @@ export async function validateFilePath(filePath: string): Promise<ValidationResu
   }
 
   // Check file existence
-  // Note: For content URIs, expo-file-system File class handles them transparently
-  try {
-    const file = new File(filePath);
-    if (!file.exists) {
-      return { isValid: false, error: 'File not found' };
+  // HT-014: content:// URIs from Android document picker are trusted — user just selected them
+  // The expo-file-system/next File class doesn't support content:// URIs
+  // For file:// URIs, validate existence with File class
+  if (!filePath.startsWith('content://')) {
+    try {
+      const file = new File(filePath);
+      if (!file.exists) {
+        return { isValid: false, error: 'File not found' };
+      }
+      // File class .exists returns false for directories, so no separate check needed
+    } catch {
+      return { isValid: false, error: 'Unable to access file' };
     }
-    // File class .exists returns false for directories, so no separate check needed
-  } catch {
-    return { isValid: false, error: 'Unable to access file' };
   }
+  // content:// URIs: trust the picker, validate at playback time if file is moved/deleted
 
   return { isValid: true };
 }

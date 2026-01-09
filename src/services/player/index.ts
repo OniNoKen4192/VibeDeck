@@ -12,7 +12,6 @@ import TrackPlayer, {
 import type { EmitterSubscription } from 'react-native';
 import { File } from 'expo-file-system/next';
 import type { Track } from '../../types';
-import { Audio } from '../../constants/audio';
 
 // Re-export Event and State for consumers
 export { Event, State } from 'react-native-track-player';
@@ -200,6 +199,13 @@ export function isReady(): boolean {
  * @returns True if file exists and is accessible
  */
 async function validateTrackFile(track: Track): Promise<boolean> {
+  // content:// URIs from Android document picker are trusted
+  // The expo-file-system/next File class doesn't support content:// URIs
+  if (track.filePath.startsWith('content://')) {
+    return true;
+  }
+
+  // For file:// URIs, validate existence
   try {
     const file = new File(track.filePath);
     return file.exists;

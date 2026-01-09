@@ -30,11 +30,15 @@ export interface AudioMetadata {
  * Extracts metadata from an audio file.
  *
  * @param filePath - Path to the audio file
+ * @param displayFileName - Optional display filename (required for content:// URIs)
  * @returns Extracted metadata with fallbacks for missing fields
  *
  * @remarks
  * Currently uses filename-based extraction as a baseline.
  * react-native-track-player doesn't expose ID3 reading directly.
+ *
+ * For content:// URIs, the filePath doesn't contain the real filename,
+ * so displayFileName must be provided from the document picker result.
  *
  * Future enhancement: Use a native module like react-native-audio-metadata
  * or expo-av's getStatusAsync for duration. For now, duration is fetched
@@ -43,8 +47,13 @@ export interface AudioMetadata {
  * For UI (Seraphelle): Consider allowing users to manually edit metadata
  * after import since auto-extraction is limited.
  */
-export async function extractMetadata(filePath: string): Promise<AudioMetadata> {
-  const fileName = extractFileName(filePath);
+export async function extractMetadata(
+  filePath: string,
+  displayFileName?: string
+): Promise<AudioMetadata> {
+  // HT-008/009 fix (Kazzrath QA): For content:// URIs, the filePath contains opaque IDs
+  // like "msf%3A33" instead of the actual filename. Use displayFileName from picker.
+  const fileName = displayFileName || extractFileName(filePath);
   const parsedFromName = parseMetadataFromFileName(fileName);
 
   return {
