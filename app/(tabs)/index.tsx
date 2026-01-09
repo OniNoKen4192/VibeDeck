@@ -7,6 +7,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -115,6 +116,22 @@ export default function BoardScreen() {
 
     loadResolvedButtons();
   }, [resolveAllButtons, storeButtons]);
+
+  // HT-015: Re-resolve buttons when Board tab gains focus
+  // Handles staleness from Library/Tags screen changes (tag-track associations, etc.)
+  useFocusEffect(
+    useCallback(() => {
+      async function refreshOnFocus() {
+        try {
+          const resolved = await resolveAllButtons();
+          setButtons(resolved);
+        } catch (err) {
+          console.error('[BoardScreen] Failed to refresh buttons on focus:', err);
+        }
+      }
+      refreshOnFocus();
+    }, [resolveAllButtons])
+  );
 
   // Register playback callbacks
   useEffect(() => {

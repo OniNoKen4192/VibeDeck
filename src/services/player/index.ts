@@ -261,8 +261,9 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
     await TrackPlayer.reset();
 
     // Add the track to the queue
+    // HT-017: Use unique queue item ID to allow same track from multiple buttons
     await TrackPlayer.add({
-      id: track.id,
+      id: `${track.id}-${Date.now()}`,
       url: track.filePath,
       title: track.title || track.fileName,
       artist: track.artist || 'Unknown Artist',
