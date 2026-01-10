@@ -45,19 +45,26 @@ export function BoardButton({
 }: BoardButtonProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const isDisabled = state === 'disabled' || button.isDisabled;
-  const isExhausted = state === 'exhausted' || (button.type === 'tag' && button.availableTracks === 0);
+  const isEmpty = button.isEmpty === true;
+  const isExhausted = state === 'exhausted' || (button.type === 'tag' && button.availableTracks === 0 && !isEmpty);
   const isPlaying = state === 'playing';
 
-  const backgroundColor = isDisabled
-    ? Colors.disabledBackground
-    : button.displayColor;
+  // Empty tag buttons get special styling per UI_DESIGN.md §Empty Tag Button State
+  const backgroundColor = isEmpty
+    ? Colors.surface
+    : isDisabled
+      ? Colors.disabledBackground
+      : button.displayColor;
 
-  const textColor = isDisabled
+  const textColor = isEmpty
     ? Colors.textMuted
-    : getButtonTextColor(backgroundColor);
+    : isDisabled
+      ? Colors.textMuted
+      : getButtonTextColor(backgroundColor);
 
-  // Exhausted buttons should not accept presses (visual feedback only)
-  const isInteractive = !isDisabled && !isExhausted;
+  // Empty and exhausted buttons should not accept presses for PLAY action.
+  // However, if button is currently playing, tap-to-stop must always work (HT-021).
+  const isInteractive = !isDisabled && !isEmpty && (!isExhausted || isPlaying);
 
   const handlePressIn = useCallback(() => {
     if (!isInteractive) return;
@@ -82,10 +89,11 @@ export function BoardButton({
   }, [isInteractive, onPress, button]);
 
   const handleLongPress = useCallback(() => {
-    // Allow long press even on exhausted buttons (for context menu/edit)
-    if (isDisabled) return;
+    // Allow long press on exhausted and empty buttons (for context menu/edit)
+    // Only truly disabled buttons (deleted tag/track) block long press
+    if (isDisabled && !isEmpty) return;
     onLongPress?.(button);
-  }, [isDisabled, onLongPress, button]);
+  }, [isDisabled, isEmpty, onLongPress, button]);
 
   // Compute button styles based on state
   const buttonStyle: ViewStyle[] = [styles.button];
@@ -94,7 +102,9 @@ export function BoardButton({
     buttonStyle.push(styles.playing);
   }
 
-  if (isExhausted && !isDisabled) {
+  if (isEmpty) {
+    buttonStyle.push(styles.empty);
+  } else if (isExhausted && !isDisabled) {
     buttonStyle.push(styles.exhausted);
   }
 
@@ -103,20 +113,25 @@ export function BoardButton({
     const typeLabel = button.type === 'tag' ? 'Tag button' : 'Direct button';
     const stateLabel = isPlaying
       ? 'now playing'
-      : isExhausted
-        ? 'pool exhausted'
-        : isDisabled
-          ? 'disabled'
-          : '';
+      : isEmpty
+        ? 'no tracks assigned'
+        : isExhausted
+          ? 'pool exhausted'
+          : isDisabled
+            ? 'disabled'
+            : '';
     const countLabel =
-      button.type === 'tag' && button.availableTracks !== undefined
+      button.type === 'tag' && button.availableTracks !== undefined && !isEmpty
         ? `${button.availableTracks} tracks remaining`
         : '';
 
-    return [typeLabel, button.name, stateLabel, countLabel]
+    return [typeLabel, isEmpty ? 'No Tracks' : button.name, stateLabel, countLabel]
       .filter(Boolean)
       .join(', ');
   };
+
+  // Display label: "No Tracks" for empty tags, otherwise button name
+  const displayLabel = isEmpty ? 'No Tracks' : button.name;
 
   return (
     <Animated.View
@@ -130,11 +145,11 @@ export function BoardButton({
         style={({ pressed }) => [
           ...buttonStyle,
           {
-            backgroundColor: pressed && !isDisabled
+            backgroundColor: pressed && isInteractive
               ? darkenColor(backgroundColor, 15)
               : backgroundColor,
           },
-          isExhausted && !isDisabled && { opacity: Colors.exhaustedOpacity },
+          (isEmpty || (isExhausted && !isDisabled)) && { opacity: Colors.exhaustedOpacity },
         ]}
         onPress={handlePress}
         onLongPress={handleLongPress}
@@ -161,8 +176,8 @@ export function BoardButton({
           </View>
         )}
 
-        {/* Tag button: count badge */}
-        {button.type === 'tag' && button.availableTracks !== undefined && (
+        {/* Tag button: count badge (hidden when empty) */}
+        {button.type === 'tag' && button.availableTracks !== undefined && !isEmpty && (
           <CountBadge count={button.availableTracks} />
         )}
 
@@ -206,11 +221,15 @@ export function BoardButton({
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {button.name}
+          {displayLabel}
         </Text>
 
-        {/* Tag button: type indicator bar */}
-        {button.type === 'tag' && !isDisabled && <TypeIndicator />}
+        {/* Tag button: type indicator bar (reduced opacity when empty) */}
+        {button.type === 'tag' && !isDisabled && (
+          <View style={isEmpty ? { opacity: 0.3 } : undefined}>
+            <TypeIndicator />
+          </View>
+        )}
       </Pressable>
     </Animated.View>
   );
@@ -245,6 +264,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: 'dashed',
     borderColor: Colors.textMuted,
+  },
+  empty: {
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: Colors.surfaceLight,
   },
   label: {
     fontSize: 16,

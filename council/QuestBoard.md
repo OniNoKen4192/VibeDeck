@@ -8,7 +8,7 @@
 
 ## Project State
 
-**Human Test Ready:** ✅ MVP Feature Complete — HT Round 6 PASSED
+**Human Test Ready:** ✅ MVP Feature Complete — HT Round 7 PASSED (HT-018, HT-019 verified)
 
 **Build Status:** ✅ SUCCESS — Development build working (Old Architecture, no reanimated/worklets)
 
@@ -24,8 +24,11 @@
 6. ~~**HT-018 Fix: SAF Permissions Module** (Pyrrhaxis) — Native module for persistent URI permissions~~ ✅ COMPLETE
 7. ~~**HT-019 Fix: Cross-store refresh** (Pyrrhaxis) — Tag/button counts after track deletion (bundled with HT-018)~~ ✅ COMPLETE
 8. **HT-020 Decision** (Seraphelle) — Empty tag button identity UX
-9. **Human Testing Round 7** (Kazzrath) — Verify HT-018, HT-019, HT-020 fixes ⬅️ NEXT
-10. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
+9. ~~**Human Testing Round 7** (Kazzrath) — Verify HT-018, HT-019 fixes~~ ✅ COMPLETE (all pass, HT-021 filed)
+10. ~~**HT-021 Fix** (Pyrrhaxis) — Exhausted button tap should stop playback~~ ✅ COMPLETE
+    - Handoff: [HANDOFF_Kazzrath_to_Pyrrhaxis_2026-01-09_ht021-exhausted-stop.md](handoffs/HANDOFF_Kazzrath_to_Pyrrhaxis_2026-01-09_ht021-exhausted-stop.md)
+11. **Human Testing Round 8** (Kazzrath) — Verify HT-021 fix ⬅️ NEXT
+12. **Code Review Phase 2** (Pyrrhaxis) — High severity fixes
 
 ---
 
@@ -44,7 +47,7 @@
 - [x] **Create `expo-saf-uri-permission` module** — Native Kotlin module in `modules/` directory
 - [x] **Integrate with import service** — Call `takePersistablePermission()` after picker
 - [x] **Integrate with track deletion** — Call `releasePersistablePermission()` + cross-store refresh (HT-019)
-- [ ] **Rebuild and test** — Verify playback survives app restart (awaiting HT Round 7)
+- [x] **Rebuild and test** — ✅ Verified in HT Round 7 (app restart + device reboot both pass)
 
 ---
 
@@ -55,6 +58,11 @@
 - [x] **Human Testing Round 6** — ✅ ALL PASS (8/8 tests)
   - Report: [qa/QA_REPORT_HT_ROUND6.md](qa/QA_REPORT_HT_ROUND6.md)
   - New bugs filed: HT-018 (URI permissions), HT-019 (tag count refresh), HT-020 (empty button UX)
+- [x] **Human Testing Round 7** — ✅ ALL PASS (7/7 tests)
+  - Report: [qa/QA_REPORT_HT_ROUND7.md](qa/QA_REPORT_HT_ROUND7.md)
+  - HT-018 verified: Playback survives app restart AND device reboot
+  - HT-019 verified: Tag/button counts update after track deletion
+  - New bug filed: HT-021 (exhausted button tap doesn't stop playback)
 
 ### ⚪ Vaelthrix the Astral — Architecture
 
@@ -99,6 +107,9 @@
 - [x] **HT-019: Cross-store refresh** — Tag/button counts update after track deletion
   - `deleteTrack()` now calls `loadTags()` and `loadButtons()` after deletion
   - Bundled with HT-018 implementation
+- [x] **HT-021: Exhausted button tap-to-stop** — Allow stop action even when pool exhausted
+  - Fixed `isInteractive` logic in `BoardButton.tsx` to allow press when playing
+  - `isInteractive = !isDisabled && !isEmpty && (!isExhausted || isPlaying)`
 
 ---
 
@@ -157,5 +168,6 @@ All issues tracked in [CODE_REVIEW.md](qa/CODE_REVIEW.md).
 - MVP features complete — HT Round 6 PASSED
 - HT-016 (duplicate direct buttons) — Intentionally allowed, not a bug
 - HT-018 architectural decision: Use SAF persistent URI permissions (native module), not file copying
-- **Active handoff:** [HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-09_saf-permissions.md](handoffs/HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-09_saf-permissions.md)
+- HT-018/019 verified in Round 7 — SAF permissions handoff complete
+- HT-021 filed: Exhausted button should still allow tap-to-stop
 - Reference: [CODE_REVIEW.md](qa/CODE_REVIEW.md), [REMEDIATION_PLAN.md](qa/REMEDIATION_PLAN.md)
