@@ -388,3 +388,54 @@
   - Updated `src/services/player/index.ts:13`
   - Regression from HT-007 migration — `File` class lives in `/next` submodule
   - Commit: b467c28
+
+- [x] **Human Testing Round 4** (Kazzrath)
+  - Verified HT-011: TrackPlayer service — PASS
+  - Verified HT-014: content:// URI handling — PASS (with QA fix)
+  - Verified HT-008/009: URI decoding — PASS
+  - HT-012: Skip deferred (pre-existing cosmetic issue)
+  - Discovered 3 new bugs: HT-015, HT-016, HT-017
+  - Full report: [qa/QA_REPORT_HT_ROUND4.md](qa/QA_REPORT_HT_ROUND4.md)
+
+- [x] **HT-014: content:// URI incompatibility** (Kazzrath QA fix, Vaelthrix decision)
+  - Architectural decision: Skip validation for content:// URIs (Option C)
+  - Kazzrath applied QA fix during testing — pending Pyrrhaxis review
+  - Files: `validation.ts`, `index.ts`, `metadata.ts`
+
+- [x] **HT-015/016/017 architectural review** (Vaelthrix)
+  - HT-015: Board refresh — Decision: `useFocusEffect` to re-resolve buttons on tab focus
+  - HT-016: Duplicate direct buttons — Decision: Allow (valid use case for multiple positions)
+  - HT-017: Second direct button fails — Decision: Use unique queue IDs (timestamp suffix)
+  - Handoff created for Pyrrhaxis implementation
+
+---
+
+## 2026-01-09
+
+- [x] **Council Framework Brief feedback** (Wrixle)
+  - Added Prerequisites section to README.md per PsychoPez feedback
+  - Added Assumptions subsection per Shadow2097 feedback
+  - Added Skills and Plugins to recommended tools
+  - Cross-referenced README.md from COUNCIL_FRAMEWORK_BRIEF.md Getting Started section
+
+- [x] **MVP Feature Completion** (Pyrrhaxis)
+  - BoardHeader component — VibeDeck title, refresh icon, settings icon (56px, 44px touch targets)
+  - Reset All feature — Confirmation dialog with warning color, resetAllPools(), success toast, haptic
+  - Long-press context menu — ButtonContextMenu bottom sheet with pin/unpin and remove actions
+  - Pin toggle — updateButton() for persistent flag, immediate board refresh
+  - Board sorting — Persistent buttons sort to top via SQL `ORDER BY persistent DESC, position ASC`
+  - AboutScreen modal — Full-screen with usage guide (How to Use, Played Tracks, Pinned Buttons)
+  - Empty tag button UI — Gray surface, 50% opacity, dashed border, "No Tracks" label, no-op on tap
+  - Enhanced DeleteConfirmation — Added `confirmColor` prop for warning vs error dialogs
+  - Files created: BoardHeader.tsx, ButtonContextMenu.tsx, AboutScreen.tsx
+  - Files modified: BoardButton.tsx, DeleteConfirmation.tsx, buttons.ts queries, index.tsx (Board screen)
+  - Archived handoff: [DONE_HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-09_mvp-features.md](council/archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-09_mvp-features.md)
+
+- [x] **HT-021: Exhausted button tap-to-stop** (Pyrrhaxis) 🏆
+  - Fixed tap-to-stop on exhausted tag buttons when currently playing
+  - Root cause: `BoardButton.isInteractive` blocked ALL presses when exhausted
+  - Fix: `isInteractive = !isDisabled && !isEmpty && (!isExhausted || isPlaying)`
+  - Toggle pattern (tap-to-play, tap-to-stop) now works regardless of pool state
+  - File modified: `src/components/BoardButton.tsx` (line 67)
+  - Commit: 4360e3c
+  - Verified in HT Round 8
