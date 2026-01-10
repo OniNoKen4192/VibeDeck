@@ -7,6 +7,29 @@
 
 ## 2026-01-09
 
+### HT-021: The Unresponsive Toggle
+**Severity:** Medium
+**Hunter:** Pyrrhaxis the Red
+**Weapon:** Conditional short-circuit
+
+An exhausted tag button — pool drained, badge at zero — refused to stop playback when tapped. The user could start the final track, but couldn't tap the button to stop it. The toggle was broken.
+
+The `BoardButton` component calculated `isInteractive` from three conditions: not disabled, not empty, not exhausted. But "exhausted" and "playing" aren't mutually exclusive. The final track plays while the pool shows zero.
+
+The fix: a single boolean adjustment.
+
+```typescript
+// Before: blocked ALL presses when exhausted
+const isInteractive = !isDisabled && !isExhausted && !isEmpty;
+
+// After: allows stop action when playing
+const isInteractive = !isDisabled && !isEmpty && (!isExhausted || isPlaying);
+```
+
+**Lesson:** Stop and play have different preconditions. Never let a restriction on starting block the ability to stop.
+
+---
+
 ### HT-018: The Ephemeral Permission
 **Severity:** High (BLOCKING)
 **Hunters:** The Full Council
@@ -194,7 +217,7 @@ await useButtonStore.getState().removeButtonsForTag(id);
 
 | Hunter | Kills | Critical | High | Medium | Low |
 |--------|-------|----------|------|--------|-----|
-| Pyrrhaxis | 7 | 0 | 3 | 4 | 0 |
+| Pyrrhaxis | 8 | 0 | 3 | 5 | 0 |
 | Kazzrath | 2 | 1 | 1 | 0 | 0 |
 | Full Council | 1 | 0 | 1 | 0 | 0 |
 
