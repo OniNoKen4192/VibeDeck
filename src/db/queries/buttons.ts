@@ -294,7 +294,7 @@ export async function getAllButtonsResolved(): Promise<ButtonResolvedRow[]> {
     FROM buttons b
     LEFT JOIN tags t ON b.tag_id = t.id
     LEFT JOIN tracks tr ON b.track_id = tr.id
-    ORDER BY b.position ASC
+    ORDER BY b.persistent DESC, b.position ASC
   `);
 }
 

@@ -19,3 +19,8 @@ export { NowPlaying } from './NowPlaying';
 
 // Feedback components
 export { Toast, type ToastType } from './Toast';
+
+// Board screen components
+export { BoardHeader } from './BoardHeader';
+export { ButtonContextMenu } from './ButtonContextMenu';
+export { AboutScreen } from './AboutScreen';

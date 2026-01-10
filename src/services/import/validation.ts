@@ -50,10 +50,21 @@ export async function validateFilePath(
     return { isValid: false, error: 'File path is too long' };
   }
 
-  // Check for path traversal attempts (security)
-  // Strip URI scheme before checking to allow content:// URIs from Android document picker
+  // Path traversal defense (CR-09)
+  // Note: In VibeDeck's architecture, paths come from Android SAF document picker
+  // which returns opaque content:// URIs — not filesystem paths. Path traversal
+  // is not a real attack vector here. This check is defense-in-depth for the
+  // exported importFromPath() API in case of future misuse.
   const pathWithoutScheme = filePath.replace(/^[a-z]+:\/\//i, '');
-  if (pathWithoutScheme.includes('..') || pathWithoutScheme.includes('//')) {
+  // Decode URL encoding and normalize separators before checking
+  let normalized: string;
+  try {
+    normalized = decodeURIComponent(pathWithoutScheme).replace(/\\/g, '/');
+  } catch {
+    // Malformed URI encoding is suspicious
+    return { isValid: false, error: 'Invalid file path format' };
+  }
+  if (normalized.includes('..') || normalized.includes('//')) {
     return { isValid: false, error: 'Invalid file path format' };
   }
 

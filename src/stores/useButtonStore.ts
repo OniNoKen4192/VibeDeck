@@ -81,6 +81,17 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
     }
   },
 
+  /**
+   * Creates a tag button linked to a tag.
+   *
+   * @throws Error if name fails validation (empty, too long, or invalid characters)
+   *
+   * @remarks
+   * **Validation:** Uses `validateButtonName()` before DB insert.
+   *
+   * **Atomic position:** Uses `insertButtonAtomic()` to prevent position race
+   * conditions when multiple buttons are created simultaneously.
+   */
   addTagButton: async (name, tagId, persistent = false, color = null) => {
     // Validate button name
     const validation = validateButtonName(name);
@@ -122,6 +133,16 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
     return button;
   },
 
+  /**
+   * Creates a direct button linked to a specific track.
+   *
+   * @throws Error if name fails validation
+   *
+   * @remarks
+   * **Validation:** Same pattern as `addTagButton`.
+   *
+   * **Atomic position:** Same pattern as `addTagButton`.
+   */
   addDirectButton: async (name, trackId, persistent = false, color = null) => {
     // Validate button name
     const validation = validateButtonName(name);
@@ -189,6 +210,13 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
     }));
   },
 
+  /**
+   * Removes all buttons for a tag. Called by useTagStore on tag deletion.
+   *
+   * @remarks
+   * **Cross-store cascade:** This is the receiving end of the cascade initiated
+   * by `useTagStore.deleteTag()`.
+   */
   removeButtonsForTag: async (tagId) => {
     await buttonQueries.deleteButtonsByTagId(tagId);
     set((state) => ({
@@ -196,6 +224,13 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
     }));
   },
 
+  /**
+   * Reorders buttons to match the given ID sequence.
+   *
+   * @remarks
+   * **Transaction:** Uses `db.withTransactionAsync()` to update all positions
+   * atomically. If any update fails, the entire reorder is rolled back.
+   */
   reorderButtons: async (orderedIds) => {
     await buttonQueries.reorderButtons(orderedIds);
     const now = new Date().toISOString();

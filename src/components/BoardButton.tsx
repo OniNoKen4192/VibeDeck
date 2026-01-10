@@ -125,13 +125,13 @@ export function BoardButton({
         ? `${button.availableTracks} tracks remaining`
         : '';
 
-    return [typeLabel, isEmpty ? 'No Tracks' : button.name, stateLabel, countLabel]
+    return [typeLabel, button.name, stateLabel, countLabel]
       .filter(Boolean)
       .join(', ');
   };
 
-  // Display label: "No Tracks" for empty tags, otherwise button name
-  const displayLabel = isEmpty ? 'No Tracks' : button.name;
+  // Display label: always show button name (HT-020: preserve identity for empty buttons)
+  const displayLabel = button.name;
 
   return (
     <Animated.View

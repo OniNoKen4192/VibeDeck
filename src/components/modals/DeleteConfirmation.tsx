@@ -12,8 +12,15 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Colors, darkenColor } from '../../constants/colors';
 import { Layout } from '../../constants/layout';
+
+/**
+ * Darken a hex color by a percentage.
+ */
+function darkenHex(hex: string, percent: number): string {
+  return darkenColor(hex, percent);
+}
 
 interface DeleteConfirmationProps {
   /** Whether the modal is visible */
@@ -24,6 +31,8 @@ interface DeleteConfirmationProps {
   message: string;
   /** Label for the confirm button */
   confirmLabel?: string;
+  /** Background color for the confirm button (default: error red) */
+  confirmColor?: string;
   /** Called when cancel button is pressed */
   onCancel: () => void;
   /** Called when delete button is pressed */
@@ -37,6 +46,7 @@ export function DeleteConfirmation({
   title,
   message,
   confirmLabel = 'Delete',
+  confirmColor = Colors.error,
   onCancel,
   onConfirm,
   testID,
@@ -69,14 +79,13 @@ export function DeleteConfirmation({
             <Pressable
               style={({ pressed }) => [
                 styles.button,
-                styles.deleteButton,
-                pressed && styles.deletePressed,
+                { backgroundColor: pressed ? darkenHex(confirmColor, 10) : confirmColor },
               ]}
               onPress={onConfirm}
               accessibilityRole="button"
               accessibilityLabel={confirmLabel}
             >
-              <Text style={styles.deleteText}>{confirmLabel}</Text>
+              <Text style={styles.confirmText}>{confirmLabel}</Text>
             </Pressable>
           </View>
         </View>
@@ -130,18 +139,12 @@ const styles = StyleSheet.create({
   cancelPressed: {
     backgroundColor: Colors.surface,
   },
-  deleteButton: {
-    backgroundColor: Colors.error,
-  },
-  deletePressed: {
-    backgroundColor: '#dc2626',
-  },
   cancelText: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.text,
   },
-  deleteText: {
+  confirmText: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.text,

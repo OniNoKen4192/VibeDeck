@@ -62,6 +62,32 @@ That is the entire point.
 
 ---
 
+## Prerequisites
+
+Before adopting this framework, ensure you have:
+
+### Required
+
+- **Claude Code** — Anthropic's CLI/agentic coding tool. This is the primary interface for working with Council dragons. Install via `npm install -g @anthropic-ai/claude-code` or see [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code).
+- **A code editor** — VS Code recommended. Claude Code integrates directly with VS Code via the Claude Code extension.
+- **Git** — Version control is essential for the handoff protocol and QuestLog history.
+
+### Recommended
+
+- **MCP servers** — Model Context Protocol servers extend Claude's capabilities (file system access, web search, etc.). The framework works without them but Tarnoth can help configure MCPs for enhanced workflows.
+- **Skills** — Project-local markdown files (`.claude/skills/*.md`) that define reusable prompts and workflows. Useful for encoding project-specific patterns.
+- **Plugins** — External slash command packages that add capabilities like `/code-review` and `/local-review`. See [agent37-skills-collection](https://github.com/Agent-3-7/agent37-skills-collection) for examples.
+
+### Assumptions
+
+This framework assumes you:
+- Are comfortable with command-line tools
+- Have basic Git knowledge (commits, branches)
+- Understand that Claude sessions don't persist context — hence the emphasis on written artifacts
+- Are willing to read and write markdown documents as part of your workflow
+
+---
+
 ## Getting Started
 
 See [COUNCIL.md](COUNCIL.md) for dragon definitions, invocation patterns, and operational details.

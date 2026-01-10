@@ -7,6 +7,80 @@
 
 ## 2026-01-09
 
+### CR-09: The Blind Gatekeeper
+**Severity:** High (Security)
+**Hunter:** Vaelthrix the Astral
+**Weapon:** Normalization
+
+The path traversal defense guarded the gate with simple string matching — `..` shall not pass. But the gatekeeper was blind to disguise. A backslash-wielding `\..` slipped through. A URL-encoded `%2e%2e` walked right in.
+
+The original code review flagged it. The fix: decode the encoding, normalize the separators, *then* check for traversal patterns.
+
+```typescript
+// Before: easily fooled
+if (pathWithoutScheme.includes('..') || pathWithoutScheme.includes('//')) {
+
+// After: sees through disguises
+const normalized = decodeURIComponent(pathWithoutScheme).replace(/\\/g, '/');
+if (normalized.includes('..') || normalized.includes('//')) {
+```
+
+In truth, VibeDeck's SAF-based architecture means content URIs are opaque identifiers — path traversal is not a real attack vector here. But defense-in-depth demands the guard be competent, even when enemies are unlikely.
+
+**Lesson:** Security checks must normalize before they compare. Every encoding is a costume.
+
+---
+
+### HT-020: The Faceless Buttons
+**Severity:** Low (UX)
+**Hunter:** Seraphelle the Silver
+**Weapon:** Design restraint
+
+When a tag button had no tracks, the spec said to replace its label with "No Tracks." Sensible for one button. But a user who creates "EDM," "Hip Hop," and "Walk-up" tags before importing any music saw three identical gray buttons — all labeled "No Tracks." Which one needed tracks? Impossible to tell.
+
+The original design tried too hard to communicate emptiness. The visual styling — gray surface, 50% opacity, dashed border, hidden count badge — already screamed "I have nothing." The label didn't need to join the chorus.
+
+The fix: keep the tag name. Let the styling do its job.
+
+```typescript
+// Before: sacrificed identity for clarity
+const displayLabel = isEmpty ? 'No Tracks' : button.name;
+
+// After: trust the styling
+const displayLabel = button.name;
+```
+
+**Lesson:** Good UX communicates through the right channel. When visuals already tell the story, words should add information — not repeat it.
+
+---
+
+### CR-17: The Phantom Number
+**Severity:** Low (Defensive)
+**Hunter:** Seraphelle the Silver
+**Weapon:** Finite guard
+
+The CountBadge trusted its input. If `count` was `0` or negative, it hid itself. Simple enough. But JavaScript's `NaN` is neither less than nor greater than zero — `NaN <= 0` returns `false`. An upstream data corruption could have the badge proudly displaying "NaN" to confused users.
+
+The fix: check for sanity before checking for value.
+
+```typescript
+// Before: trusted the number was a number
+if (count <= 0) {
+  return null;
+}
+
+// After: trust, but verify
+if (!Number.isFinite(count) || count <= 0) {
+  return null;
+}
+```
+
+In practice, `count` comes from database integer aggregates — NaN would require corruption. But defense-in-depth means guarding even the unlikely doors.
+
+**Lesson:** `NaN` isn't less than zero. Always verify finitude before comparing magnitude.
+
+---
+
 ### HT-021: The Unresponsive Toggle
 **Severity:** Medium
 **Hunter:** Pyrrhaxis the Red
@@ -217,8 +291,13 @@ await useButtonStore.getState().removeButtonsForTag(id);
 
 | Hunter | Kills | Critical | High | Medium | Low |
 |--------|-------|----------|------|--------|-----|
-| Pyrrhaxis | 8 | 0 | 3 | 5 | 0 |
-| Kazzrath | 2 | 1 | 1 | 0 | 0 |
+| Pyrrhaxis | 9 | 0 | 4 | 5 | 0 |
+| Kazzrath | 3 | 1 | 2 | 0 | 0 |
+| Vaelthrix | 2 | 0 | 2 | 0 | 0 |
+| Seraphelle | 3 | 0 | 1 | 0 | 2 |
+| Chatterwind | 1 | 0 | 1 | 0 | 0 |
+| Wrixle | 1 | 0 | 1 | 0 | 0 |
+| Tarnoth | 1 | 0 | 1 | 0 | 0 |
 | Full Council | 1 | 0 | 1 | 0 | 0 |
 
 ---

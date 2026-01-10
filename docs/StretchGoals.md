@@ -23,6 +23,8 @@
 10. Track `fileStatus` field (`valid` | `missing` | `unchecked`) for persistent validation state
 11. React Native New Architecture (TurboModules) — Re-enable when `react-native-track-player` adds compatibility
 12. Import Summary feedback — Basic toast/modal showing "N imported / M skipped" after batch import
+13. Background playback — Continue audio when app minimized/screen off (prevents accidental song chop)
+14. Player state sync (CR-10) — Sync notification/Bluetooth controls with UI; required for background play
 
 
 

@@ -50,8 +50,8 @@ export function CountBadge({ count, animateOnMount = false }: CountBadgeProps) {
     }
   }, [animateOnMount, scaleAnim]);
 
-  // Don't render badge if count is 0 or negative
-  if (count <= 0) {
+  // Don't render badge if count is invalid, 0, or negative
+  if (!Number.isFinite(count) || count <= 0) {
     return null;
   }
 

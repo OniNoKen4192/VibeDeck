@@ -439,3 +439,73 @@
   - File modified: `src/components/BoardButton.tsx` (line 67)
   - Commit: 4360e3c
   - Verified in HT Round 8
+
+- [x] **HT-015: Board refresh on tab focus** (Pyrrhaxis)
+  - Added `useFocusEffect` to re-resolve buttons when returning to Board tab
+  - Commit: 389904e
+
+- [x] **HT-017: Unique queue item IDs** (Pyrrhaxis)
+  - Suffix track.id with timestamp in `playTrack()` to prevent duplicate ID conflicts
+  - Commit: 389904e
+
+- [x] **HT-018: SAF Permissions Module** (Pyrrhaxis)
+  - Created native Expo module `expo-saf-uri-permission` for Android SAF persistent permissions
+  - `takePersistablePermission()` called after document picker returns URIs
+  - `releasePersistablePermission()` called on track deletion
+  - Tracks now survive app restart and device reboot
+  - Commit: ca3bd80
+
+- [x] **HT-019: Cross-store refresh on track deletion** (Pyrrhaxis)
+  - `deleteTrack()` now calls `loadTags()` and `loadButtons()` after deletion
+  - Tag/button counts update immediately after track removal
+  - Bundled with HT-018 implementation
+
+- [x] **Human Testing Round 5** (Kazzrath)
+  - Verified HT-015, HT-017 fixes — ALL PASS
+  - Report: [qa/QA_REPORT_HT_ROUND5.md](council/qa/QA_REPORT_HT_ROUND5.md)
+
+- [x] **Human Testing Round 6** (Kazzrath)
+  - Verified MVP features — ALL PASS (8/8 tests)
+  - Report: [qa/QA_REPORT_HT_ROUND6.md](council/qa/QA_REPORT_HT_ROUND6.md)
+  - New bugs filed: HT-018, HT-019, HT-020
+
+- [x] **Human Testing Round 7** (Kazzrath)
+  - Verified HT-018, HT-019 fixes — ALL PASS (7/7 tests)
+  - HT-018: Playback survives app restart AND device reboot
+  - Report: [qa/QA_REPORT_HT_ROUND7.md](council/qa/QA_REPORT_HT_ROUND7.md)
+  - New bug filed: HT-021
+
+- [x] **HT-014 code review cleanup** (Pyrrhaxis)
+  - Reviewed Kazzrath's QA fixes for HT-014/008/009
+  - Removed DEBUG logging, committed clean code
+  - Commit: 15c9fe5
+
+- [x] **HT-018/019/020 Architectural Review** (Vaelthrix)
+  - HT-018: SAF persistent URI permissions via native module
+  - HT-019: Cross-store refresh on track deletion
+  - HT-020: Keep tag name, styling-only differentiation (defer to Seraphelle)
+
+- [x] **SAF Permissions Architecture** (Vaelthrix)
+  - Designed native module approach for persistent URI permissions
+  - Created architecture doc: [docs/ARCHITECTURE_SAF_PERMISSIONS.md](docs/ARCHITECTURE_SAF_PERMISSIONS.md)
+  - Created implementation handoff for Pyrrhaxis
+
+- [x] **Human Testing Round 8** (Kazzrath) 🏆
+  - Verified HT-021: Exhausted button tap-to-stop — PASS
+  - Pyrrhaxis fix confirmed working
+
+- [x] **HT-020: Empty tag button identity** (Seraphelle)
+  - Decision: Option C — Keep tag name, styling-only differentiation
+  - Empty buttons now show tag name instead of "No Tracks"
+  - Gray surface, 50% opacity, dashed border still signal empty state
+  - Preserves identity when multiple tags are empty
+  - File modified: `src/components/BoardButton.tsx`
+  - Spec updated: `docs/UI_DESIGN.md` §Empty Tag Button State
+
+- [x] **Configure test framework** (Tarnoth)
+  - Installed jest, jest-expo, @testing-library/react-native, @types/jest
+  - Created `jest.config.js` with jest-expo preset and path alias mapping
+  - Created `jest.setup.js` with mocks for all native modules
+  - Added npm scripts: `test`, `test:watch`, `test:coverage`
+  - Created example test: `src/components/__tests__/CountBadge.test.tsx` (11 tests, 100% coverage)
+  - Native module mocks: react-native-track-player, expo-file-system, expo-sqlite, expo-haptics, expo-crypto, expo-saf-uri-permission

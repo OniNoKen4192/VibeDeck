@@ -777,6 +777,342 @@ Used for destructive actions (delete track, delete tag).
 
 ---
 
+## Board Screen Header
+
+The Board screen needs a minimal header to access settings/about while keeping the button board as the hero.
+
+### Layout Structure
+
+```
+┌─────────────────────────────────────────────┐
+│  VibeDeck                        [⟳] [⚙]   │  ← Header
+├─────────────────────────────────────────────┤
+│                                             │
+│  ┌───────┐  ┌───────┐  ┌───────┐           │
+│  │  BTN  │  │  BTN  │  │  BTN  │           │
+│  └───────┘  └───────┘  └───────┘           │
+│                                             │
+│  ... button grid ...                        │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+### Header Styling
+
+| Property | Value |
+|----------|-------|
+| Height | 56px |
+| Background | `background` (not `surface` — stays recessive) |
+| Title | "VibeDeck" — 20px bold, `text`, left-aligned with 16px padding |
+| Icons | Right-aligned, 44×44px touch targets, `textSecondary` default |
+
+### Header Icons
+
+| Icon | Purpose | Position |
+|------|---------|----------|
+| Reset (⟳) | Reset All played flags | Right, second from edge |
+| Settings (⚙) | Open About/Settings | Right, edge |
+
+**Icon spacing:** 8px between icons, 12px from edge.
+
+---
+
+## Reset All Feature
+
+Resets all played flags across all tags, restoring all pools to full.
+
+### Reset Button Placement
+
+Located in the Board header, right side. Uses a circular arrow (⟳) icon.
+
+| Property | Value |
+|----------|-------|
+| Icon | `refresh` (FontAwesome) |
+| Size | 24px icon, 44×44px touch target |
+| Color | `textSecondary` default, `primary` when pressed |
+| Position | Header right, left of settings icon |
+
+### Reset Confirmation Dialog
+
+Confirmation required before resetting — this action cannot be undone.
+
+```
+┌─────────────────────────────────────────────┐
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │         Reset All Tracks?           │    │
+│  ├─────────────────────────────────────┤    │
+│  │                                     │    │
+│  │  This will mark all tracks as       │    │
+│  │  unplayed, refilling all tag pools. │    │
+│  │                                     │    │
+│  │  Current session progress will      │    │
+│  │  be lost.                           │    │
+│  │                                     │    │
+│  │  ┌───────────┐  ┌───────────────┐   │    │
+│  │  │  Cancel   │  │    Reset      │   │    │
+│  │  └───────────┘  └───────────────┘   │    │
+│  │                                     │    │
+│  └─────────────────────────────────────┘    │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+| Button | Style |
+|--------|-------|
+| Cancel | `surface` background, `text` color |
+| Reset | `warning` (#f59e0b) background, white text |
+
+**Note:** Using `warning` color (not `error`) because reset is recoverable — you just re-play tracks. It's disruptive but not destructive.
+
+### Post-Reset Feedback
+
+After successful reset:
+- Show toast: "All tracks reset" (type: `success`)
+- Haptic feedback: `Haptics.notificationAsync(Success)`
+- Button count badges animate to show restored counts
+
+---
+
+## Long-Press Context Menu
+
+Triggered when user long-presses a button on the board. Presents contextual actions.
+
+### Trigger Behavior
+
+| Property | Value |
+|----------|-------|
+| Activation | 500ms long press |
+| Haptic | `Haptics.impactAsync(Medium)` on menu open |
+| Cancel | Release before 500ms, or tap outside menu |
+
+### Menu Layout (Bottom Sheet)
+
+```
+┌─────────────────────────────────────────────┐
+│                                             │
+│                                             │
+│                                             │
+│  (dimmed background, tappable to dismiss)   │
+│                                             │
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │  ────────  (drag handle)            │    │
+│  │                                     │    │
+│  │  "Warmup"                           │    │  ← Button name
+│  │                                     │    │
+│  │  ┌─────────────────────────────┐    │    │
+│  │  │  📌  Pin to Board           │    │    │  ← If not pinned
+│  │  └─────────────────────────────┘    │    │
+│  │                                OR   │    │
+│  │  ┌─────────────────────────────┐    │    │
+│  │  │  📌  Unpin from Board       │    │    │  ← If pinned
+│  │  └─────────────────────────────┘    │    │
+│  │                                     │    │
+│  │  ┌─────────────────────────────┐    │    │
+│  │  │  🗑  Remove Button           │    │    │  ← Destructive
+│  │  └─────────────────────────────┘    │    │
+│  │                                     │    │
+│  │  Safe area padding                  │    │
+│  └─────────────────────────────────────┘    │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+### Bottom Sheet Styling
+
+| Property | Value |
+|----------|-------|
+| Background | `surface` |
+| Border radius | 16px (top corners only) |
+| Max height | 40% of screen |
+| Animation | Slide up from bottom, 200ms |
+| Overlay | `#000000` at 40% opacity |
+| Drag handle | 40×4px, `surfaceLight`, centered, 8px from top |
+
+### Menu Row Styling
+
+| Property | Value |
+|----------|-------|
+| Height | 56px |
+| Padding | 16px horizontal |
+| Icon size | 20px |
+| Icon-text gap | 12px |
+| Text size | 16px medium |
+| Touch feedback | Background `surfaceLight` on press |
+
+### Menu Actions
+
+| Action | Icon | Text | Color | Behavior |
+|--------|------|------|-------|----------|
+| Pin | `thumb-tack` | "Pin to Board" | `text` | Sets `persistent: true`, closes menu |
+| Unpin | `thumb-tack` | "Unpin from Board" | `text` | Sets `persistent: false`, closes menu |
+| Remove | `trash-o` | "Remove Button" | `error` | Shows delete confirmation, then removes |
+
+**Pin Toggle Logic:**
+- If `button.persistent === true`: Show "Unpin from Board"
+- If `button.persistent === false`: Show "Pin to Board"
+
+**Remove Confirmation:**
+Uses existing `DeleteConfirmation` component with text:
+- Title: "Remove Button?"
+- Body: "Remove '{button.name}' from the board? You can add it again later."
+- Cancel: "Cancel"
+- Confirm: "Remove"
+
+---
+
+## About / Settings Screen
+
+Informational screen with app version, usage tutorial, and settings explanation.
+
+### Navigation
+
+Accessed from Board header via settings (⚙) icon. Opens as a modal (full-screen slide-up).
+
+### Layout Structure
+
+```
+┌─────────────────────────────────────────────┐
+│  About VibeDeck                     [  ✕ ] │  ← Header with close
+├─────────────────────────────────────────────┤
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │  🎵                                 │    │
+│  │  VibeDeck                           │    │  ← App name
+│  │  Version 1.0.0                      │    │  ← Version
+│  └─────────────────────────────────────┘    │
+│                                             │
+│  ─────────────────────────────────────────  │
+│                                             │
+│  How to Use                                 │  ← Section header
+│                                             │
+│  1. Import your audio files from the        │
+│     Library tab.                            │
+│                                             │
+│  2. Create tags (like "Timeout", "Score")   │
+│     in the Tags tab.                        │
+│                                             │
+│  3. Assign tags to your tracks.             │
+│                                             │
+│  4. Your board fills with buttons. Tap      │
+│     to play!                                │
+│                                             │
+│  ─────────────────────────────────────────  │
+│                                             │
+│  Understanding Played Tracks                │  ← Section header
+│                                             │
+│  When you tap a tag button, VibeDeck        │
+│  picks a random track from that tag that    │
+│  hasn't been played yet this session.       │
+│                                             │
+│  The count badge shows how many tracks      │
+│  are still available. When it reaches       │
+│  zero, the pool automatically resets.       │
+│                                             │
+│  Use the ⟳ button in the header to          │
+│  manually reset all tracks at once.         │
+│                                             │
+│  ─────────────────────────────────────────  │
+│                                             │
+│  Pinned Buttons                             │  ← Section header
+│                                             │
+│  Long-press any button to pin it.           │
+│  Pinned buttons stay at the top of          │
+│  your board and won't disappear.            │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+### Header Styling
+
+| Property | Value |
+|----------|-------|
+| Height | 56px |
+| Background | `surface` |
+| Title | "About VibeDeck" — 18px bold, centered |
+| Close button | "✕" icon, 44×44px touch target, right edge |
+
+### Content Styling
+
+| Element | Style |
+|---------|-------|
+| App icon | Music note (♪), 48px, `primary` color, centered |
+| App name | 24px bold, `text`, centered |
+| Version | 14px, `textSecondary`, centered |
+| Section header | 16px bold, `text`, 24px top margin |
+| Body text | 14px, `textSecondary`, line-height 22px |
+| Section divider | 1px `surfaceLight`, 24px vertical margin |
+| Content padding | 20px horizontal |
+
+### Modal Behavior
+
+| Property | Value |
+|----------|-------|
+| Type | Full-screen modal |
+| Animation | Slide up from bottom, 300ms |
+| Background | `background` |
+| Scrollable | Yes (ScrollView for content) |
+| Safe area | Respect top and bottom insets |
+
+---
+
+## Empty Tag Button State
+
+When a tag has no tracks assigned, its button should be visually distinct and non-functional.
+
+### Visual Treatment
+
+| Property | Enabled (tracks exist) | Empty (no tracks) |
+|----------|------------------------|-------------------|
+| Background | Tag color | `surface` (gray) |
+| Opacity | 100% | 50% |
+| Text color | White | `textMuted` |
+| Count badge | Shows number | Hidden |
+| Border | None | 2px dashed `surfaceLight` |
+| Pressable | Yes | No (returns early) |
+
+### Empty State Display
+
+```
+┌─────────────────────────┐
+│                         │
+│                         │
+│     EDM                 │  ← Tag name preserved (HT-020)
+│                         │
+│  ════════════════════   │  ← Type indicator (muted)
+└─────────────────────────┘
+```
+
+**Behavior:** When `button.isEmpty === true`:
+- Skip `onButtonPress` entirely (return early)
+- No haptic feedback
+- Keep tag name as label (styling differentiates empty state)
+- Keep type indicator bar but at 30% opacity
+
+---
+
+## Implementation Checklist (Board MVP Features)
+
+Components to build for MVP feature completion:
+
+### Board Screen Header
+1. **BoardHeader** — Title + Reset + Settings icons
+
+### Reset All Feature
+2. **ResetConfirmation** — Confirmation dialog (reuse DeleteConfirmation pattern)
+
+### Long-Press Context Menu
+3. **ButtonContextMenu** — Bottom sheet with Pin/Remove actions
+
+### About Screen
+4. **AboutScreen** — Full-screen modal with usage guide
+
+### Empty Tag Button
+5. **BoardButton updates** — Empty state styling (no new component)
+
+---
+
 ## Implementation Checklist (Library/Tags)
 
 Components to build:

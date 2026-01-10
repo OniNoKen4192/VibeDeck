@@ -84,6 +84,16 @@ export const useTrackStore = create<TrackStore>((set, get) => ({
     }));
   },
 
+  /**
+   * Deletes a track from the library.
+   *
+   * @remarks
+   * **Cross-store refresh:** Deleting a track affects tag counts and button states.
+   * After deletion, this triggers `useTagStore.loadTags()` and `useButtonStore.loadButtons()`
+   * to ensure UI reflects the cascaded changes.
+   *
+   * **SAF cleanup:** Releases persistent URI permission for the deleted file.
+   */
   deleteTrack: async (id) => {
     // Get track before deletion to access filePath
     const track = get().tracks.find((t) => t.id === id);

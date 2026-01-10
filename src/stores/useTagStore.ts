@@ -108,6 +108,14 @@ export const useTagStore = create<TagStore>((set, get) => ({
     }
   },
 
+  /**
+   * Creates a new tag.
+   *
+   * @throws Error if name fails validation (empty, too long, or invalid characters)
+   *
+   * @remarks
+   * **Validation:** Uses `validateTagName()` before DB insert. Trims whitespace.
+   */
   addTag: async (name, color = null) => {
     // Validate tag name
     const validation = validateTagName(name);
@@ -159,6 +167,14 @@ export const useTagStore = create<TagStore>((set, get) => ({
     }));
   },
 
+  /**
+   * Deletes a tag and cascades to buttons.
+   *
+   * @remarks
+   * **Cross-store cascade:** After deleting the tag from DB, calls
+   * `useButtonStore.removeButtonsForTag()` to clean up orphaned buttons
+   * from both database and in-memory state.
+   */
   deleteTag: async (id) => {
     await tagQueries.deleteTag(id);
     // Cascade to button store — remove orphaned buttons from in-memory state
@@ -168,6 +184,14 @@ export const useTagStore = create<TagStore>((set, get) => ({
     }));
   },
 
+  /**
+   * Adds a tag to a track.
+   *
+   * @remarks
+   * **Optimistic update with rollback:** Updates tag counts immediately in state,
+   * then persists to database. If DB write fails, reloads full tag state to
+   * restore accurate counts.
+   */
   addTagToTrack: async (trackId, tagId) => {
     // Optimistically update counts (assume track is unplayed)
     set((state) => ({
@@ -183,6 +207,12 @@ export const useTagStore = create<TagStore>((set, get) => ({
     }
   },
 
+  /**
+   * Removes a tag from a track.
+   *
+   * @remarks
+   * **Optimistic update with rollback:** Same pattern as `addTagToTrack`.
+   */
   removeTagFromTrack: async (trackId, tagId) => {
     // Optimistically update counts (assume track was unplayed)
     set((state) => ({
@@ -198,6 +228,17 @@ export const useTagStore = create<TagStore>((set, get) => ({
     }
   },
 
+  /**
+   * Replaces all tags for a track atomically.
+   *
+   * @remarks
+   * **Optimistic update with rollback:** Calculates delta between old and new
+   * tag sets, updates counts immediately, then persists via transaction.
+   * Full reload on error to restore consistency.
+   *
+   * **Transaction:** The underlying DB call uses `withTransactionAsync` to
+   * ensure the delete-then-insert is atomic.
+   */
   setTagsForTrack: async (trackId, tagIds) => {
     // Get previous tags to calculate deltas
     const previousTags = await trackTagQueries.getTagsForTrack(trackId);

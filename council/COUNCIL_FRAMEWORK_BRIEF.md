@@ -316,6 +316,8 @@ Each dragon stayed in their lane. Handoffs were explicit. Context persisted thro
 
 ## Getting Started
 
+> **Prerequisites:** Before setting up the Council, ensure you have the required tools installed. See [README.md](README.md#prerequisites) for the complete list of requirements and assumptions.
+
 ### Minimum Viable Council
 
 You don't need 8 dragons. Start with 3:

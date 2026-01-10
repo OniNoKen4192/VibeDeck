@@ -82,6 +82,16 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({ isPlaying });
   },
 
+  /**
+   * Sets volume and persists to storage.
+   *
+   * @remarks
+   * **Optimistic update with rollback:** Updates state immediately for
+   * responsive UI, then persists. Rolls back to previous value if
+   * persistence fails and re-throws for optional caller handling.
+   *
+   * **Clamping:** Input is clamped to 0-100 range.
+   */
   setVolume: async (volume) => {
     const clamped = Math.max(0, Math.min(100, volume));
     const previousVolume = get().volume;

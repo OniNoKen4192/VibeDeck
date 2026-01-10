@@ -16,6 +16,10 @@ import {
   NowPlaying,
   Toast,
 } from '../../src/components';
+import { BoardHeader } from '../../src/components/BoardHeader';
+import { ButtonContextMenu } from '../../src/components/ButtonContextMenu';
+import { AboutScreen } from '../../src/components/AboutScreen';
+import { DeleteConfirmation } from '../../src/components/modals/DeleteConfirmation';
 import { Colors } from '../../src/constants/colors';
 import { Layout } from '../../src/constants/layout';
 import type { ButtonResolved } from '../../src/types';
@@ -29,12 +33,14 @@ import {
   registerPlaybackStateCallback,
   registerPlaybackErrorCallback,
 } from '../../src/services/player';
-import { selectTrackForTag } from '../../src/services/tagPool';
+import { selectTrackForTag, resetAllPools } from '../../src/services/tagPool';
 
 export default function BoardScreen() {
   // Store connections
   const resolveAllButtons = useButtonStore((state) => state.resolveAllButtons);
   const storeButtons = useButtonStore((state) => state.buttons); // Subscribe to button changes
+  const updateButton = useButtonStore((state) => state.updateButton);
+  const deleteButton = useButtonStore((state) => state.deleteButton);
   const currentTrack = usePlayerStore((state) => state.currentTrack);
   const isPlaying = usePlayerStore((state) => state.isPlaying);
   const volume = usePlayerStore((state) => state.volume);
@@ -49,7 +55,14 @@ export default function BoardScreen() {
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'error' | 'warning' | 'info'>('error');
+  const [toastType, setToastType] = useState<'error' | 'warning' | 'info' | 'success'>('error');
+
+  // Modal state
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [selectedButton, setSelectedButton] = useState<ButtonResolved | null>(null);
+  const [aboutVisible, setAboutVisible] = useState(false);
+  const [resetConfirmVisible, setResetConfirmVisible] = useState(false);
+  const [removeConfirmVisible, setRemoveConfirmVisible] = useState(false);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -67,7 +80,7 @@ export default function BoardScreen() {
   /**
    * Show a toast notification.
    */
-  const showToast = useCallback((message: string, type: 'error' | 'warning' | 'info' = 'error') => {
+  const showToast = useCallback((message: string, type: 'error' | 'warning' | 'info' | 'success' = 'error') => {
     setToastMessage(message);
     setToastType(type);
     setToastVisible(true);
@@ -176,7 +189,7 @@ export default function BoardScreen() {
    * For direct buttons: play the linked track
    */
   const handleButtonPress = useCallback(async (button: ButtonResolved) => {
-    if (button.isDisabled) return;
+    if (button.isDisabled || button.isEmpty) return;
 
     // Haptic feedback on press
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -197,7 +210,7 @@ export default function BoardScreen() {
         console.log('[BoardScreen] Pool exhausted for tag:', button.tagId);
         triggerShake(button.id);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        showToast('All tracks played. Long-press to reset pool.', 'warning');
+        showToast('All tracks played. Use ⟳ to reset pools.', 'warning');
         return;
       }
 
@@ -225,11 +238,82 @@ export default function BoardScreen() {
   }, [playingButtonId, markPlayed, refreshButtons, triggerShake, showToast]);
 
   /**
-   * Handle button long press - placeholder for edit mode
+   * Handle button long press - open context menu
    */
   const handleButtonLongPress = useCallback((button: ButtonResolved) => {
-    console.log('[BoardScreen] Button long-pressed:', button.name);
-    // TODO: Navigate to button edit modal (deferred)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSelectedButton(button);
+    setContextMenuVisible(true);
+  }, []);
+
+  /**
+   * Handle pin/unpin toggle from context menu
+   */
+  const handleTogglePin = useCallback(async (button: ButtonResolved) => {
+    try {
+      await updateButton(button.id, { persistent: !button.persistent });
+      await refreshButtons();
+    } catch (err) {
+      console.error('[BoardScreen] Failed to toggle pin:', err);
+      showToast('Failed to update button', 'error');
+    }
+    setContextMenuVisible(false);
+  }, [updateButton, refreshButtons, showToast]);
+
+  /**
+   * Handle remove button request from context menu
+   */
+  const handleRemoveRequest = useCallback((button: ButtonResolved) => {
+    setContextMenuVisible(false);
+    setSelectedButton(button);
+    setRemoveConfirmVisible(true);
+  }, []);
+
+  /**
+   * Confirm and remove button
+   */
+  const handleRemoveConfirm = useCallback(async () => {
+    if (!selectedButton) return;
+    try {
+      await deleteButton(selectedButton.id);
+      await refreshButtons();
+      showToast('Button removed', 'info');
+    } catch (err) {
+      console.error('[BoardScreen] Failed to remove button:', err);
+      showToast('Failed to remove button', 'error');
+    }
+    setRemoveConfirmVisible(false);
+    setSelectedButton(null);
+  }, [selectedButton, deleteButton, refreshButtons, showToast]);
+
+  /**
+   * Handle reset all request from header
+   */
+  const handleResetRequest = useCallback(() => {
+    setResetConfirmVisible(true);
+  }, []);
+
+  /**
+   * Confirm and reset all played flags
+   */
+  const handleResetConfirm = useCallback(async () => {
+    try {
+      await resetAllPools();
+      await refreshButtons();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      showToast('All tracks reset', 'success');
+    } catch (err) {
+      console.error('[BoardScreen] Failed to reset pools:', err);
+      showToast('Failed to reset tracks', 'error');
+    }
+    setResetConfirmVisible(false);
+  }, [refreshButtons, showToast]);
+
+  /**
+   * Handle settings/about request from header
+   */
+  const handleSettingsPress = useCallback(() => {
+    setAboutVisible(true);
   }, []);
 
   /**
@@ -272,17 +356,24 @@ export default function BoardScreen() {
     return (
       <View style={styles.emptyContainer}>
         <StatusBar style="light" />
-        <View style={styles.emptyIconContainer}>
-          <FontAwesome name="th-large" size={64} color={Colors.textMuted} />
+        <BoardHeader
+          onResetPress={handleResetRequest}
+          onSettingsPress={handleSettingsPress}
+        />
+        <View style={styles.emptyContent}>
+          <View style={styles.emptyIconContainer}>
+            <FontAwesome name="th-large" size={64} color={Colors.textMuted} />
+          </View>
+          <Text style={styles.emptyTitle}>No buttons yet</Text>
+          <Text style={styles.emptySubtitle}>
+            Add tracks to your library, create tags, then add buttons to your board.
+          </Text>
+          <View style={styles.emptyHint}>
+            <FontAwesome name="arrow-down" size={16} color={Colors.primary} />
+            <Text style={styles.emptyHintText}>Start with Library or Tags below</Text>
+          </View>
         </View>
-        <Text style={styles.emptyTitle}>No buttons yet</Text>
-        <Text style={styles.emptySubtitle}>
-          Add tracks to your library, create tags, then add buttons to your board.
-        </Text>
-        <View style={styles.emptyHint}>
-          <FontAwesome name="arrow-down" size={16} color={Colors.primary} />
-          <Text style={styles.emptyHintText}>Start with Library or Tags below</Text>
-        </View>
+        <AboutScreen visible={aboutVisible} onClose={() => setAboutVisible(false)} />
       </View>
     );
   }
@@ -290,6 +381,10 @@ export default function BoardScreen() {
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <StatusBar style="light" />
+      <BoardHeader
+        onResetPress={handleResetRequest}
+        onSettingsPress={handleSettingsPress}
+      />
       <ButtonBoard
         buttons={buttons}
         playingButtonId={playingButtonId}
@@ -307,12 +402,53 @@ export default function BoardScreen() {
         />
         <NowPlaying track={currentTrack} isPlaying={isPlaying} />
       </ButtonBoard>
+
+      {/* Toast notifications */}
       <Toast
         message={toastMessage}
         type={toastType}
         visible={toastVisible}
         onDismiss={() => setToastVisible(false)}
         position="top"
+      />
+
+      {/* Context menu for long-press */}
+      <ButtonContextMenu
+        visible={contextMenuVisible}
+        button={selectedButton}
+        onClose={() => setContextMenuVisible(false)}
+        onTogglePin={handleTogglePin}
+        onRemove={handleRemoveRequest}
+      />
+
+      {/* About/Settings screen */}
+      <AboutScreen
+        visible={aboutVisible}
+        onClose={() => setAboutVisible(false)}
+      />
+
+      {/* Reset All confirmation */}
+      <DeleteConfirmation
+        visible={resetConfirmVisible}
+        title="Reset All Tracks?"
+        message={'This will mark all tracks as unplayed, refilling all tag pools.\n\nCurrent session progress will be lost.'}
+        confirmLabel="Reset"
+        confirmColor={Colors.warning}
+        onCancel={() => setResetConfirmVisible(false)}
+        onConfirm={handleResetConfirm}
+      />
+
+      {/* Remove button confirmation */}
+      <DeleteConfirmation
+        visible={removeConfirmVisible}
+        title="Remove Button?"
+        message={`Remove '${selectedButton?.name || ''}' from the board? You can add it again later.`}
+        confirmLabel="Remove"
+        onCancel={() => {
+          setRemoveConfirmVisible(false);
+          setSelectedButton(null);
+        }}
+        onConfirm={handleRemoveConfirm}
       />
     </Animated.View>
   );
@@ -337,6 +473,9 @@ const styles = StyleSheet.create({
   emptyContainer: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  emptyContent: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Layout.spacing.xl,

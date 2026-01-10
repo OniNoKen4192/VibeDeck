@@ -28,7 +28,6 @@ VibeDeck is a **game-day audio tool** for sports parents. The button board is th
 | **Drag Reorder** | Rearrange button positions by dragging |
 | **Playback Controls** | Stop button + Volume slider |
 | **Interrupt Behavior** | New button tap immediately stops current audio |
-| **Device Picker** | Select audio output device (Bluetooth, speaker, etc.) |
 | **Track Metadata** | View and edit title, artist, and other fields |
 
 ### Out of Scope (Post-MVP)
@@ -42,6 +41,7 @@ VibeDeck is a **game-day audio tool** for sports parents. The button board is th
 | Audio effects (fade, crossfade) | Polish feature, not core |
 | Waveform visualization | Nice-to-have, not essential |
 | Import from streaming services | Licensing complexity |
+| Device Picker | Android handles audio routing at system level; users can switch via OS controls |
 | Search within library | Tag filtering sufficient for MVP |
 | React Native New Architecture | `react-native-track-player` not yet compatible; re-enable when library is updated |
 
@@ -89,7 +89,6 @@ VibeDeck is a **game-day audio tool** for sports parents. The button board is th
 - New tap interrupts current audio immediately
 - Stop button silences playback
 - Volume slider adjusts output level
-- Can select audio output device
 
 ### US-5: Manage Button Layout
 > As a user, I want to arrange my buttons so the most-used ones are easy to reach.
@@ -121,12 +120,12 @@ VibeDeck is a **game-day audio tool** for sports parents. The button board is th
 
 | Screen | Purpose | Key Elements |
 |--------|---------|--------------|
-| **Button Board** | Main game-day screen | Button grid, playback controls, device picker, reset button |
+| **Button Board** | Main game-day screen | Button grid, playback controls, reset button |
 | **Library** | View all imported tracks | Track list, tag filter, add/edit buttons |
 | **Track Detail** | View/edit single track | Metadata fields, tag assignment, delete option |
 | **Tags** | Manage tags | Tag list, create/edit/delete |
 | **Button Editor** | Create/edit a button | Type selector, tag/track picker, name, persistent toggle |
-| **Settings** | App configuration | (Minimal for MVP — maybe just "About") |
+| **Settings/About** | App info and usage guide | Version info, usage tutorial (import → tag → play workflow), played flags explanation |
 
 **Navigation:** Bottom tab bar with Board, Library, Tags. Settings accessible from header.
 

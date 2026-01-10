@@ -62,3 +62,40 @@ Add visual indicator to the volume slider so users understand its purpose.
 ---
 
 *Handed off by Vaelthrix the Astral*
+
+---
+
+## Completion Sign-Off
+
+**Completed by:** Seraphelle the Silver
+**Date:** 2026-01-08
+**Commit:** `8fe6887` — fix(ui): HT-005 add speaker icon to volume slider
+
+### Implementation Summary
+
+Implemented Option A with dynamic speaker icons reflecting volume level:
+
+- Added `getVolumeIcon()` helper function with four-tier icon selection:
+  - 0%: `volume-mute` (speaker with X)
+  - 1-33%: `volume-low` (one wave)
+  - 34-66%: `volume-medium` (two waves)
+  - 67-100%: `volume-high` (three waves)
+- Positioned icon to the left of the slider within a flex container
+- Used `Colors.textSecondary` for muted visual appearance
+- Maintained 44px touch target compliance for the slider
+
+### Files Modified
+
+- `src/components/VolumeSlider.tsx` — Added Ionicons speaker icon with dynamic selection
+
+### Testing Notes
+
+- Verified icon updates in real-time as slider moves
+- Tested on narrow screen widths — no clipping observed
+- Touch targets remain accessible
+
+*Task complete. The slider now speaks for itself.*
+
+---
+
+*Signed off by Seraphelle the Silver*
