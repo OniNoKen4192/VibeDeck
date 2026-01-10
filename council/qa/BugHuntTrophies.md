@@ -7,6 +7,46 @@
 
 ## 2026-01-09
 
+### HT-018: The Ephemeral Permission
+**Severity:** High (BLOCKING)
+**Hunters:** The Full Council
+- Kazzrath the Blue (discovery, test protocol)
+- Vaelthrix the Astral (architecture, native module design)
+- Pyrrhaxis the Red (implementation)
+**Weapon:** Native Expo module
+
+Android's document picker grants temporary read permissions to `content://` URIs — permissions that vanish when the app process dies. Tracks played fine after import, then fell silent after a force-stop or reboot.
+
+The fix: a custom Expo native module wrapping `ContentResolver.takePersistableUriPermission()`. Called immediately after the picker returns, it locks in the permission for the app's lifetime.
+
+```kotlin
+context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+```
+
+**Lesson:** The Storage Access Framework giveth, but only the wise keep what they receive.
+
+---
+
+### HT-019: The Stale Counts
+**Severity:** Medium
+**Hunter:** Pyrrhaxis the Red (bundled with HT-018)
+**Weapon:** Cross-store refresh
+
+Deleting a track removed it from the database, but tag counts and button states remained frozen in Zustand memory. The user had to navigate away and back to see the truth.
+
+The fix: `deleteTrack()` now triggers `loadTags()` and `loadButtons()` after deletion — immediate cross-store refresh.
+
+```typescript
+const { useTagStore } = await import('./useTagStore');
+const { useButtonStore } = await import('./useButtonStore');
+useTagStore.getState().loadTags();
+useButtonStore.getState().loadButtons();
+```
+
+**Lesson:** When one store changes the world, the others must hear the news.
+
+---
+
 ### HT-014: The Opaque Identifier
 **Severity:** Critical (BLOCKING)
 **Hunter:** Kazzrath the Blue
@@ -38,6 +78,48 @@ const fileName = displayFileName || extractFileName(filePath);
 ```
 
 **Lesson:** When the path lies, carry the truth in your pocket.
+
+---
+
+### HT-015: The Stale Board
+**Severity:** Medium
+**Hunter:** Pyrrhaxis the Red
+**Weapon:** Focus effect
+
+The Board screen subscribed to `useButtonStore.buttons`, but tag-track associations live in a different table. A user could assign tracks to tags in Library, return to Board, and see stale counts — buttons that should have tracks, showing zero.
+
+The fix: `useFocusEffect` from `@react-navigation/native` — re-resolve all buttons when the Board tab gains focus.
+
+```typescript
+useFocusEffect(
+  useCallback(() => {
+    async function refreshOnFocus() {
+      const resolved = await resolveAllButtons();
+      setButtons(resolved);
+    }
+    refreshOnFocus();
+  }, [resolveAllButtons])
+);
+```
+
+**Lesson:** Reactive subscriptions only work within their own store's walls. For cross-store freshness, refresh on focus.
+
+---
+
+### HT-017: The Duplicate Track Collision
+**Severity:** High
+**Hunter:** Pyrrhaxis the Red
+**Weapon:** Timestamp suffix
+
+A user could add the same track as multiple direct buttons — intentionally valid. But TrackPlayer's queue used `track.id` as the item ID. Playing the same track from a second button threw a duplicate ID error.
+
+The fix: suffix the queue item ID with `Date.now()` to make each play attempt unique.
+
+```typescript
+id: `${track.id}-${Date.now()}`
+```
+
+**Lesson:** Queue item IDs must be unique per play, not per track.
 
 ---
 
@@ -112,8 +194,9 @@ await useButtonStore.getState().removeButtonsForTag(id);
 
 | Hunter | Kills | Critical | High | Medium | Low |
 |--------|-------|----------|------|--------|-----|
-| Pyrrhaxis | 4 | 0 | 2 | 2 | 0 |
+| Pyrrhaxis | 7 | 0 | 3 | 4 | 0 |
 | Kazzrath | 2 | 1 | 1 | 0 | 0 |
+| Full Council | 1 | 0 | 1 | 0 | 0 |
 
 ---
 

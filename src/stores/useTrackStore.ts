@@ -8,6 +8,7 @@ import type { Track } from '../types';
 import { generateUUID } from '../utils/uuid';
 import * as trackQueries from '../db/queries/tracks';
 import * as trackTagQueries from '../db/queries/trackTags';
+import { releasePersistablePermission } from '../../modules/expo-saf-uri-permission/src';
 
 /**
  * Track store interface
@@ -84,10 +85,29 @@ export const useTrackStore = create<TrackStore>((set, get) => ({
   },
 
   deleteTrack: async (id) => {
+    // Get track before deletion to access filePath
+    const track = get().tracks.find((t) => t.id === id);
+
     await trackQueries.deleteTrack(id);
     set((state) => ({
       tracks: state.tracks.filter((t) => t.id !== id),
     }));
+
+    // HT-018: Release persistent URI permission
+    if (track?.filePath) {
+      try {
+        await releasePersistablePermission(track.filePath);
+      } catch {
+        // Ignore - permission may not have been persisted
+      }
+    }
+
+    // HT-019: Cross-store refresh to update tag counts and button states
+    // Import dynamically to avoid circular dependency
+    const { useTagStore } = await import('./useTagStore');
+    const { useButtonStore } = await import('./useButtonStore');
+    useTagStore.getState().loadTags();
+    useButtonStore.getState().loadButtons();
   },
 
   markPlayed: async (id) => {

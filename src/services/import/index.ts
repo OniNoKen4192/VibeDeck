@@ -6,6 +6,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { validateFilePath, getSupportedFormats } from './validation';
 import { extractMetadata, AudioMetadata } from './metadata';
+import { takePersistablePermission } from '../../../modules/expo-saf-uri-permission/src';
 import type { Track } from '../../types';
 
 // Re-export utilities for external use
@@ -135,6 +136,15 @@ export async function pickAndImportTracks(
 
     if (onProgress) {
       onProgress(i + 1, files.length, file.name || 'Unknown');
+    }
+
+    // HT-018: Take persistent permission for content:// URIs
+    // This allows playback to work after app restart
+    try {
+      await takePersistablePermission(filePath);
+    } catch (err) {
+      // Log but don't fail - some URIs may not support persistence
+      console.warn(`Could not persist permission for ${filePath}:`, err);
     }
 
     // HT-014: Pass file.name for content:// URI handling in validation and metadata
