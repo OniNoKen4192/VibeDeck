@@ -509,3 +509,23 @@
   - Added npm scripts: `test`, `test:watch`, `test:coverage`
   - Created example test: `src/components/__tests__/CountBadge.test.tsx` (11 tests, 100% coverage)
   - Native module mocks: react-native-track-player, expo-file-system, expo-sqlite, expo-haptics, expo-crypto, expo-saf-uri-permission
+
+---
+
+## 2026-01-10
+
+- [x] **HT-022: SafeArea Inset Collision** (Seraphelle)
+  - Board screen header was rendering behind Android status bar on edge-to-edge displays
+  - Wrapped all three Board screen containers in `SafeAreaView edges={['top']}`
+  - Loading state, empty state, and main board all now respect safe area insets
+  - Main board uses nested `Animated.View` inside `SafeAreaView` to preserve fade animation
+  - Added `safeArea` style with background color, simplified `container` style
+  - File modified: `app/(tabs)/index.tsx`
+  - Archived handoff: [DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-10_HT-022-safearea.md](council/archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-10_HT-022-safearea.md)
+
+- [x] **HT-023: Tab Bar Bottom SafeArea** (Seraphelle)
+  - Tab bar was colliding with Android navigation bar on devices with button navigation
+  - Removed hardcoded `height: 56` from `tabBarStyle` in tab layout
+  - React Navigation now automatically handles bottom safe area padding
+  - File modified: `app/(tabs)/_layout.tsx`
+  - Archived handoff: [DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-10_HT-023-tabbar-safearea.md](council/archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-10_HT-023-tabbar-safearea.md)

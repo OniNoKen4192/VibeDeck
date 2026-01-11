@@ -5,6 +5,62 @@
 
 ---
 
+## 2026-01-10
+
+### HT-022: The Invisible Header
+**Severity:** High (Usability blocker)
+**Hunter:** Seraphelle the Silver
+**Weapon:** SafeAreaView
+
+The Board screen had no concept of device boundaries. On a Samsung Galaxy S23 Ultra — an edge-to-edge canvas — the "VibeDeck" header rendered at pixel zero, directly behind the clock, battery icon, and notification badges. The reset and settings buttons? Buried under system UI, untouchable.
+
+The screen used `headerShown: false` with a custom `BoardHeader` component, but forgot to ask the device where its actual content area began. Three render paths — loading, empty, populated — all made the same mistake.
+
+The fix: wrap each container in `SafeAreaView` from `react-native-safe-area-context`, respecting only the top edge (the tab bar handles the bottom).
+
+```typescript
+// Before: blissfully ignorant of the status bar
+<Animated.View style={styles.container}>
+
+// After: asks permission before entering
+<SafeAreaView edges={['top']} style={styles.safeArea}>
+  <Animated.View style={styles.container}>
+```
+
+**Lesson:** Custom headers must earn their space. The status bar was there first.
+
+---
+
+### HT-023: The Crushed Tab Bar
+**Severity:** High (Usability blocker)
+**Hunter:** Seraphelle the Silver
+**Weapon:** Deletion
+
+The tab bar had a secret: `height: 56`. A hardcoded constraint that seemed reasonable on paper, but ignored the realities of physical devices. On phones with button navigation, the system navigation bar sat directly on top of the Board/Library/Tags tabs — a pixel-perfect collision.
+
+React Navigation's bottom tab bar knows about safe areas. It adds padding automatically... unless you override its height. Then you're on your own.
+
+The fix: delete the constraint. Let the framework do its job.
+
+```typescript
+// Before: micromanaging
+tabBarStyle: {
+  backgroundColor: Colors.surface,
+  borderTopColor: Colors.surfaceLight,
+  height: 56,  // The troublemaker
+},
+
+// After: trusting the framework
+tabBarStyle: {
+  backgroundColor: Colors.surface,
+  borderTopColor: Colors.surfaceLight,
+},
+```
+
+**Lesson:** Sometimes the best fix is removing the code that thinks it's helping.
+
+---
+
 ## 2026-01-09
 
 ### CR-09: The Blind Gatekeeper
@@ -292,9 +348,9 @@ await useButtonStore.getState().removeButtonsForTag(id);
 | Hunter | Kills | Critical | High | Medium | Low |
 |--------|-------|----------|------|--------|-----|
 | Pyrrhaxis | 9 | 0 | 4 | 5 | 0 |
+| Seraphelle | 5 | 0 | 3 | 0 | 2 |
 | Kazzrath | 3 | 1 | 2 | 0 | 0 |
 | Vaelthrix | 2 | 0 | 2 | 0 | 0 |
-| Seraphelle | 3 | 0 | 1 | 0 | 2 |
 | Chatterwind | 1 | 0 | 1 | 0 | 0 |
 | Wrixle | 1 | 0 | 1 | 0 | 0 |
 | Tarnoth | 1 | 0 | 1 | 0 | 0 |

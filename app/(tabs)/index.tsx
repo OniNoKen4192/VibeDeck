@@ -6,6 +6,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -343,18 +344,18 @@ export default function BoardScreen() {
   // Loading state
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView edges={['top']} style={styles.loadingContainer}>
         <StatusBar style="light" />
         <ActivityIndicator size="large" color={Colors.primary} />
         <Text style={styles.loadingText}>Loading board...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Empty state
   if (buttons.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <SafeAreaView edges={['top']} style={styles.emptyContainer}>
         <StatusBar style="light" />
         <BoardHeader
           onResetPress={handleResetRequest}
@@ -374,90 +375,95 @@ export default function BoardScreen() {
           </View>
         </View>
         <AboutScreen visible={aboutVisible} onClose={() => setAboutVisible(false)} />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <StatusBar style="light" />
-      <BoardHeader
-        onResetPress={handleResetRequest}
-        onSettingsPress={handleSettingsPress}
-      />
-      <ButtonBoard
-        buttons={buttons}
-        playingButtonId={playingButtonId}
-        shakingButtonId={shakingButtonId}
-        shakeAnim={shakeAnim}
-        onButtonPress={handleButtonPress}
-        onButtonLongPress={handleButtonLongPress}
-      >
-        <PlaybackControls
-          volume={localVolume}
-          onVolumeChange={handleVolumeChange}
-          onVolumeChangeComplete={handleVolumeChangeComplete}
-          onStop={handleStop}
-          isPlaying={isPlaying}
+    <SafeAreaView edges={['top']} style={styles.safeArea}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <StatusBar style="light" />
+        <BoardHeader
+          onResetPress={handleResetRequest}
+          onSettingsPress={handleSettingsPress}
         />
-        <NowPlaying track={currentTrack} isPlaying={isPlaying} />
-      </ButtonBoard>
+        <ButtonBoard
+          buttons={buttons}
+          playingButtonId={playingButtonId}
+          shakingButtonId={shakingButtonId}
+          shakeAnim={shakeAnim}
+          onButtonPress={handleButtonPress}
+          onButtonLongPress={handleButtonLongPress}
+        >
+          <PlaybackControls
+            volume={localVolume}
+            onVolumeChange={handleVolumeChange}
+            onVolumeChangeComplete={handleVolumeChangeComplete}
+            onStop={handleStop}
+            isPlaying={isPlaying}
+          />
+          <NowPlaying track={currentTrack} isPlaying={isPlaying} />
+        </ButtonBoard>
 
-      {/* Toast notifications */}
-      <Toast
-        message={toastMessage}
-        type={toastType}
-        visible={toastVisible}
-        onDismiss={() => setToastVisible(false)}
-        position="top"
-      />
+        {/* Toast notifications */}
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          visible={toastVisible}
+          onDismiss={() => setToastVisible(false)}
+          position="top"
+        />
 
-      {/* Context menu for long-press */}
-      <ButtonContextMenu
-        visible={contextMenuVisible}
-        button={selectedButton}
-        onClose={() => setContextMenuVisible(false)}
-        onTogglePin={handleTogglePin}
-        onRemove={handleRemoveRequest}
-      />
+        {/* Context menu for long-press */}
+        <ButtonContextMenu
+          visible={contextMenuVisible}
+          button={selectedButton}
+          onClose={() => setContextMenuVisible(false)}
+          onTogglePin={handleTogglePin}
+          onRemove={handleRemoveRequest}
+        />
 
-      {/* About/Settings screen */}
-      <AboutScreen
-        visible={aboutVisible}
-        onClose={() => setAboutVisible(false)}
-      />
+        {/* About/Settings screen */}
+        <AboutScreen
+          visible={aboutVisible}
+          onClose={() => setAboutVisible(false)}
+        />
 
-      {/* Reset All confirmation */}
-      <DeleteConfirmation
-        visible={resetConfirmVisible}
-        title="Reset All Tracks?"
-        message={'This will mark all tracks as unplayed, refilling all tag pools.\n\nCurrent session progress will be lost.'}
-        confirmLabel="Reset"
-        confirmColor={Colors.warning}
-        onCancel={() => setResetConfirmVisible(false)}
-        onConfirm={handleResetConfirm}
-      />
+        {/* Reset All confirmation */}
+        <DeleteConfirmation
+          visible={resetConfirmVisible}
+          title="Reset All Tracks?"
+          message={'This will mark all tracks as unplayed, refilling all tag pools.\n\nCurrent session progress will be lost.'}
+          confirmLabel="Reset"
+          confirmColor={Colors.warning}
+          onCancel={() => setResetConfirmVisible(false)}
+          onConfirm={handleResetConfirm}
+        />
 
-      {/* Remove button confirmation */}
-      <DeleteConfirmation
-        visible={removeConfirmVisible}
-        title="Remove Button?"
-        message={`Remove '${selectedButton?.name || ''}' from the board? You can add it again later.`}
-        confirmLabel="Remove"
-        onCancel={() => {
-          setRemoveConfirmVisible(false);
-          setSelectedButton(null);
-        }}
-        onConfirm={handleRemoveConfirm}
-      />
-    </Animated.View>
+        {/* Remove button confirmation */}
+        <DeleteConfirmation
+          visible={removeConfirmVisible}
+          title="Remove Button?"
+          message={`Remove '${selectedButton?.name || ''}' from the board? You can add it again later.`}
+          confirmLabel="Remove"
+          onCancel={() => {
+            setRemoveConfirmVisible(false);
+            setSelectedButton(null);
+          }}
+          onConfirm={handleRemoveConfirm}
+        />
+      </Animated.View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  container: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,

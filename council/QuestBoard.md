@@ -21,7 +21,7 @@
 
 ## In Progress
 
-*None currently — awaiting HT Round 8*
+*None currently*
 
 ---
 
@@ -29,6 +29,8 @@
 
 ### 🪽 Seraphelle the Silver — UI/UX
 
+- [x] **HT-022: SafeArea Inset Collision** — ✅ Fixed (SafeAreaView wrap on all 3 Board screen containers)
+- [x] **HT-023: Tab Bar Bottom SafeArea** — ✅ Fixed (removed fixed height from tabBarStyle)
 - [x] **CR-17: Fix CountBadge NaN handling** — ✅ Fixed (`Number.isFinite(count)` guard added)
 - [ ] **CR-26: Add picker cancellation feedback** — Observe behavior in next HT round, then decide
 
