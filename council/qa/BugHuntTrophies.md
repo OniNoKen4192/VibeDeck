@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-01-11
+
+### HT-024: The Broken Promise
+**Severity:** High (UX failure)
+**Hunter:** Vaelthrix the Astral
+**Weapon:** Logic simplification
+
+"The music must flow." A principle carved into the architecture — when a tag pool runs dry, silently reset it and keep playing. The service layer honored this covenant. Deep in `selectTrackForTag()`, lines 94-97 detected exhaustion, reset the pool, and returned a fresh track.
+
+But the UI never let the message through.
+
+`BoardButton.tsx` calculated `isInteractive` with a fatal condition: `!isExhausted || isPlaying`. When exhausted and not playing, the button went deaf. Taps registered. The button even animated on press. But `handlePress` returned early, and `selectTrackForTag()` — with all its auto-reset wisdom — was never called.
+
+The service was ready. The UI blocked the door.
+
+```typescript
+// Before: gatekeeping the gatekeeper
+const isInteractive = !isDisabled && !isEmpty && (!isExhausted || isPlaying);
+
+// After: let the service decide
+const isInteractive = !isDisabled && !isEmpty;
+```
+
+The exhausted state still matters — it drives the visual styling (dashed border, reduced opacity, warning icon). But interactivity? That's the service layer's call. Empty buttons are truly dead. Exhausted buttons just need a reset.
+
+**Lesson:** When one layer makes a promise, don't let another layer break it. The UI should communicate state, not duplicate business logic.
+
+---
+
 ## 2026-01-10
 
 ### HT-022: The Invisible Header
@@ -350,7 +379,7 @@ await useButtonStore.getState().removeButtonsForTag(id);
 | Pyrrhaxis | 9 | 0 | 4 | 5 | 0 |
 | Seraphelle | 5 | 0 | 3 | 0 | 2 |
 | Kazzrath | 3 | 1 | 2 | 0 | 0 |
-| Vaelthrix | 2 | 0 | 2 | 0 | 0 |
+| Vaelthrix | 3 | 0 | 3 | 0 | 0 |
 | Chatterwind | 1 | 0 | 1 | 0 | 0 |
 | Wrixle | 1 | 0 | 1 | 0 | 0 |
 | Tarnoth | 1 | 0 | 1 | 0 | 0 |

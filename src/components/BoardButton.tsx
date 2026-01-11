@@ -62,9 +62,11 @@ export function BoardButton({
       ? Colors.textMuted
       : getButtonTextColor(backgroundColor);
 
-  // Empty and exhausted buttons should not accept presses for PLAY action.
-  // However, if button is currently playing, tap-to-stop must always work (HT-021).
-  const isInteractive = !isDisabled && !isEmpty && (!isExhausted || isPlaying);
+  // Empty buttons should not accept presses (no tracks to play).
+  // Exhausted buttons SHOULD accept presses — selectTrackForTag auto-resets the pool.
+  // "The music must flow" — tapping an exhausted button silently resets and plays.
+  // If button is currently playing, tap-to-stop must always work (HT-021).
+  const isInteractive = !isDisabled && !isEmpty;
 
   const handlePressIn = useCallback(() => {
     if (!isInteractive) return;

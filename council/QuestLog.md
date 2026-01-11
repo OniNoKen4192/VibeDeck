@@ -529,3 +529,14 @@
   - React Navigation now automatically handles bottom safe area padding
   - File modified: `app/(tabs)/_layout.tsx`
   - Archived handoff: [DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-10_HT-023-tabbar-safearea.md](council/archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-10_HT-023-tabbar-safearea.md)
+
+---
+
+## 2026-01-11
+
+- [x] **HT-024: Exhausted tag pool auto-reset not triggering** (Vaelthrix)
+  - Root cause: `BoardButton.isInteractive` was blocking presses on exhausted buttons
+  - The auto-reset logic in `selectTrackForTag()` was correct but never reached
+  - Fix: Changed `isInteractive` to allow exhausted (but not empty) buttons to be pressed
+  - "The music must flow" — tapping exhausted tag now silently resets pool and plays
+  - Files modified: `src/components/BoardButton.tsx`, `app/(tabs)/index.tsx`

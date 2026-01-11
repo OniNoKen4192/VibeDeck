@@ -207,11 +207,12 @@ export default function BoardScreen() {
       const result = await selectTrackForTag(button.tagId, markPlayed);
 
       if (!result.track) {
-        // Pool exhausted - shake the button and show feedback
-        console.log('[BoardScreen] Pool exhausted for tag:', button.tagId);
+        // This should rarely happen — selectTrackForTag auto-resets exhausted pools.
+        // Only triggers if tag truly has no tracks (caught by isEmpty above) or DB error.
+        console.error('[BoardScreen] No track returned for tag:', button.tagId, result);
         triggerShake(button.id);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        showToast('All tracks played. Use ⟳ to reset pools.', 'warning');
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        showToast('Could not select track. Try again.', 'error');
         return;
       }
 

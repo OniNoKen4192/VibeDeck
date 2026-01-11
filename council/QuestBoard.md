@@ -21,7 +21,7 @@
 
 ## In Progress
 
-*None currently*
+- [x] **HT-024: Exhausted tag pool auto-reset not triggering** (Vaelthrix) — ✅ Fixed
 
 ---
 
