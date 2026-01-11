@@ -42,3 +42,6 @@ nul
 # generated native folders
 /ios
 /android
+
+# native module build artifacts
+modules/**/android/build/
