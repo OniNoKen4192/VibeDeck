@@ -46,6 +46,9 @@ const FLATLIST_CONFIG = {
   windowSize: 5,
 };
 
+/** Sort modes for track list */
+type SortMode = 'recent' | 'az' | 'za';
+
 export default function LibraryScreen() {
   // Store connections
   const tracks = useTrackStore((state) => state.tracks);
@@ -63,6 +66,7 @@ export default function LibraryScreen() {
 
   // Local state
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortMode, setSortMode] = useState<SortMode>('recent');
   const [isImporting, setIsImporting] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(new Set());
@@ -121,12 +125,51 @@ export default function LibraryScreen() {
   }, [tracks, searchQuery]);
 
   /**
+   * Sort filtered tracks based on current sort mode.
+   */
+  const sortedTracks = useMemo(() => {
+    const sorted = [...filteredTracks];
+
+    switch (sortMode) {
+      case 'az':
+        return sorted.sort((a, b) => {
+          const titleA = (a.title || a.fileName).toLowerCase();
+          const titleB = (b.title || b.fileName).toLowerCase();
+          return titleA.localeCompare(titleB);
+        });
+      case 'za':
+        return sorted.sort((a, b) => {
+          const titleA = (a.title || a.fileName).toLowerCase();
+          const titleB = (b.title || b.fileName).toLowerCase();
+          return titleB.localeCompare(titleA);
+        });
+      case 'recent':
+      default:
+        // Already sorted by created_at DESC from database
+        return sorted;
+    }
+  }, [filteredTracks, sortMode]);
+
+  /**
    * Show a toast notification.
    */
   const showToast = useCallback((message: string, type: 'error' | 'warning' | 'success' | 'info' = 'info') => {
     setToastMessage(message);
     setToastType(type);
     setToastVisible(true);
+  }, []);
+
+  /**
+   * Cycle through sort modes: recent → az → za → recent
+   */
+  const handleSortChange = useCallback(() => {
+    setSortMode((prev) => {
+      switch (prev) {
+        case 'recent': return 'az';
+        case 'az': return 'za';
+        case 'za': return 'recent';
+      }
+    });
   }, []);
 
   /**
@@ -433,7 +476,12 @@ export default function LibraryScreen() {
           onCancel={handleCancelSelection}
         />
       ) : (
-        <LibraryHeader onImport={handleImport} isImporting={isImporting} />
+        <LibraryHeader
+          onImport={handleImport}
+          isImporting={isImporting}
+          sortMode={sortMode}
+          onSortChange={handleSortChange}
+        />
       )}
 
       {/* Search bar (hidden in selection mode for cleaner UX) */}
@@ -447,7 +495,7 @@ export default function LibraryScreen() {
 
       {/* Track list */}
       <FlatList
-        data={filteredTracks}
+        data={sortedTracks}
         renderItem={renderTrackRow}
         keyExtractor={keyExtractor}
         getItemLayout={getItemLayout}

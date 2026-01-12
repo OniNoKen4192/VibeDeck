@@ -6,6 +6,20 @@
 
 ## 1.1.0 Development
 
+### Track List Sorting — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_track-sorting.md)
+
+Added sort button to Library screen header. Users can cycle through three modes: Most Recent (default), A→Z, and Z→A. Uses `localeCompare()` for proper alphabetical sorting.
+
+**Changes:**
+- Added `SortMode` type and `sortMode` state to library.tsx
+- Created `sortedTracks` memo that applies sorting after filtering
+- Added sort button to `LibraryHeader` with cycling behavior
+- Icon changes to indicate current mode (clock, arrow-down, arrow-up)
+
+---
+
 ### Button Board Padding — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_board-padding.md)
