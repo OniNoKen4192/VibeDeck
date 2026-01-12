@@ -6,6 +6,21 @@
 
 ## 1.1.0 Development
 
+### Swipe to Change Tab — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_swipe-tabs.md)
+
+Replaced Expo Router's `Tabs` with `MaterialTopTabs` for swipe gesture support. Users can now swipe horizontally between Board, Library, and Tags screens. Custom bottom tab bar preserves existing UI.
+
+**Changes:**
+- Installed `@react-navigation/material-top-tabs` and `react-native-pager-view`
+- Replaced `Tabs` with `MaterialTopTabs` in `_layout.tsx` using `withLayoutContext`
+- Added custom `CustomTabBar` component positioned at bottom
+- Swipe gestures work between all three screens
+- Lazy loading enabled for performance
+
+---
+
 ### Color Picker for Buttons — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_color-picker.md)
