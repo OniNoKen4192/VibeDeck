@@ -6,6 +6,20 @@
 
 ## 1.1.0 Development
 
+### Volume Mute Toggle — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_volume-mute.md)
+
+Tap volume icon to toggle mute. Remembers previous volume for unmute restore.
+
+**Changes:**
+- Wrapped volume icon in Pressable with hitSlop for better touch target
+- Added `onMuteToggle` prop to PlaybackControls
+- Added `previousVolume` state and `handleMuteToggle` handler in BoardScreen
+- Haptic feedback on tap, dynamic accessibility label (Mute/Unmute)
+
+---
+
 ### Track List Sorting — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_track-sorting.md)

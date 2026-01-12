@@ -54,6 +54,7 @@ export default function BoardScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [playingButtonId, setPlayingButtonId] = useState<string | null>(null);
   const [localVolume, setLocalVolume] = useState(volume);
+  const [previousVolume, setPreviousVolume] = useState(50);
 
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
@@ -364,6 +365,27 @@ export default function BoardScreen() {
     await applyVolume(value);
   }, []);
 
+  /**
+   * Toggle mute: tap volume icon to mute/unmute
+   */
+  const handleMuteToggle = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    if (localVolume > 0) {
+      // Mute: save current volume, set to 0
+      setPreviousVolume(localVolume);
+      setLocalVolume(0);
+      await usePlayerStore.getState().setVolume(0);
+      applyVolume(0);
+    } else {
+      // Unmute: restore previous volume (or default 50)
+      const restoreVolume = previousVolume > 0 ? previousVolume : 50;
+      setLocalVolume(restoreVolume);
+      await usePlayerStore.getState().setVolume(restoreVolume);
+      applyVolume(restoreVolume);
+    }
+  }, [localVolume, previousVolume]);
+
   // Loading state
   if (isLoading) {
     return (
@@ -425,6 +447,7 @@ export default function BoardScreen() {
             onStop={handleStop}
             onPause={handlePause}
             onResume={handleResume}
+            onMuteToggle={handleMuteToggle}
             isPlaying={isPlaying}
             isPaused={isPaused}
           />

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Layout } from '../constants/layout';
@@ -40,6 +40,8 @@ interface PlaybackControlsProps {
   onPause: () => void;
   /** Called when resume is pressed */
   onResume: () => void;
+  /** Called when volume icon is tapped to toggle mute */
+  onMuteToggle: () => void;
   /** True if audio is currently playing */
   isPlaying?: boolean;
   /** True if paused (track loaded but not playing) */
@@ -53,6 +55,7 @@ export function PlaybackControls({
   onStop,
   onPause,
   onResume,
+  onMuteToggle,
   isPlaying = false,
   isPaused = false,
 }: PlaybackControlsProps) {
@@ -69,12 +72,18 @@ export function PlaybackControls({
         onResume={onResume}
         disabled={!hasTrack}
       />
-      <Ionicons
-        name={getVolumeIconName(volume)}
-        size={Layout.tabIconSize}
-        color={Colors.textSecondary}
-        accessibilityLabel={`Volume ${volume} percent`}
-      />
+      <Pressable
+        onPress={onMuteToggle}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        accessibilityRole="button"
+        accessibilityLabel={volume === 0 ? 'Unmute' : 'Mute'}
+      >
+        <Ionicons
+          name={getVolumeIconName(volume)}
+          size={Layout.tabIconSize}
+          color={Colors.textSecondary}
+        />
+      </Pressable>
       <View style={styles.sliderContainer}>
         <VolumeSlider
           value={volume}

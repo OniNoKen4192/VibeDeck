@@ -38,6 +38,7 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 3. ~~**Real-time volume slider**~~ — Complete. Polished by Seraphelle 2026-01-11.
 4. ~~**Button board padding**~~ — Complete. Polished by Seraphelle 2026-01-11.
 5. ~~**Track list sorting**~~ — Complete. Polished by Seraphelle 2026-01-11.
+6. ~~**Volume mute toggle**~~ — Complete. Polished by Seraphelle 2026-01-11.
 
 ---
 
@@ -53,7 +54,6 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 
 | Feature | Category | Complexity | Notes |
 |---------|----------|------------|-------|
-| Tap volume icon to mute | UX | Low | |
 | Gear → Hamburger icon | UX | Low | Rename screen to "About" |
 | Color picker for buttons | UX | Medium | Persisted buttons only |
 | Swipe to change tab | UX | Medium | |
