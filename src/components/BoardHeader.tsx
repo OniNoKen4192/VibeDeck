@@ -1,6 +1,6 @@
 /**
  * @file components/BoardHeader.tsx
- * @description Header component for the Board screen with title, reset, and settings icons.
+ * @description Header component for the Board screen with title, reset, and about icons.
  * @see docs/UI_DESIGN.md §Board Screen Header
  */
 
@@ -13,11 +13,11 @@ import { Layout } from '../constants/layout';
 interface BoardHeaderProps {
   /** Called when the reset button is pressed */
   onResetPress: () => void;
-  /** Called when the settings button is pressed */
-  onSettingsPress: () => void;
+  /** Called when the about button is pressed */
+  onAboutPress: () => void;
 }
 
-export function BoardHeader({ onResetPress, onSettingsPress }: BoardHeaderProps) {
+export function BoardHeader({ onResetPress, onAboutPress }: BoardHeaderProps) {
   return (
     <View style={styles.header}>
       <Text style={styles.title}>VibeDeck</Text>
@@ -38,11 +38,11 @@ export function BoardHeader({ onResetPress, onSettingsPress }: BoardHeaderProps)
             styles.iconButton,
             pressed && styles.iconButtonPressed,
           ]}
-          onPress={onSettingsPress}
+          onPress={onAboutPress}
           accessibilityRole="button"
-          accessibilityLabel="Open settings and about"
+          accessibilityLabel="Open about screen"
         >
-          <FontAwesome name="cog" size={24} color={Colors.textSecondary} />
+          <FontAwesome name="bars" size={24} color={Colors.textSecondary} />
         </Pressable>
       </View>
     </View>

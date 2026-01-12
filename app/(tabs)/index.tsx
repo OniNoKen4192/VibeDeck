@@ -315,9 +315,9 @@ export default function BoardScreen() {
   }, [refreshButtons, showToast]);
 
   /**
-   * Handle settings/about request from header
+   * Handle about screen request from header
    */
-  const handleSettingsPress = useCallback(() => {
+  const handleAboutPress = useCallback(() => {
     setAboutVisible(true);
   }, []);
 
@@ -404,7 +404,7 @@ export default function BoardScreen() {
         <StatusBar style="light" />
         <BoardHeader
           onResetPress={handleResetRequest}
-          onSettingsPress={handleSettingsPress}
+          onAboutPress={handleAboutPress}
         />
         <View style={styles.emptyContent}>
           <View style={styles.emptyIconContainer}>
@@ -430,7 +430,7 @@ export default function BoardScreen() {
         <StatusBar style="light" />
         <BoardHeader
           onResetPress={handleResetRequest}
-          onSettingsPress={handleSettingsPress}
+          onAboutPress={handleAboutPress}
         />
         <ButtonBoard
           buttons={buttons}

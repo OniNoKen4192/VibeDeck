@@ -6,6 +6,20 @@
 
 ## 1.1.0 Development
 
+### Hamburger Icon — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_hamburger-icon.md)
+
+Changed gear/cog icon to hamburger menu icon. Renamed "Settings" references to "About" for semantic clarity.
+
+**Changes:**
+- Changed icon from `cog` to `bars` in BoardHeader
+- Renamed `onSettingsPress` prop to `onAboutPress`
+- Updated accessibility label to "Open about screen"
+- Renamed handler in BoardScreen accordingly
+
+---
+
 ### Volume Mute Toggle — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_volume-mute.md)

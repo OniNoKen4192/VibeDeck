@@ -39,6 +39,7 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 4. ~~**Button board padding**~~ — Complete. Polished by Seraphelle 2026-01-11.
 5. ~~**Track list sorting**~~ — Complete. Polished by Seraphelle 2026-01-11.
 6. ~~**Volume mute toggle**~~ — Complete. Polished by Seraphelle 2026-01-11.
+7. ~~**Hamburger icon**~~ — Complete. Polished by Seraphelle 2026-01-11.
 
 ---
 
@@ -54,7 +55,6 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 
 | Feature | Category | Complexity | Notes |
 |---------|----------|------------|-------|
-| Gear → Hamburger icon | UX | Low | Rename screen to "About" |
 | Color picker for buttons | UX | Medium | Persisted buttons only |
 | Swipe to change tab | UX | Medium | |
 | Rename Track | Track Mgmt | Low | |
