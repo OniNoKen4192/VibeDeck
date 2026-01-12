@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Layout } from '../constants/layout';
 import { StopButton } from './StopButton';
+import { PlayPauseButton } from './PlayPauseButton';
 import { VolumeSlider } from './VolumeSlider';
 
 /**
@@ -35,8 +36,14 @@ interface PlaybackControlsProps {
   onVolumeChangeComplete?: (value: number) => void;
   /** Called when stop is pressed */
   onStop: () => void;
+  /** Called when pause is pressed */
+  onPause: () => void;
+  /** Called when resume is pressed */
+  onResume: () => void;
   /** True if audio is currently playing */
   isPlaying?: boolean;
+  /** True if paused (track loaded but not playing) */
+  isPaused?: boolean;
 }
 
 export function PlaybackControls({
@@ -44,11 +51,24 @@ export function PlaybackControls({
   onVolumeChange,
   onVolumeChangeComplete,
   onStop,
+  onPause,
+  onResume,
   isPlaying = false,
+  isPaused = false,
 }: PlaybackControlsProps) {
+  // Stop and PlayPause are enabled when playing OR paused (track is loaded)
+  const hasTrack = isPlaying || isPaused;
+
   return (
     <View style={styles.container}>
-      <StopButton onPress={onStop} disabled={!isPlaying} />
+      <StopButton onPress={onStop} disabled={!hasTrack} />
+      <PlayPauseButton
+        isPlaying={isPlaying}
+        isPaused={isPaused}
+        onPause={onPause}
+        onResume={onResume}
+        disabled={!hasTrack}
+      />
       <Ionicons
         name={getVolumeIconName(volume)}
         size={Layout.tabIconSize}

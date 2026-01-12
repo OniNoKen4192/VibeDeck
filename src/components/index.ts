@@ -14,6 +14,7 @@ export { TypeIndicator } from './TypeIndicator';
 // Playback components
 export { PlaybackControls } from './PlaybackControls';
 export { StopButton } from './StopButton';
+export { PlayPauseButton } from './PlayPauseButton';
 export { VolumeSlider } from './VolumeSlider';
 export { NowPlaying } from './NowPlaying';
 

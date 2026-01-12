@@ -302,6 +302,11 @@ export async function pause(): Promise<void> {
     await TrackPlayer.pause();
   } catch (error) {
     console.error('Error pausing:', error);
+    onPlaybackError?.({
+      code: 'playback_error',
+      userMessage: 'Failed to pause playback. Please try again.',
+      details: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 
@@ -317,6 +322,11 @@ export async function resume(): Promise<void> {
     await TrackPlayer.play();
   } catch (error) {
     console.error('Error resuming:', error);
+    onPlaybackError?.({
+      code: 'playback_error',
+      userMessage: 'Failed to resume playback. Please try again.',
+      details: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 

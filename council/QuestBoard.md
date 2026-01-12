@@ -7,80 +7,102 @@
 
 ## Project State
 
-**Human Test Ready:** ✅ MVP Feature Complete — HT Round 8 PASSED (HT-020, HT-021 verified)
+**Current Version:** 1.0.2 — SHIPPED
+**Next Version:** 1.1.0 — In Development
+**Status:** 1.1.0 development active
 
-**Build Status:** ✅ SUCCESS — Development build working (Old Architecture, no reanimated/worklets)
+---
+
+## 1.0 Summary
+
+VibeDeck 1.0 is complete. Core features delivered:
+- Tag-based button board with random track selection
+- Direct buttons for specific tracks
+- Auto-reset exhausted pools ("the music must flow")
+- SAF persistent permissions for track survival across restarts
+- Pin/unpin buttons, Reset All function
+- Offline-only architecture (no network calls, ever)
+
+**Final Stats:** 24 HT bugs fixed, 65 code review issues triaged, 9 human testing rounds passed.
+
+See [docs/1.0_LessonsLearned.md](../docs/1.0_LessonsLearned.md) for retrospective.
 
 ---
 
 ## Priority Order
 
-1. **Code Review Phase 2** — ✅ COMPLETE (all High severity items resolved or shelved)
+See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
+
+1. ~~**Background playback**~~ — Already works! Verified 2026-01-11.
+2. ~~**Pause/Play button**~~ — Complete. Forged by Pyrrhaxis 2026-01-11.
+3. **Real-time volume slider** — Quick win from live fire.
+4. **Button board padding** — UX polish.
 
 ---
 
 ## In Progress
 
-- [x] **HT-024: Exhausted tag pool auto-reset not triggering** (Vaelthrix) — ✅ Fixed
+| Quest | Dragon | Handoff |
+|-------|--------|---------|
+| Real-time volume slider | Seraphelle | [HANDOFF](handoffs/HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_realtime-volume.md) |
 
 ---
 
 ## Pending
 
-### 🪽 Seraphelle the Silver — UI/UX
+### 1.1.0 Features
 
-- [x] **HT-022: SafeArea Inset Collision** — ✅ Fixed (SafeAreaView wrap on all 3 Board screen containers)
-- [x] **HT-023: Tab Bar Bottom SafeArea** — ✅ Fixed (removed fixed height from tabBarStyle)
-- [x] **CR-17: Fix CountBadge NaN handling** — ✅ Fixed (`Number.isFinite(count)` guard added)
-- [ ] **CR-26: Add picker cancellation feedback** — Observe behavior in next HT round, then decide
+| Feature | Category | Complexity | Notes |
+|---------|----------|------------|-------|
+| Real-time volume slider | UX | Low | Live fire: throttled onValueChange |
+| Button board padding | UX | Low | Live fire: prevent bottom row occlusion |
+| Track list sorting | UX | Low | Most recent, alphabetical |
+| Tap volume icon to mute | UX | Low | |
+| Gear → Hamburger icon | UX | Low | Rename screen to "About" |
+| Color picker for buttons | UX | Medium | Persisted buttons only |
+| Swipe to change tab | UX | Medium | |
+| Rename Track | Track Mgmt | Low | |
+| Track start/end time | Track Mgmt | Medium | Unified slider UI |
+| Per-track volume | Track Mgmt | Medium | |
 
-### 🔴 Pyrrhaxis the Crimson — Code
+### Stretch (may punt to 1.2)
 
-#### Phase 2: High Severity (After HT Bug Fixes)
+| Feature | Category | Complexity |
+|---------|----------|------------|
+| Full directory import | Import | Medium |
+| Utilities screen | Maintenance | Medium |
 
-- [x] **CR-09: Complete path traversal defense** — ✅ Fixed (URL decode + backslash normalization)
-- [x] **CR-12: Disable exhausted button presses** — ✅ Fixed in BoardButton.tsx (isInteractive logic)
-- [x] **CR-16: Fix VolumeSlider division by zero** — ✅ Fixed (sliderWidth === 0 guard)
-- [x] **CR-18: Debounce VolumeSlider** — ✅ Fixed (16ms throttle implemented)
+### Deferred from 1.0
 
-### 🟡 Chatterwind the Brass — Safety
-
-- [x] **Review path traversal fix** — ✅ CR-09 APPROVED (defense complete for threat model)
-- [x] **Audit error message exposure** — ✅ CR-27 APPROVED (low risk, user-friendly messages)
-
-### 🟤 Wrixle the Copper — Documentation
-
-- [x] **Document transaction patterns** — Created [docs/DATABASE.md](../docs/DATABASE.md)
-- [x] **Update store JSDoc** — Added cross-store refresh, optimistic update, and validation documentation
-
-### 🟠 Tarnoth the Bronze — DevOps & Tooling
-
-- [x] **Configure automated test framework** — ✅ Jest + React Native Testing Library configured
+| Item | Reason |
+|------|--------|
+| CR-26: Picker cancellation feedback | Observe in field use |
+| Medium/Low severity code review items | Non-blocking |
+| React Native New Architecture | Awaiting track-player support |
 
 ---
 
 ## Code Review Reference
 
-All issues tracked in [CODE_REVIEW.md](qa/CODE_REVIEW.md).
+Phase 2 complete. Remaining items are Medium/Low severity, deferred to future releases.
 
-| Severity | Count | Fixed | Remaining |
-|----------|-------|-------|-----------|
-| Critical | 8 | 8 | 0 |
-| High | 15 | 6 | 9 |
-| Medium | 15 | 1 | 14 |
-| Low | 8 | 0 | 8 |
-
-**Note:** 3 new issues (CR-44, CR-45, CR-46) added from re-review. CR-44 deferred (cosmetic count issue).
+See [CODE_REVIEW.md](qa/CODE_REVIEW.md) for full issue list.
 
 ---
 
 ## Notes
 
-- All critical issues resolved
-- MVP features complete — HT Round 8 PASSED
-- HT-016 (duplicate direct buttons) — Intentionally allowed, not a bug
-- HT-018 architectural decision: Use SAF persistent URI permissions (native module), not file copying
-- HT-018/019/020/021 verified — SAF permissions, empty button identity, exhausted button fix complete
-- CR-12/16/18 found already fixed during Phase 2 review (2026-01-09)
-- CR-10 moved to [stretchGoals.md](../docs/stretchGoals.md) — bundled with background playback
-- Reference: [CODE_REVIEW.md](qa/CODE_REVIEW.md), [REMEDIATION_PLAN.md](qa/REMEDIATION_PLAN.md)
+- 1.1.0 is the first public release (1.0.x was private MVP)
+- Background playback already works (react-native-track-player handles it)
+- Live fire learnings from 2026-01-11 Lady Kraken vs Winter Club game
+- Native module `expo-saf-uri-permission` handles Android SAF permissions
+- Test framework configured (Jest + RNTL) but test coverage is minimal
+
+---
+
+## References
+
+- [StretchGoals.md](../docs/StretchGoals.md) — Future feature ideas
+- [1.0_LessonsLearned.md](../docs/1.0_LessonsLearned.md) — 1.0 retrospective
+- [BugHuntTrophies.md](qa/BugHuntTrophies.md) — Bug stories and lessons
+- [CODE_REVIEW.md](qa/CODE_REVIEW.md) — Code review tracking

@@ -30,6 +30,8 @@ import { useTrackStore } from '../../src/stores/useTrackStore';
 import {
   playTrack,
   stop as playerStop,
+  pause as playerPause,
+  resume as playerResume,
   applyVolume,
   registerPlaybackStateCallback,
   registerPlaybackErrorCallback,
@@ -328,6 +330,25 @@ export default function BoardScreen() {
   }, []);
 
   /**
+   * Handle pause button press
+   */
+  const handlePause = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await playerPause();
+  }, []);
+
+  /**
+   * Handle resume button press
+   */
+  const handleResume = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await playerResume();
+  }, []);
+
+  // Derive isPaused: track is loaded but not playing
+  const isPaused = currentTrack !== null && !isPlaying;
+
+  /**
    * Handle volume change during sliding (local state only for responsiveness)
    */
   const handleVolumeChange = useCallback((value: number) => {
@@ -401,7 +422,10 @@ export default function BoardScreen() {
             onVolumeChange={handleVolumeChange}
             onVolumeChangeComplete={handleVolumeChangeComplete}
             onStop={handleStop}
+            onPause={handlePause}
+            onResume={handleResume}
             isPlaying={isPlaying}
+            isPaused={isPaused}
           />
           <NowPlaying track={currentTrack} isPlaying={isPlaying} />
         </ButtonBoard>
