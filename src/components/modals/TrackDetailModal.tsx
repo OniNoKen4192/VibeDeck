@@ -9,6 +9,7 @@ import {
   Modal,
   View,
   Text,
+  TextInput,
   Pressable,
   StyleSheet,
   ScrollView,
@@ -42,6 +43,8 @@ interface TrackDetailModalProps {
   onAddToBoard: (track: Track) => void;
   /** Called when track is deleted */
   onDelete: (track: Track) => void;
+  /** Called when track metadata is renamed */
+  onRename: (trackId: string, updates: { title?: string; artist?: string | null }) => void;
   /** Optional test ID */
   testID?: string;
 }
@@ -57,15 +60,32 @@ export function TrackDetailModal({
   onPreview,
   onAddToBoard,
   onDelete,
+  onRename,
   testID,
 }: TrackDetailModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
 
+  // Edit state for inline title/artist editing
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingArtist, setIsEditingArtist] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editArtist, setEditArtist] = useState('');
+
   // Sync selected tags when track or trackTags change
   useEffect(() => {
     setSelectedTagIds(new Set(trackTags.map((t) => t.id)));
   }, [trackTags]);
+
+  // Initialize edit values when track changes
+  useEffect(() => {
+    if (track) {
+      setEditTitle(track.title || track.fileName);
+      setEditArtist(track.artist || '');
+      setIsEditingTitle(false);
+      setIsEditingArtist(false);
+    }
+  }, [track]);
 
   const handleToggleTag = useCallback(
     (tagId: string) => {
@@ -95,6 +115,30 @@ export function TrackDetailModal({
     onClose();
     onDelete(track);
   }, [track, onClose, onDelete]);
+
+  const handleSaveTitle = useCallback(() => {
+    setIsEditingTitle(false);
+    if (!track) return;
+    const newTitle = editTitle.trim();
+    // Don't allow empty title - revert to fileName
+    if (!newTitle) {
+      setEditTitle(track.title || track.fileName);
+      return;
+    }
+    if (newTitle !== track.title) {
+      onRename(track.id, { title: newTitle });
+    }
+  }, [editTitle, track, onRename]);
+
+  const handleSaveArtist = useCallback(() => {
+    setIsEditingArtist(false);
+    if (!track) return;
+    const newArtist = editArtist.trim();
+    // Empty string becomes null in database
+    if (newArtist !== (track.artist || '')) {
+      onRename(track.id, { artist: newArtist || null });
+    }
+  }, [editArtist, track, onRename]);
 
   if (!track) return null;
 
@@ -138,10 +182,48 @@ export function TrackDetailModal({
                   style={styles.musicIcon}
                 />
                 <View style={styles.trackDetails}>
-                  <Text style={styles.title} numberOfLines={2}>
-                    {displayTitle}
-                  </Text>
-                  <Text style={styles.artist}>{displayArtist}</Text>
+                  {isEditingTitle ? (
+                    <TextInput
+                      style={styles.titleInput}
+                      value={editTitle}
+                      onChangeText={setEditTitle}
+                      onBlur={handleSaveTitle}
+                      onSubmitEditing={handleSaveTitle}
+                      autoFocus
+                      selectTextOnFocus
+                      returnKeyType="done"
+                    />
+                  ) : (
+                    <Pressable onPress={() => setIsEditingTitle(true)}>
+                      <View style={styles.editableRow}>
+                        <Text style={styles.title} numberOfLines={2}>
+                          {displayTitle}
+                        </Text>
+                        <FontAwesome name="pencil" size={12} color={Colors.textMuted} style={styles.editIcon} />
+                      </View>
+                    </Pressable>
+                  )}
+                  {isEditingArtist ? (
+                    <TextInput
+                      style={styles.artistInput}
+                      value={editArtist}
+                      onChangeText={setEditArtist}
+                      onBlur={handleSaveArtist}
+                      onSubmitEditing={handleSaveArtist}
+                      autoFocus
+                      selectTextOnFocus
+                      placeholder="Unknown Artist"
+                      placeholderTextColor={Colors.textMuted}
+                      returnKeyType="done"
+                    />
+                  ) : (
+                    <Pressable onPress={() => setIsEditingArtist(true)}>
+                      <View style={styles.editableRow}>
+                        <Text style={styles.artist}>{displayArtist}</Text>
+                        <FontAwesome name="pencil" size={10} color={Colors.textMuted} style={styles.editIcon} />
+                      </View>
+                    </Pressable>
+                  )}
                   <Text style={styles.duration}>{displayDuration}</Text>
                 </View>
               </View>
@@ -276,15 +358,43 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.text,
     marginBottom: 4,
+    flex: 1,
   },
   artist: {
     fontSize: 14,
     color: Colors.textSecondary,
     marginBottom: 2,
+    flex: 1,
   },
   duration: {
     fontSize: 12,
     color: Colors.textMuted,
+  },
+  editableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editIcon: {
+    marginLeft: 6,
+  },
+  titleInput: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text,
+    backgroundColor: Colors.surfaceLight,
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 4,
+  },
+  artistInput: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    backgroundColor: Colors.surfaceLight,
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 2,
   },
   divider: {
     height: 1,

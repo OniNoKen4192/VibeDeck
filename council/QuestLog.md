@@ -6,6 +6,20 @@
 
 ## 1.1.0 Development
 
+### Rename Track — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_rename-track.md)
+
+Added inline editing for track title and artist in the TrackDetailModal. Tap the pencil icon to edit, blur or submit to save.
+
+**Changes:**
+- Added edit state and TextInput for title/artist in TrackDetailModal
+- Added `onRename` prop to pass updates to parent
+- Added `handleRenameTrack` handler in library.tsx using `updateTrack` store action
+- Pencil icon hints at editability, empty title reverts to fileName
+
+---
+
 ### Hamburger Icon — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_hamburger-icon.md)

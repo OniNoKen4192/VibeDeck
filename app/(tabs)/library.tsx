@@ -383,6 +383,22 @@ export default function LibraryScreen() {
   }, [deleteTrack, showToast, isPreviewPlaying]);
 
   /**
+   * Handle track rename (title/artist update).
+   */
+  const handleRenameTrack = useCallback(async (
+    trackId: string,
+    updates: { title?: string; artist?: string | null }
+  ) => {
+    try {
+      await useTrackStore.getState().updateTrack(trackId, updates);
+      showToast('Track updated', 'success');
+    } catch (err) {
+      console.error('[LibraryScreen] Rename track failed:', err);
+      showToast('Failed to update track', 'error');
+    }
+  }, [showToast]);
+
+  /**
    * Close detail modal.
    */
   const handleCloseDetail = useCallback(() => {
@@ -527,6 +543,7 @@ export default function LibraryScreen() {
         onPreview={handlePreview}
         onAddToBoard={handleAddToBoard}
         onDelete={handleDeleteTrack}
+        onRename={handleRenameTrack}
       />
 
       {/* Bulk tag modal */}
