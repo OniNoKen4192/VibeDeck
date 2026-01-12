@@ -20,6 +20,18 @@ import { Colors } from '../constants/colors';
 import { Layout } from '../constants/layout';
 import type { ButtonResolved } from '../types';
 
+/** Human-readable color names for accessibility labels */
+const COLOR_NAMES: Record<string, string> = {
+  '#ef4444': 'red',
+  '#f97316': 'orange',
+  '#eab308': 'yellow',
+  '#22c55e': 'green',
+  '#14b8a6': 'teal',
+  '#3b82f6': 'blue',
+  '#8b5cf6': 'violet',
+  '#ec4899': 'pink',
+};
+
 interface ButtonContextMenuProps {
   /** Whether the menu is visible */
   visible: boolean;
@@ -29,6 +41,8 @@ interface ButtonContextMenuProps {
   onClose: () => void;
   /** Called when pin/unpin is pressed */
   onTogglePin: (button: ButtonResolved) => void;
+  /** Called when color is changed (null = reset to default) */
+  onChangeColor: (button: ButtonResolved, color: string | null) => void;
   /** Called when remove is pressed */
   onRemove: (button: ButtonResolved) => void;
 }
@@ -41,6 +55,7 @@ export function ButtonContextMenu({
   button,
   onClose,
   onTogglePin,
+  onChangeColor,
   onRemove,
 }: ButtonContextMenuProps) {
   const insets = useSafeAreaInsets();
@@ -80,6 +95,13 @@ export function ButtonContextMenu({
       onRemove(button);
     }
     // Don't auto-close — let the parent show confirmation dialog
+  };
+
+  const handleColorSelect = (color: string | null) => {
+    if (button) {
+      onChangeColor(button, color);
+    }
+    handleOverlayPress(); // Close menu
   };
 
   if (!button) return null;
@@ -128,6 +150,38 @@ export function ButtonContextMenu({
               {isPinned ? 'Unpin from Board' : 'Pin to Board'}
             </Text>
           </Pressable>
+
+          {/* Change Color section */}
+          <View style={styles.colorSection}>
+            <View style={styles.colorHeader}>
+              <FontAwesome name="paint-brush" size={20} color={Colors.text} />
+              <Text style={styles.menuText}>Change Color</Text>
+            </View>
+            <View style={styles.colorSwatches}>
+              {Colors.tagColors.map((color) => (
+                <Pressable
+                  key={color}
+                  style={[
+                    styles.swatch,
+                    { backgroundColor: color },
+                    button.displayColor === color && styles.swatchSelected,
+                  ]}
+                  onPress={() => handleColorSelect(color)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Select ${COLOR_NAMES[color] || color}`}
+                />
+              ))}
+              {/* Reset to default */}
+              <Pressable
+                style={[styles.swatch, styles.resetSwatch]}
+                onPress={() => handleColorSelect(null)}
+                accessibilityRole="button"
+                accessibilityLabel="Reset to default color"
+              >
+                <FontAwesome name="times" size={14} color={Colors.textSecondary} />
+              </Pressable>
+            </View>
+          </View>
 
           {/* Remove row */}
           <Pressable
@@ -195,5 +249,35 @@ const styles = StyleSheet.create({
   },
   pinnedIcon: {
     transform: [{ rotate: '45deg' }],
+  },
+  colorSection: {
+    marginBottom: Layout.spacing.sm,
+  },
+  colorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 44,
+    paddingHorizontal: Layout.spacing.lg,
+    gap: 12,
+  },
+  colorSwatches: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: Layout.spacing.lg,
+    gap: 8,
+  },
+  swatch: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  swatchSelected: {
+    borderWidth: 3,
+    borderColor: Colors.text,
+  },
+  resetSwatch: {
+    backgroundColor: Colors.surfaceLight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

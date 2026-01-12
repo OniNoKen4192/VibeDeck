@@ -41,12 +41,15 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 6. ~~**Volume mute toggle**~~ — Complete. Polished by Seraphelle 2026-01-11.
 7. ~~**Hamburger icon**~~ — Complete. Polished by Seraphelle 2026-01-11.
 8. ~~**Rename Track**~~ — Complete. Polished by Seraphelle 2026-01-11.
+9. ~~**Color picker for buttons**~~ — Complete. Polished by Seraphelle 2026-01-11.
 
 ---
 
 ## In Progress
 
-*No active quests*
+| Quest | Dragon | Handoff |
+|-------|--------|---------|
+| *None* | — | — |
 
 ---
 
@@ -56,7 +59,6 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 
 | Feature | Category | Complexity | Notes |
 |---------|----------|------------|-------|
-| Color picker for buttons | UX | Medium | Persisted buttons only |
 | Swipe to change tab | UX | Medium | |
 | Track start/end time | Track Mgmt | Medium | Unified slider UI |
 | Per-track volume | Track Mgmt | Medium | |

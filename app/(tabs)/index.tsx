@@ -266,6 +266,23 @@ export default function BoardScreen() {
   }, [updateButton, refreshButtons, showToast]);
 
   /**
+   * Handle change button color from context menu
+   */
+  const handleChangeButtonColor = useCallback(async (
+    button: ButtonResolved,
+    color: string | null
+  ) => {
+    try {
+      await updateButton(button.id, { color });
+      await refreshButtons();
+      showToast(color ? 'Color updated' : 'Color reset', 'success');
+    } catch (err) {
+      console.error('[BoardScreen] Failed to change color:', err);
+      showToast('Failed to update color', 'error');
+    }
+  }, [updateButton, refreshButtons, showToast]);
+
+  /**
    * Handle remove button request from context menu
    */
   const handleRemoveRequest = useCallback((button: ButtonResolved) => {
@@ -469,6 +486,7 @@ export default function BoardScreen() {
           button={selectedButton}
           onClose={() => setContextMenuVisible(false)}
           onTogglePin={handleTogglePin}
+          onChangeColor={handleChangeButtonColor}
           onRemove={handleRemoveRequest}
         />
 

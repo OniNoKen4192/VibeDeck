@@ -6,6 +6,21 @@
 
 ## 1.1.0 Development
 
+### Color Picker for Buttons — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_color-picker.md)
+
+Added inline color swatches to the ButtonContextMenu. Long-press any button to access the context menu, then tap a color swatch to apply. Includes reset option (×) to revert to tag/default color.
+
+**Changes:**
+- Added `onChangeColor` prop to ButtonContextMenu
+- Added 8 color swatches from `Colors.tagColors` plus reset swatch
+- Added `handleChangeButtonColor` handler in BoardScreen using `updateButton` store action
+- Selected color shows white border indicator
+- Accessible color names for screen readers
+
+---
+
 ### Rename Track — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_rename-track.md)
