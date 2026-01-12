@@ -6,6 +6,18 @@
 
 ## 1.1.0 Development
 
+### Real-time Volume Slider — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_realtime-volume.md)
+
+Live fire learning from Lady Kraken game — volume slider only affected audio on release, not during drag. Added `applyVolume()` call to the drag handler for real-time volume control during fades.
+
+**Changes:**
+- Updated `handleVolumeChange` in BoardScreen to call `applyVolume()` during slider drag
+- VolumeSlider already throttles to 16ms, so no additional throttling needed
+
+---
+
 ### Pause/Play Button — 2026-01-11
 **Dragon:** Pyrrhaxis the Red
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Pyrrhaxis_2026-01-11_pause-play-button.md)

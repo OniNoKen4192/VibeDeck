@@ -349,10 +349,11 @@ export default function BoardScreen() {
   const isPaused = currentTrack !== null && !isPlaying;
 
   /**
-   * Handle volume change during sliding (local state only for responsiveness)
+   * Handle volume change during sliding - update UI and apply to player in real-time
    */
   const handleVolumeChange = useCallback((value: number) => {
     setLocalVolume(value);
+    applyVolume(value);
   }, []);
 
   /**
