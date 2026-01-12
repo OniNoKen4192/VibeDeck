@@ -236,6 +236,8 @@ interface ButtonResolvedRow {
   track_album: string | null;
   track_genre: string | null;
   track_duration_ms: number | null;
+  track_start_time_ms: number | null;
+  track_end_time_ms: number | null;
   track_played: number | null;
   track_created_at: string | null;
   track_updated_at: string | null;
@@ -275,6 +277,8 @@ export async function getAllButtonsResolved(): Promise<ButtonResolvedRow[]> {
       tr.album as track_album,
       tr.genre as track_genre,
       tr.duration_ms as track_duration_ms,
+      tr.start_time_ms as track_start_time_ms,
+      tr.end_time_ms as track_end_time_ms,
       tr.played as track_played,
       tr.created_at as track_created_at,
       tr.updated_at as track_updated_at,
@@ -352,6 +356,8 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
         album: row.track_album,
         genre: row.track_genre,
         durationMs: row.track_duration_ms,
+        startTimeMs: row.track_start_time_ms,
+        endTimeMs: row.track_end_time_ms,
         played: row.track_played === 1,
         createdAt: row.track_created_at!,
         updatedAt: row.track_updated_at!,

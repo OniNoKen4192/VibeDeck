@@ -399,6 +399,31 @@ export default function LibraryScreen() {
   }, [showToast]);
 
   /**
+   * Handle cue point updates (start/end time).
+   */
+  const handleUpdateCuePoints = useCallback(async (
+    trackId: string,
+    startMs: number | null,
+    endMs: number | null
+  ) => {
+    try {
+      await useTrackStore.getState().updateTrack(trackId, {
+        startTimeMs: startMs,
+        endTimeMs: endMs,
+      });
+      // Update detailTrack state to reflect changes immediately
+      setDetailTrack((prev) =>
+        prev?.id === trackId
+          ? { ...prev, startTimeMs: startMs, endTimeMs: endMs }
+          : prev
+      );
+    } catch (err) {
+      console.error('[LibraryScreen] Update cue points failed:', err);
+      showToast('Failed to update cue points', 'error');
+    }
+  }, [showToast]);
+
+  /**
    * Close detail modal.
    */
   const handleCloseDetail = useCallback(() => {
@@ -544,6 +569,7 @@ export default function LibraryScreen() {
         onAddToBoard={handleAddToBoard}
         onDelete={handleDeleteTrack}
         onRename={handleRenameTrack}
+        onUpdateCuePoints={handleUpdateCuePoints}
       />
 
       {/* Bulk tag modal */}

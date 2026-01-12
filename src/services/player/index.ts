@@ -130,6 +130,8 @@ export async function initializePlayer(): Promise<boolean> {
       android: {
         appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
       },
+      // Enable progress updates for cue point monitoring (every 500ms)
+      progressUpdateEventInterval: 0.5,
     });
 
     // Register event listeners
@@ -273,6 +275,11 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
 
     // Store reference to our Track object
     currentTrackRef = track;
+
+    // Seek to start time if set (before playing to avoid brief audio from 0)
+    if (track.startTimeMs && track.startTimeMs > 0) {
+      await TrackPlayer.seekTo(track.startTimeMs / 1000);
+    }
 
     // Start playback
     await TrackPlayer.play();
@@ -506,7 +513,24 @@ function registerEventListeners(): void {
     }
   );
 
-  eventSubscriptions = [stateSubscription, queueEndedSubscription, errorSubscription];
+  // Progress updates for cue point end-time monitoring
+  const progressSubscription = TrackPlayer.addEventListener(
+    Event.PlaybackProgressUpdated,
+    async (event) => {
+      const track = currentTrackRef;
+      if (track?.endTimeMs) {
+        const currentMs = event.position * 1000;
+        // Stop playback when we reach or exceed the end time (with small tolerance)
+        if (currentMs >= track.endTimeMs - 250) {
+          await TrackPlayer.reset();
+          currentTrackRef = null;
+          onPlaybackStateChange?.(false, null);
+        }
+      }
+    }
+  );
+
+  eventSubscriptions = [stateSubscription, queueEndedSubscription, errorSubscription, progressSubscription];
 }
 
 /**

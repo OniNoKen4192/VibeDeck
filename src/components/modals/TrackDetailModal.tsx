@@ -18,6 +18,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
 import { Layout } from '../../constants/layout';
 import { TagChipPicker } from './TagChipPicker';
+import { CuePointEditor } from './CuePointEditor';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import { formatDuration } from '../../utils/time';
 import type { Track, Tag } from '../../types';
@@ -45,6 +46,8 @@ interface TrackDetailModalProps {
   onDelete: (track: Track) => void;
   /** Called when track metadata is renamed */
   onRename: (trackId: string, updates: { title?: string; artist?: string | null }) => void;
+  /** Called when cue points are updated */
+  onUpdateCuePoints: (trackId: string, startMs: number | null, endMs: number | null) => void;
   /** Optional test ID */
   testID?: string;
 }
@@ -61,6 +64,7 @@ export function TrackDetailModal({
   onAddToBoard,
   onDelete,
   onRename,
+  onUpdateCuePoints,
   testID,
 }: TrackDetailModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -237,6 +241,19 @@ export function TrackDetailModal({
                   allTags={allTags}
                   selectedTagIds={selectedTagIds}
                   onToggle={handleToggleTag}
+                />
+              </View>
+
+              <View style={styles.divider} />
+
+              {/* Cue Points section */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Cue Points</Text>
+                <CuePointEditor
+                  durationMs={track.durationMs}
+                  startTimeMs={track.startTimeMs}
+                  endTimeMs={track.endTimeMs}
+                  onChange={(start, end) => onUpdateCuePoints(track.id, start, end)}
                 />
               </View>
 

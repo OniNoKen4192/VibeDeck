@@ -4,7 +4,7 @@
  */
 
 import * as SQLite from 'expo-sqlite';
-import { CREATE_TABLES_SQL, SCHEMA_VERSION } from './schema';
+import { CREATE_TABLES_SQL, SCHEMA_VERSION, MIGRATION_V2 } from './schema';
 
 const DATABASE_NAME = 'vibedeck.db';
 
@@ -41,8 +41,15 @@ export async function initDatabase(): Promise<void> {
   const currentVersion = versionResult?.user_version ?? 0;
 
   if (currentVersion < SCHEMA_VERSION) {
-    // Run schema creation (CREATE IF NOT EXISTS is idempotent)
-    await db.execAsync(CREATE_TABLES_SQL);
+    // Fresh install: Run schema creation (CREATE IF NOT EXISTS is idempotent)
+    if (currentVersion === 0) {
+      await db.execAsync(CREATE_TABLES_SQL);
+    }
+
+    // Run migrations for existing databases
+    if (currentVersion < 2) {
+      await db.execAsync(MIGRATION_V2);
+    }
 
     // Update schema version
     await db.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION};`);

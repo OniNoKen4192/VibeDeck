@@ -3,7 +3,7 @@
  * @description SQLite schema definitions for VibeDeck database tables and indexes.
  */
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const CREATE_TABLES_SQL = `
 -- Enable foreign keys
@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS tracks (
     album TEXT,
     genre TEXT,
     duration_ms INTEGER,
+    start_time_ms INTEGER,
+    end_time_ms INTEGER,
     played INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
@@ -71,4 +73,12 @@ CREATE INDEX IF NOT EXISTS idx_track_tags_tag ON track_tags(tag_id);
 CREATE INDEX IF NOT EXISTS idx_buttons_position ON buttons(position);
 CREATE INDEX IF NOT EXISTS idx_buttons_tag ON buttons(tag_id);
 CREATE INDEX IF NOT EXISTS idx_buttons_track ON buttons(track_id);
+`;
+
+/**
+ * Migration from v1 to v2: Add cue point columns
+ */
+export const MIGRATION_V2 = `
+ALTER TABLE tracks ADD COLUMN start_time_ms INTEGER;
+ALTER TABLE tracks ADD COLUMN end_time_ms INTEGER;
 `;

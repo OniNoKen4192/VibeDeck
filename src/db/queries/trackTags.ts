@@ -21,6 +21,8 @@ interface TrackRow {
   album: string | null;
   genre: string | null;
   duration_ms: number | null;
+  start_time_ms: number | null;
+  end_time_ms: number | null;
   played: number;
   created_at: string;
   updated_at: string;
@@ -44,6 +46,8 @@ function rowToTrack(row: TrackRow): Track {
     album: row.album,
     genre: row.genre,
     durationMs: row.duration_ms,
+    startTimeMs: row.start_time_ms,
+    endTimeMs: row.end_time_ms,
     played: row.played === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

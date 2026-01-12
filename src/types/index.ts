@@ -15,6 +15,8 @@ export interface Track {
   album: string | null;
   genre: string | null;
   durationMs: number | null;
+  startTimeMs: number | null;
+  endTimeMs: number | null;
   played: boolean;
   createdAt: string;
   updatedAt: string;

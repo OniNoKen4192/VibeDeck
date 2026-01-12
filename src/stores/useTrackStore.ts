@@ -31,7 +31,7 @@ interface TrackStore {
   loadTracks: () => Promise<void>;
   /** Add a track to library. Prefer using import service instead. */
   addTrack: (
-    track: Omit<Track, 'id' | 'played' | 'createdAt' | 'updatedAt'>
+    track: Omit<Track, 'id' | 'startTimeMs' | 'endTimeMs' | 'played' | 'createdAt' | 'updatedAt'>
   ) => Promise<Track>;
   /** Update track metadata (title, artist, etc.) */
   updateTrack: (id: string, updates: Partial<Track>) => Promise<void>;
@@ -64,6 +64,8 @@ export const useTrackStore = create<TrackStore>((set, get) => ({
     const track: Track = {
       ...trackData,
       id: generateUUID(),
+      startTimeMs: null,
+      endTimeMs: null,
       played: false,
       createdAt: now,
       updatedAt: now,

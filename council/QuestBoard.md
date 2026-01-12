@@ -43,14 +43,13 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 8. ~~**Rename Track**~~ — Complete. Polished by Seraphelle 2026-01-11.
 9. ~~**Color picker for buttons**~~ — Complete. Polished by Seraphelle 2026-01-11.
 10. ~~**Swipe to change tab**~~ — Complete. Polished by Seraphelle 2026-01-11.
+11. ~~**Track start/end time (cue points)**~~ — Complete. Forged by Pyrrhaxis 2026-01-11.
 
 ---
 
 ## In Progress
 
-| Quest | Dragon | Handoff |
-|-------|--------|---------|
-| *None* | — | — |
+*No quests currently in progress.*
 
 ---
 
@@ -60,7 +59,6 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 
 | Feature | Category | Complexity | Notes |
 |---------|----------|------------|-------|
-| Track start/end time | Track Mgmt | Medium | Unified slider UI |
 | Per-track volume | Track Mgmt | Medium | |
 
 ### Stretch (may punt to 1.2)

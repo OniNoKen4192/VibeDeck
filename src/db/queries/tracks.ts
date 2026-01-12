@@ -15,6 +15,8 @@ interface TrackRow {
   album: string | null;
   genre: string | null;
   duration_ms: number | null;
+  start_time_ms: number | null;
+  end_time_ms: number | null;
   played: number;
   created_at: string;
   updated_at: string;
@@ -30,6 +32,8 @@ function rowToTrack(row: TrackRow): Track {
     album: row.album,
     genre: row.genre,
     durationMs: row.duration_ms,
+    startTimeMs: row.start_time_ms,
+    endTimeMs: row.end_time_ms,
     played: row.played === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -63,8 +67,8 @@ export async function getUnplayedTracks(): Promise<Track[]> {
 export async function insertTrack(track: Track): Promise<void> {
   const db = getDatabase();
   await db.runAsync(
-    `INSERT INTO tracks (id, file_path, file_name, title, artist, album, genre, duration_ms, played, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO tracks (id, file_path, file_name, title, artist, album, genre, duration_ms, start_time_ms, end_time_ms, played, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       track.id,
       track.filePath,
@@ -74,6 +78,8 @@ export async function insertTrack(track: Track): Promise<void> {
       track.album,
       track.genre,
       track.durationMs,
+      track.startTimeMs,
+      track.endTimeMs,
       track.played ? 1 : 0,
       track.createdAt,
       track.updatedAt,
@@ -113,6 +119,14 @@ export async function updateTrack(id: string, updates: Partial<Omit<Track, 'id' 
   if (updates.durationMs !== undefined) {
     fields.push('duration_ms = ?');
     values.push(updates.durationMs);
+  }
+  if (updates.startTimeMs !== undefined) {
+    fields.push('start_time_ms = ?');
+    values.push(updates.startTimeMs);
+  }
+  if (updates.endTimeMs !== undefined) {
+    fields.push('end_time_ms = ?');
+    values.push(updates.endTimeMs);
   }
   if (updates.played !== undefined) {
     fields.push('played = ?');
