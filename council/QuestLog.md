@@ -6,6 +6,17 @@
 
 ## 1.1.0 Development
 
+### Button Board Padding — 2026-01-11
+**Dragon:** Seraphelle the Silver
+**Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_board-padding.md)
+
+Live fire learning from Lady Kraken game — bottom row of buttons felt cramped when NowPlaying bar appeared. Increased scroll content padding to give breathing room.
+
+**Changes:**
+- Increased `paddingBottom` in ButtonBoard's `scrollContent` from 24px to 72px (accounts for NowPlaying height)
+
+---
+
 ### Real-time Volume Slider — 2026-01-11
 **Dragon:** Seraphelle the Silver
 **Handoff:** [DONE_HANDOFF](archive/handoffs/2026-01/DONE_HANDOFF_Vaelthrix_to_Seraphelle_2026-01-11_realtime-volume.md)

@@ -36,7 +36,7 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 1. ~~**Background playback**~~ — Already works! Verified 2026-01-11.
 2. ~~**Pause/Play button**~~ — Complete. Forged by Pyrrhaxis 2026-01-11.
 3. ~~**Real-time volume slider**~~ — Complete. Polished by Seraphelle 2026-01-11.
-4. **Button board padding** — UX polish.
+4. ~~**Button board padding**~~ — Complete. Polished by Seraphelle 2026-01-11.
 
 ---
 
@@ -52,7 +52,6 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 
 | Feature | Category | Complexity | Notes |
 |---------|----------|------------|-------|
-| Button board padding | UX | Low | Live fire: prevent bottom row occlusion |
 | Track list sorting | UX | Low | Most recent, alphabetical |
 | Tap volume icon to mute | UX | Low | |
 | Gear → Hamburger icon | UX | Low | Rename screen to "About" |

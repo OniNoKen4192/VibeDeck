@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Layout.screenPadding,
-    paddingBottom: Layout.spacing.xl,
+    paddingBottom: Layout.spacing.xl + Layout.nowPlayingHeight, // 72px - breathing room for NowPlaying
   },
   grid: {
     gap: Layout.buttonGap,
