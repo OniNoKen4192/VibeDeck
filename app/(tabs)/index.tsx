@@ -33,6 +33,7 @@ import {
   pause as playerPause,
   resume as playerResume,
   applyVolume,
+  setMasterVolumeRef,
   registerPlaybackStateCallback,
   registerPlaybackErrorCallback,
 } from '../../src/services/player';
@@ -380,6 +381,7 @@ export default function BoardScreen() {
   const handleVolumeChangeComplete = useCallback(async (value: number) => {
     await usePlayerStore.getState().setVolume(value);
     await applyVolume(value);
+    setMasterVolumeRef(value);
   }, []);
 
   /**
@@ -394,12 +396,14 @@ export default function BoardScreen() {
       setLocalVolume(0);
       await usePlayerStore.getState().setVolume(0);
       applyVolume(0);
+      setMasterVolumeRef(0);
     } else {
       // Unmute: restore previous volume (or default 50)
       const restoreVolume = previousVolume > 0 ? previousVolume : 50;
       setLocalVolume(restoreVolume);
       await usePlayerStore.getState().setVolume(restoreVolume);
       applyVolume(restoreVolume);
+      setMasterVolumeRef(restoreVolume);
     }
   }, [localVolume, previousVolume]);
 

@@ -110,7 +110,7 @@ export type ImportProgressCallback = (current: number, total: number, fileName: 
  * ```
  */
 export async function pickAndImportTracks(
-  addTrack: (track: Omit<Track, 'id' | 'startTimeMs' | 'endTimeMs' | 'played' | 'createdAt' | 'updatedAt'>) => Promise<Track>,
+  addTrack: (track: Omit<Track, 'id' | 'startTimeMs' | 'endTimeMs' | 'volumeAdjust' | 'played' | 'createdAt' | 'updatedAt'>) => Promise<Track>,
   onProgress?: ImportProgressCallback
 ): Promise<BatchImportResult> {
   // Build MIME types from supported formats
@@ -174,7 +174,7 @@ export async function pickAndImportTracks(
  */
 export async function importFromPath(
   filePath: string,
-  addTrack: (track: Omit<Track, 'id' | 'startTimeMs' | 'endTimeMs' | 'played' | 'createdAt' | 'updatedAt'>) => Promise<Track>,
+  addTrack: (track: Omit<Track, 'id' | 'startTimeMs' | 'endTimeMs' | 'volumeAdjust' | 'played' | 'createdAt' | 'updatedAt'>) => Promise<Track>,
   fileName?: string
 ): Promise<ImportResult> {
   // HT-014 fix (Kazzrath QA): Pass fileName for content:// URI extension checking

@@ -10,6 +10,7 @@ import {
   initializePlayer,
   destroyPlayer,
   applyVolume,
+  setMasterVolumeRef,
 } from '../src/services/player';
 import { usePlayerStore } from '../src/stores/usePlayerStore';
 import { useTrackStore } from '../src/stores/useTrackStore';
@@ -75,6 +76,7 @@ export default function RootLayout() {
         // Apply persisted volume to player
         const volume = usePlayerStore.getState().volume;
         await applyVolume(volume);
+        setMasterVolumeRef(volume);
 
         if (mounted) {
           setAppReady(true);

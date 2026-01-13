@@ -424,6 +424,27 @@ export default function LibraryScreen() {
   }, [showToast]);
 
   /**
+   * Handle volume adjustment updates.
+   */
+  const handleUpdateVolume = useCallback(async (
+    trackId: string,
+    volumeAdjust: number | null
+  ) => {
+    try {
+      await useTrackStore.getState().updateTrack(trackId, { volumeAdjust });
+      // Update detailTrack state to reflect changes immediately
+      setDetailTrack((prev) =>
+        prev?.id === trackId
+          ? { ...prev, volumeAdjust }
+          : prev
+      );
+    } catch (err) {
+      console.error('[LibraryScreen] Update volume adjustment failed:', err);
+      showToast('Failed to update volume', 'error');
+    }
+  }, [showToast]);
+
+  /**
    * Close detail modal.
    */
   const handleCloseDetail = useCallback(() => {
@@ -570,6 +591,7 @@ export default function LibraryScreen() {
         onDelete={handleDeleteTrack}
         onRename={handleRenameTrack}
         onUpdateCuePoints={handleUpdateCuePoints}
+        onUpdateVolume={handleUpdateVolume}
       />
 
       {/* Bulk tag modal */}

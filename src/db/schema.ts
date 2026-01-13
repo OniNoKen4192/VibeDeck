@@ -3,7 +3,7 @@
  * @description SQLite schema definitions for VibeDeck database tables and indexes.
  */
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export const CREATE_TABLES_SQL = `
 -- Enable foreign keys
@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS tracks (
     duration_ms INTEGER,
     start_time_ms INTEGER,
     end_time_ms INTEGER,
+    volume_adjust INTEGER,
     played INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
@@ -81,4 +82,11 @@ CREATE INDEX IF NOT EXISTS idx_buttons_track ON buttons(track_id);
 export const MIGRATION_V2 = `
 ALTER TABLE tracks ADD COLUMN start_time_ms INTEGER;
 ALTER TABLE tracks ADD COLUMN end_time_ms INTEGER;
+`;
+
+/**
+ * Migration from v2 to v3: Add per-track volume adjustment
+ */
+export const MIGRATION_V3 = `
+ALTER TABLE tracks ADD COLUMN volume_adjust INTEGER;
 `;

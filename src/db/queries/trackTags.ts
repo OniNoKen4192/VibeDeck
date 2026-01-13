@@ -23,6 +23,7 @@ interface TrackRow {
   duration_ms: number | null;
   start_time_ms: number | null;
   end_time_ms: number | null;
+  volume_adjust: number | null;
   played: number;
   created_at: string;
   updated_at: string;
@@ -48,6 +49,7 @@ function rowToTrack(row: TrackRow): Track {
     durationMs: row.duration_ms,
     startTimeMs: row.start_time_ms,
     endTimeMs: row.end_time_ms,
+    volumeAdjust: row.volume_adjust,
     played: row.played === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

@@ -4,7 +4,7 @@
  */
 
 import * as SQLite from 'expo-sqlite';
-import { CREATE_TABLES_SQL, SCHEMA_VERSION, MIGRATION_V2 } from './schema';
+import { CREATE_TABLES_SQL, SCHEMA_VERSION, MIGRATION_V2, MIGRATION_V3 } from './schema';
 
 const DATABASE_NAME = 'vibedeck.db';
 
@@ -49,6 +49,9 @@ export async function initDatabase(): Promise<void> {
     // Run migrations for existing databases
     if (currentVersion < 2) {
       await db.execAsync(MIGRATION_V2);
+    }
+    if (currentVersion < 3) {
+      await db.execAsync(MIGRATION_V3);
     }
 
     // Update schema version

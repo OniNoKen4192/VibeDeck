@@ -17,6 +17,7 @@ export interface Track {
   durationMs: number | null;
   startTimeMs: number | null;
   endTimeMs: number | null;
+  volumeAdjust: number | null;
   played: boolean;
   createdAt: string;
   updatedAt: string;

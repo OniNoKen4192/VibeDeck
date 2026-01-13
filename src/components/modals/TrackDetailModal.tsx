@@ -19,6 +19,7 @@ import { Colors } from '../../constants/colors';
 import { Layout } from '../../constants/layout';
 import { TagChipPicker } from './TagChipPicker';
 import { CuePointEditor } from './CuePointEditor';
+import { VolumeAdjustSlider } from './VolumeAdjustSlider';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import { formatDuration } from '../../utils/time';
 import type { Track, Tag } from '../../types';
@@ -48,6 +49,8 @@ interface TrackDetailModalProps {
   onRename: (trackId: string, updates: { title?: string; artist?: string | null }) => void;
   /** Called when cue points are updated */
   onUpdateCuePoints: (trackId: string, startMs: number | null, endMs: number | null) => void;
+  /** Called when volume adjustment is updated */
+  onUpdateVolume: (trackId: string, volumeAdjust: number | null) => void;
   /** Optional test ID */
   testID?: string;
 }
@@ -65,6 +68,7 @@ export function TrackDetailModal({
   onDelete,
   onRename,
   onUpdateCuePoints,
+  onUpdateVolume,
   testID,
 }: TrackDetailModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -254,6 +258,17 @@ export function TrackDetailModal({
                   startTimeMs={track.startTimeMs}
                   endTimeMs={track.endTimeMs}
                   onChange={(start, end) => onUpdateCuePoints(track.id, start, end)}
+                />
+              </View>
+
+              <View style={styles.divider} />
+
+              {/* Volume Adjustment section */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Volume Adjustment</Text>
+                <VolumeAdjustSlider
+                  value={track.volumeAdjust}
+                  onChange={(value) => onUpdateVolume(track.id, value)}
                 />
               </View>
 

@@ -80,6 +80,29 @@ let onPlaybackError: PlaybackErrorCallback | null = null;
 // Current track reference (TrackPlayer doesn't store our full Track object)
 let currentTrackRef: Track | null = null;
 
+// Master volume reference for restoring after track-adjusted playback
+let masterVolumeRef: number = 80;
+
+/**
+ * Calculate effective volume considering track adjustment.
+ * @param masterVolume - Global volume 0-100
+ * @param trackAdjust - Per-track adjustment -50 to +50 (null = 0)
+ * @returns Effective volume 0-100
+ */
+function calculateEffectiveVolume(masterVolume: number, trackAdjust: number | null): number {
+  const adjust = trackAdjust ?? 0;
+  const multiplier = 1 + (adjust / 100);
+  const effective = masterVolume * multiplier;
+  return Math.max(0, Math.min(100, effective));
+}
+
+/**
+ * Update the master volume reference. Call when volume changes.
+ */
+export function setMasterVolumeRef(volume: number): void {
+  masterVolumeRef = volume;
+}
+
 /**
  * Initializes the track player. Call once at app startup.
  *
@@ -284,6 +307,12 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
     // Start playback
     await TrackPlayer.play();
 
+    // Apply per-track volume adjustment if set
+    if (track.volumeAdjust !== null && track.volumeAdjust !== 0) {
+      const effectiveVolume = calculateEffectiveVolume(masterVolumeRef, track.volumeAdjust);
+      await setVolume(effectiveVolume);
+    }
+
     return { success: true };
   } catch (error) {
     const playbackError: PlaybackError = {
@@ -346,6 +375,10 @@ export async function stop(): Promise<void> {
   if (!isPlayerInitialized) return;
 
   try {
+    // Restore master volume if track had adjustment
+    if (currentTrackRef?.volumeAdjust !== null && currentTrackRef?.volumeAdjust !== 0) {
+      await setVolume(masterVolumeRef);
+    }
     await TrackPlayer.reset();
     currentTrackRef = null;
     onPlaybackStateChange?.(false, null);
@@ -493,7 +526,11 @@ function registerEventListeners(): void {
   // Track ends
   const queueEndedSubscription = TrackPlayer.addEventListener(
     Event.PlaybackQueueEnded,
-    () => {
+    async () => {
+      // Restore master volume if track had adjustment
+      if (currentTrackRef?.volumeAdjust !== null && currentTrackRef?.volumeAdjust !== 0) {
+        await setVolume(masterVolumeRef);
+      }
       currentTrackRef = null;
       onPlaybackStateChange?.(false, null);
     }
@@ -522,6 +559,10 @@ function registerEventListeners(): void {
         const currentMs = event.position * 1000;
         // Stop playback when we reach or exceed the end time (with small tolerance)
         if (currentMs >= track.endTimeMs - 250) {
+          // Restore master volume if track had adjustment
+          if (track.volumeAdjust !== null && track.volumeAdjust !== 0) {
+            await setVolume(masterVolumeRef);
+          }
           await TrackPlayer.reset();
           currentTrackRef = null;
           onPlaybackStateChange?.(false, null);
