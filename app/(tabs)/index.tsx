@@ -157,7 +157,7 @@ export default function BoardScreen() {
 
     registerPlaybackStateCallback((playing, track) => {
       usePlayerStore.getState().setIsPlaying(playing);
-      if (track) {
+      if (playing && track) {
         usePlayerStore.getState().play(track);
       }
       if (!playing && !track) {

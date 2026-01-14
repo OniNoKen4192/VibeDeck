@@ -485,7 +485,7 @@ export function getCurrentTrack(): Track | null {
  * ```typescript
  * // In your player setup:
  * registerPlaybackStateCallback((isPlaying, track) => {
- *   if (track) {
+ *   if (isPlaying && track) {
  *     usePlayerStore.getState().play(track);
  *   }
  *   usePlayerStore.getState().setIsPlaying(isPlaying);
