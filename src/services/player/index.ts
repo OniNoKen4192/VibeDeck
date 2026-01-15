@@ -12,6 +12,7 @@ import TrackPlayer, {
 import type { EmitterSubscription } from 'react-native';
 import { File } from 'expo-file-system/next';
 import type { Track } from '../../types';
+import { useTrackStore } from '../../stores/useTrackStore';
 
 // Re-export Event and State for consumers
 export { Event, State } from 'react-native-track-player';
@@ -306,6 +307,26 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
 
     // Start playback
     await TrackPlayer.play();
+
+    // Discover duration if not known (for cue points feature)
+    if (track.durationMs === null) {
+      // Small delay to let TrackPlayer load the track metadata
+      setTimeout(async () => {
+        try {
+          const progress = await TrackPlayer.getProgress();
+          if (progress.duration > 0) {
+            const durationMs = Math.round(progress.duration * 1000);
+            await useTrackStore.getState().updateTrack(track.id, { durationMs });
+            // Update our local reference so subsequent plays don't re-discover
+            if (currentTrackRef?.id === track.id) {
+              currentTrackRef = { ...currentTrackRef, durationMs };
+            }
+          }
+        } catch (error) {
+          console.warn('[Player] Failed to discover track duration:', error);
+        }
+      }, 500);
+    }
 
     // Apply per-track volume adjustment if set
     if (track.volumeAdjust !== null && track.volumeAdjust !== 0) {
