@@ -45,3 +45,6 @@ nul
 
 # native module build artifacts
 modules/**/android/build/
+
+# release binaries (APKs are too large for git history)
+ReleaseFiles/

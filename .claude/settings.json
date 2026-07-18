@@ -1,6 +1,3 @@
 {
-  "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
-    "local-review@agent37-skills": true
-  }
+  "enabledPlugins": {}
 }
