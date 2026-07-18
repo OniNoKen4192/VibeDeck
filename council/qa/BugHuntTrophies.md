@@ -5,6 +5,225 @@
 
 ---
 
+## 2026-01-14
+
+### HT-032: The Silent Import
+**Severity:** High (Feature broken)
+**Hunter:** Pyrrhaxis the Red
+**Weapon:** Deferred discovery
+
+The cue points feature was dead on arrival. Every track showed "Duration unknown — cue points unavailable." The architecture had a plan: `extractMetadata()` would set `durationMs: null` during import, and "it will be set on playback." But no one wrote the playback part.
+
+The import service couldn't extract duration — Android's SAF content URIs don't expose it, and expo-file-system doesn't read audio metadata. The handoff spec said "will be set on playback," but the player service just... played. No discovery. No persistence.
+
+The fix: tap `TrackPlayer.getProgress()` after playback starts.
+
+```typescript
+// After TrackPlayer.play() succeeds:
+if (track.durationMs === null) {
+  setTimeout(async () => {
+    const progress = await TrackPlayer.getProgress();
+    if (progress.duration > 0) {
+      const durationMs = Math.round(progress.duration * 1000);
+      await useTrackStore.getState().updateTrack(track.id, { durationMs });
+    }
+  }, 500);
+}
+```
+
+The 500ms delay gives TrackPlayer time to parse the audio file and populate its metadata. Once discovered, the duration persists — subsequent plays skip the check.
+
+**Lesson:** "Will be set later" is a promise, not an implementation. Every deferred action needs a concrete home.
+
+---
+
+### HT-027: The Immortal Play Button
+**Severity:** High (UX blocker)
+**Hunter:** Pyrrhaxis the Red
+**Weapon:** Conditional guard
+
+The pause button worked — audio stopped. But the UI refused to believe it. The play/pause icon flickered to "paused" for a single frame, then snapped back to "playing." Tapping again did nothing. The button thought it was already playing.
+
+The culprit: a playback state callback that conflated "track exists" with "should be playing."
+
+```typescript
+// Before: track exists = must be playing!
+registerPlaybackStateCallback((playing, track) => {
+  usePlayerStore.getState().setIsPlaying(playing);  // correctly sets false
+  if (track) {
+    usePlayerStore.getState().play(track);  // immediately sets true!
+  }
+});
+```
+
+When pausing, TrackPlayer fires the callback with `playing=false` and `track=<current track>`. The store dutifully set `isPlaying: false`. Then the next line saw a track existed and called `play()`, which set `isPlaying: true`. The pause state lived for a single render cycle.
+
+The fix: only call `play()` when actually starting playback.
+
+```typescript
+// After: respect the playing flag
+if (playing && track) {
+  usePlayerStore.getState().play(track);
+}
+```
+
+**Lesson:** Presence of data doesn't imply action. A track can exist without playing. Check the verb, not just the noun.
+
+---
+
+### HT-026: The Misplaced Navigator
+**Severity:** High (UX blocker)
+**Hunter:** Seraphelle the Silver
+**Weapon:** Prop placement
+
+The swipe gestures feature replaced Expo Router's `<Tabs>` with `MaterialTopTabNavigator`. The spec called for `tabBarPosition: 'bottom'`, but the implementation placed it inside `screenOptions`. TypeScript protested — correctly. The property belongs on the navigator itself, not as a per-screen option.
+
+Meanwhile, the tab bar drifted to the top of the screen (the navigator's default), and the playback controls at the bottom were partially obscured by Android's system navigation bar. QA testing of pause/play and volume controls was blocked.
+
+```typescript
+// Before: wrong location, TypeScript error
+screenOptions={{
+  tabBarPosition: 'bottom',  // TS2353: does not exist
+  swipeEnabled: true,
+}}
+
+// After: direct prop on navigator
+<MaterialTopTabs
+  tabBarPosition="bottom"
+  tabBar={(props) => <CustomTabBar {...props} />}
+  screenOptions={{
+    swipeEnabled: true,
+  }}
+>
+```
+
+**Lesson:** Read the API docs before trusting handoff specs. Navigator-level props and screen-level options are different animals.
+
+---
+
+### HT-029: The Ghost Tab
+**Severity:** Medium
+**Hunter:** Kazzarth the Blue
+**Weapon:** Deletion
+
+The swipe gesture worked beautifully — until you swiped one too many times past Tags. Then a ghost appeared: "Tab Two," the Expo template placeholder, complete with developer instructions to "Open up the code for this screen."
+
+The screen had been hidden from the tab bar with `tabBarItemStyle: { display: 'none' }`, but `MaterialTopTabNavigator` doesn't respect visual hiding for gesture navigation. The swipe index counted all registered screens, hidden or not.
+
+The fix: don't hide the corpse. Bury it.
+
+```bash
+rm app/(tabs)/two.tsx
+```
+
+And remove its registration from the navigator entirely.
+
+**Lesson:** Hiding a screen from view doesn't hide it from touch. If it shouldn't exist, delete it.
+
+---
+
+### HT-030: The Forgotten Edge
+**Severity:** Medium
+**Hunter:** Kazzarth the Blue
+**Weapon:** SafeAreaView
+
+The Library screen's track detail modal thought it owned the whole screen. On edge-to-edge Android devices, the header — with its close button and track title — rendered directly under the status bar. Clock, battery, signal icons: all competing for the same pixels.
+
+The Board screen had learned this lesson ten days prior (HT-022). The Library screen hadn't been paying attention.
+
+```typescript
+// Before: assumed it had the whole screen
+<View style={styles.container}>
+  <StatusBar style="light" />
+  {/* Header */}
+
+// After: asks the system where content can go
+<SafeAreaView edges={['top']} style={styles.container}>
+  <StatusBar style="light" />
+  {/* Header */}
+```
+
+The fix was identical to HT-022 — wrap the container in `SafeAreaView` from `react-native-safe-area-context`, respecting only the top edge (the tab bar handles the bottom).
+
+**Lesson:** Every screen with a custom header must independently remember the status bar exists. Lessons don't automatically propagate across files.
+
+---
+
+### HT-033: The Stolen Gesture
+**Severity:** High (Feature broken)
+**Hunter:** Kazzarth the Blue
+**Weapon:** Component replacement
+
+The per-track volume slider rendered beautifully — a sleek `@react-native-community/slider` with purple accent colors. But it refused to move. Tapping, dragging, nothing registered.
+
+The culprit: a ScrollView wrapping the TrackDetailModal content. On Android, the native slider's horizontal pan gesture competed with ScrollView's vertical scroll detection. The ScrollView won every time, intercepting touches before the slider could claim them.
+
+Attempts to fix the gesture conflict — `onStartShouldSetResponder`, `onMoveShouldSetResponder` — all failed. The slider's native touch handling couldn't be overridden from React.
+
+The fix: abandon the slider. Replace it with button-based controls that don't require drag gestures.
+
+```typescript
+// Before: beautiful but broken
+<Slider
+  minimumValue={-50}
+  maximumValue={50}
+  onValueChange={handleChange}
+/>
+
+// After: functional
+<View style={styles.controlRow}>
+  <Pressable onPress={handleDecrease}>
+    <FontAwesome name="minus" />
+  </Pressable>
+  <Pressable onPress={handleReset}>
+    <Text>Reset</Text>
+  </Pressable>
+  <Pressable onPress={handleIncrease}>
+    <FontAwesome name="plus" />
+  </Pressable>
+</View>
+```
+
+The new UI uses minus/plus buttons with 5% increments, a Reset button, and a visual progress bar. Less elegant, but it works.
+
+**Lesson:** When native components fight the framework, sometimes the best fix is a different component entirely.
+
+---
+
+### HT-031: The Forgotten Sync
+**Severity:** High (Feature broken)
+**Hunter:** Kazzarth the Blue
+**Weapon:** State synchronization
+
+The track rename feature had all the pieces: a text input that captured changes, an `onBlur` handler that fired on focus loss, a callback that persisted to the database. Yet the UI reverted every edit the moment you finished typing.
+
+The TrackDetailModal initialized its `editTitle` state from the `track` prop. When `handleSaveTitle` called `onRename()`, the database updated. The store updated. But the `detailTrack` state in the parent component — the source of the `track` prop — remained unchanged.
+
+Then React re-rendered. The modal's `useEffect` saw the same old `track` prop and dutifully reset `editTitle` to the original value. The user's edit vanished.
+
+```typescript
+// Before: updated DB, forgot local state
+const handleRenameTrack = useCallback(async (trackId, updates) => {
+  await useTrackStore.getState().updateTrack(trackId, updates);
+  showToast('Track updated', 'success');
+}, [showToast]);
+
+// After: mirrors the pattern used by cue points and volume
+const handleRenameTrack = useCallback(async (trackId, updates) => {
+  await useTrackStore.getState().updateTrack(trackId, updates);
+  setDetailTrack((prev) =>
+    prev?.id === trackId ? { ...prev, ...updates } : prev
+  );
+  showToast('Track updated', 'success');
+}, [showToast]);
+```
+
+The cue points handler at line 410 and volume handler at line 435 both had this `setDetailTrack` call. The rename handler at line 394 was the odd one out.
+
+**Lesson:** When a modal edits data passed via props, the parent must update its state — or the next render will erase the changes.
+
+---
+
 ## 2026-01-11
 
 ### HT-024: The Broken Promise
@@ -376,9 +595,9 @@ await useButtonStore.getState().removeButtonsForTag(id);
 
 | Hunter | Kills | Critical | High | Medium | Low |
 |--------|-------|----------|------|--------|-----|
-| Pyrrhaxis | 9 | 0 | 4 | 5 | 0 |
-| Seraphelle | 5 | 0 | 3 | 0 | 2 |
-| Kazzrath | 3 | 1 | 2 | 0 | 0 |
+| Pyrrhaxis | 11 | 0 | 6 | 5 | 0 |
+| Kazzarth | 7 | 1 | 4 | 2 | 0 |
+| Seraphelle | 6 | 0 | 4 | 0 | 2 |
 | Vaelthrix | 3 | 0 | 3 | 0 | 0 |
 | Chatterwind | 1 | 0 | 1 | 0 | 0 |
 | Wrixle | 1 | 0 | 1 | 0 | 0 |

@@ -186,3 +186,66 @@ if (pathWithoutScheme.includes('..') || pathWithoutScheme.includes('//')) {
 
 ---
 
+## Session 2 — 2026-01-12 (1.1.0 QA)
+
+### HT-025: Tag Button Does Not Update When Tag Renamed
+
+**Severity:** Medium
+**Category:** Data Integrity / UI Staleness
+**Version Found:** 1.0.2
+**Scribe:** Kazzarth the Blue
+
+**Steps to Reproduce:**
+1. Create a tag (e.g., "TestTag") with a color
+2. Button auto-creates on Board with tag's name and color
+3. Navigate to Tags screen
+4. Tap the tag to edit, rename it (e.g., "RenamedTag") and/or change color
+5. Save changes
+6. Navigate back to Board screen
+
+**Observed:**
+- Button still displays old tag name and old color
+- Behavior persists after app restart (data survives kill/relaunch)
+- Creating new tags/buttons does NOT force refresh of stale button
+- Button functionality is correct (plays tracks from renamed tag)
+
+**Expected:** Button should display the current tag name and color.
+
+**Root Cause (Confirmed):**
+When a tag button is created ([tags.tsx:100](app/(tabs)/tags.tsx#L100)), the tag's name and color are **copied** into the button record:
+
+```typescript
+await addTagButton(name, newTag.id, false, color);
+```
+
+The button stores its own `name` and `color` fields in the database. When the tag is renamed via `updateTag()`, only the `tags` table is updated—the button's stored copy remains unchanged.
+
+Display resolution ([BoardButton.tsx:136](src/components/BoardButton.tsx#L136)) always uses `button.name`:
+```typescript
+const displayLabel = button.name;
+```
+
+Color resolution ([buttons.ts:373](src/db/queries/buttons.ts#L373)) uses `button.color` first:
+```typescript
+const displayColor = button.color ?? tag?.color ?? DEFAULT_BUTTON_COLOR;
+```
+
+Since both are populated at creation time, the tag's current values are never consulted.
+
+**Affected Files:**
+- `app/(tabs)/tags.tsx:100` — copies name/color at button creation
+- `src/stores/useTagStore.ts:updateTag` — does not cascade to buttons
+- `src/db/queries/buttons.ts:373` — resolution logic
+- `src/components/BoardButton.tsx:136` — display logic
+
+**Fix Options (for Vaelthrix):**
+1. **Cascade on tag update:** When `updateTag()` is called, also update all buttons referencing that tag
+2. **Derive from tag:** For tag buttons, prefer `tag.name` over `button.name` and `tag.color` over `button.color` in resolution logic
+3. **Hybrid:** Store button.name/color as null for tag buttons, let resolution derive from linked tag
+
+Option 2 is architecturally cleaner—tag buttons should derive display from their linked tag. Button-level name/color overrides could still be supported for user customization.
+
+**Status:** Open — documented for 1.1.0
+
+---
+

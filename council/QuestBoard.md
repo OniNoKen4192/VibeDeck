@@ -44,12 +44,13 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 9. ~~**Color picker for buttons**~~ — Complete. Polished by Seraphelle 2026-01-11.
 10. ~~**Swipe to change tab**~~ — Complete. Polished by Seraphelle 2026-01-11.
 11. ~~**Track start/end time (cue points)**~~ — Complete. Forged by Pyrrhaxis 2026-01-11.
+12. ~~**Per-track volume**~~ — Complete. Forged by Pyrrhaxis 2026-01-14.
 
 ---
 
 ## In Progress
 
-*No quests currently in progress.*
+*No active quests — 1.1.0 feature work complete!*
 
 ---
 
@@ -57,9 +58,7 @@ See [1.1.0_Goals.md](1.1.0_Goals.md) for full feature list.
 
 ### 1.1.0 Features
 
-| Feature | Category | Complexity | Notes |
-|---------|----------|------------|-------|
-| Per-track volume | Track Mgmt | Medium | |
+*All 1.1.0 features assigned or complete!*
 
 ### Stretch (may punt to 1.2)
 

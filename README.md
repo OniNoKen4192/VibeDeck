@@ -1,5 +1,7 @@
 # VibeDeck
 
+**Version:** 1.0.2 | [Changelog](CHANGELOG.md)
+
 A tag-based, button-board audio player for managing music and sounds at sporting events. Built for parents who want to offload mental stress and make the task fun.
 
 **Target Platform:** Android
