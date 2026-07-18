@@ -75,6 +75,7 @@ function CustomTabBar({ state, navigation }: TabBarProps) {
 export default function TabLayout() {
   return (
     <MaterialTopTabs
+      tabBarPosition="bottom"
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         swipeEnabled: true,
@@ -98,13 +99,6 @@ export default function TabLayout() {
         name="tags"
         options={{
           title: 'Tags',
-        }}
-      />
-      {/* Hide the old two.tsx screen */}
-      <MaterialTopTabs.Screen
-        name="two"
-        options={{
-          tabBarItemStyle: { display: 'none' },
         }}
       />
     </MaterialTopTabs>
