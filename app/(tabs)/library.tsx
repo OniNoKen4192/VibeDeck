@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   ListRenderItem,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import {
@@ -391,6 +392,12 @@ export default function LibraryScreen() {
   ) => {
     try {
       await useTrackStore.getState().updateTrack(trackId, updates);
+      // Update detailTrack state to reflect changes immediately
+      setDetailTrack((prev) =>
+        prev?.id === trackId
+          ? { ...prev, ...updates }
+          : prev
+      );
       showToast('Track updated', 'success');
     } catch (err) {
       console.error('[LibraryScreen] Rename track failed:', err);
@@ -503,17 +510,17 @@ export default function LibraryScreen() {
   // Loading state
   if (isLoadingTracks) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView edges={['top']} style={styles.loadingContainer}>
         <StatusBar style="light" />
         <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Empty state
   if (tracks.length === 0 && !isImporting) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.container}>
         <StatusBar style="light" />
         <EmptyLibrary onImport={handleImport} />
         <Toast
@@ -523,12 +530,12 @@ export default function LibraryScreen() {
           onDismiss={() => setToastVisible(false)}
           position="top"
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       <StatusBar style="light" />
 
       {/* Header */}
@@ -620,7 +627,7 @@ export default function LibraryScreen() {
         onDismiss={() => setToastVisible(false)}
         position="top"
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
