@@ -274,7 +274,8 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
       }
     }
 
-    // Resolve display color: button.color ?? tag.color ?? default
+    // HT-025: tag buttons derive display from the linked tag; button.color is an explicit override
+    const displayName = button.type === 'tag' ? tag?.name ?? button.name : button.name;
     const displayColor = button.color ?? tag?.color ?? DEFAULT_BUTTON_COLOR;
 
     return {
@@ -282,6 +283,7 @@ export const useButtonStore = create<ButtonStore>((set, get) => ({
       tag,
       track,
       availableTracks,
+      displayName,
       displayColor,
       isDisabled,
     };

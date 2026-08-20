@@ -130,7 +130,7 @@ export function ButtonContextMenu({
 
           {/* Button name header */}
           <Text style={styles.buttonName} numberOfLines={1}>
-            {button.name}
+            {button.displayName}
           </Text>
 
           {/* Pin / Unpin row */}

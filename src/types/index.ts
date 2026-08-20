@@ -71,6 +71,7 @@ export interface ButtonResolved extends Button {
   // For direct buttons
   track?: Track;
   // Computed
+  displayName: string; // tag buttons derive from tag.name (HT-025); falls back to button.name
   displayColor: string; // resolved from button.color ?? tag.color ?? default
   isDisabled: boolean; // e.g., direct button with deleted track, or tag with no tracks
   isEmpty?: boolean; // true if tag button has zero tracks assigned

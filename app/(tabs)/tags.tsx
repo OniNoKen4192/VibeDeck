@@ -97,7 +97,8 @@ export default function TagsScreen() {
         // Ask if user wants to add a button for this tag
         // For now, we auto-create a button for the tag
         try {
-          await addTagButton(name, newTag.id, false, color);
+          // HT-025: no color copy — null lets displayColor derive from the tag
+          await addTagButton(name, newTag.id, false, null);
         } catch (buttonErr) {
           // Silently fail button creation - tag was still created
           console.warn('[TagsScreen] Failed to create button for tag:', buttonErr);

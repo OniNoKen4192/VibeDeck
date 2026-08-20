@@ -3,7 +3,7 @@
  * @description SQLite schema definitions for VibeDeck database tables and indexes.
  */
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 export const CREATE_TABLES_SQL = `
 -- Enable foreign keys
@@ -89,4 +89,17 @@ ALTER TABLE tracks ADD COLUMN end_time_ms INTEGER;
  */
 export const MIGRATION_V3 = `
 ALTER TABLE tracks ADD COLUMN volume_adjust INTEGER;
+`;
+
+/**
+ * Migration from v3 to v4 (HT-025): Tag buttons now derive display name/color
+ * from their linked tag. Clear colors that were copied from the tag at creation
+ * (a color differing from the tag's is a deliberate user override and is kept).
+ */
+export const MIGRATION_V4 = `
+UPDATE buttons
+SET color = NULL
+WHERE type = 'tag'
+  AND color IS NOT NULL
+  AND color = (SELECT color FROM tags WHERE tags.id = buttons.tag_id);
 `;

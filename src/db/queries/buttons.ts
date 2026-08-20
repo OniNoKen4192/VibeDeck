@@ -370,6 +370,9 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
     }
   }
 
+  // HT-025: tag buttons derive display from the linked tag so renames/recolors
+  // cascade; button.color remains an explicit user override when set
+  const displayName = button.type === 'tag' ? tag?.name ?? button.name : button.name;
   const displayColor = button.color ?? tag?.color ?? DEFAULT_BUTTON_COLOR;
 
   return {
@@ -378,6 +381,7 @@ export function rowToButtonResolved(row: ButtonResolvedRow): ButtonResolved {
     track,
     availableTracks: row.available_tracks ?? undefined,
     totalTracks: row.total_tracks ?? undefined,
+    displayName,
     displayColor,
     isDisabled,
     isEmpty,

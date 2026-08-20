@@ -245,7 +245,11 @@ Since both are populated at creation time, the tag's current values are never co
 
 Option 2 is architecturally cleaner—tag buttons should derive display from their linked tag. Button-level name/color overrides could still be supported for user customization.
 
-**Status:** Open — documented for 1.1.0
+**Fix Applied (2026-08-19):** Option 2/3 hybrid, by Vaelthrix the Astral.
+- `ButtonResolved` gains computed `displayName`: tag buttons derive from `tag.name`, falling back to stored `button.name`; `BoardButton` and `ButtonContextMenu` render it
+- `displayColor` chain unchanged (`button.color ?? tag.color ?? default`), but tag-button creation no longer copies the tag color into `button.color`, so tag color changes flow through; an explicit color set via the context menu still overrides, and the reset swatch (null) reverts to tag color
+- Schema v4 migration clears creation-copied colors on existing tag buttons (only where the color still equals the tag's color, preserving deliberate overrides)
+- Regression tests added in `src/db/queries/__tests__/buttons.test.ts`
 
----
+**Status:** Fixed — pending human verification (test plan A2.2, A2.3)
 
