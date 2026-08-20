@@ -41,20 +41,21 @@ export async function initDatabase(): Promise<void> {
   const currentVersion = versionResult?.user_version ?? 0;
 
   if (currentVersion < SCHEMA_VERSION) {
-    // Fresh install: Run schema creation (CREATE IF NOT EXISTS is idempotent)
     if (currentVersion === 0) {
+      // Fresh install: schema already includes all current columns, so
+      // migrations must NOT run (ALTER TABLE would hit duplicate columns)
       await db.execAsync(CREATE_TABLES_SQL);
-    }
-
-    // Run migrations for existing databases
-    if (currentVersion < 2) {
-      await db.execAsync(MIGRATION_V2);
-    }
-    if (currentVersion < 3) {
-      await db.execAsync(MIGRATION_V3);
-    }
-    if (currentVersion < 4) {
-      await db.execAsync(MIGRATION_V4);
+    } else {
+      // Existing database: run only the outstanding migrations
+      if (currentVersion < 2) {
+        await db.execAsync(MIGRATION_V2);
+      }
+      if (currentVersion < 3) {
+        await db.execAsync(MIGRATION_V3);
+      }
+      if (currentVersion < 4) {
+        await db.execAsync(MIGRATION_V4);
+      }
     }
 
     // Update schema version

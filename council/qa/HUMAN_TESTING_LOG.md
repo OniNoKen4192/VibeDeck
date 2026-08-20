@@ -253,3 +253,28 @@ Option 2 is architecturally cleaner—tag buttons should derive display from the
 
 **Status:** Fixed — pending human verification (test plan A2.2, A2.3)
 
+---
+
+### HT-034: Fresh Installs Crash During Database Initialization
+
+**Severity:** Critical (release blocker — every new user hits it)
+**Category:** Data Layer / Startup
+**Version Found:** 1.1.0 (latent since migrations were introduced)
+**Found By:** Code review during HT-025 fix, 2026-08-19
+
+**Steps to Reproduce:**
+1. Install the app on a device with no existing VibeDeck database
+2. Launch the app
+
+**Observed (by code inspection):** `initDatabase()` at `user_version = 0` ran `CREATE_TABLES_SQL` (which includes all current columns) and then ALSO ran `MIGRATION_V2`/`MIGRATION_V3`. The `ALTER TABLE ... ADD COLUMN` statements hit existing columns, SQLite throws "duplicate column name", and initialization fails on first launch.
+
+**Why it was never seen:** every test device to date upgraded from an existing v1 database, so the fresh-install path never executed. 1.0.x shipped at schema v1 (no migrations existed yet).
+
+**Root Cause:** `src/db/init.ts` gated table creation on `currentVersion === 0` but ran the migration blocks unconditionally for any `currentVersion < N`, including 0.
+
+**Fix Applied (2026-08-19):** Fresh installs (`currentVersion === 0`) now run only `CREATE_TABLES_SQL`; migrations run only for existing databases (`currentVersion >= 1`). Migration sequencing is covered by tests in `src/db/__tests__/init.test.ts` (fresh install, v1 upgrade, v3 upgrade, current version no-op).
+
+**Status:** Fixed — pending human verification (fresh install on clean emulator; add to pre-flight for 1.1.0 QA pass)
+
+---
+
