@@ -278,3 +278,83 @@ Option 2 is architecturally cleaner—tag buttons should derive display from the
 
 ---
 
+## Session 3 — 2026-08-23 (1.1.0 QA pass, fresh install)
+
+**Tester:** Project Lead
+**Build:** 1.1.0 (versionCode 2), fresh install on Medium_Phone_API_36.1 emulator
+**Scribe:** Vaelthrix the Astral
+
+*Pre-flight confirmed: HT-034 fresh-install boot clean, version 1.1.0, new app icon live.*
+
+### HT-035: Edit Tag Modal — Delete Tag Button Obscured by System Nav Bar
+
+**Severity:** Medium
+**Category:** UI / Safe Area
+**Found During:** Test plan A2 (tag editing)
+
+**Steps to Reproduce:**
+1. Open Tags screen, tap an existing tag to edit
+2. Observe bottom of the Edit Tag modal
+
+**Observed:** The "Delete Tag" option at the bottom of the modal is partially covered by the Android system navigation bar (3-button nav). Screenshot provided by tester.
+
+**Expected:** Modal content should respect the bottom safe-area inset.
+
+**Root Cause (Confirmed):** `src/components/tags/TagModal.tsx` — the bottom-anchored modal (`styles.modal`, flex-end overlay) applies no bottom safe-area padding; the component uses neither `SafeAreaView` nor `useSafeAreaInsets`. Same family as HT-022/HT-026/HT-030.
+
+**Fix Direction:** Add `useSafeAreaInsets()` and apply `paddingBottom: insets.bottom` (plus existing padding) to the modal container. Check other bottom-anchored modals (TrackDetailModal, ButtonContextMenu, DeleteConfirmation) for the same omission while at it.
+
+**Status:** Fixed 2026-08-23 — `useSafeAreaInsets().bottom` applied as paddingBottom on TagModal, TrackDetailModal, and BulkTagModal sheets (ButtonContextMenu already had it; DeleteConfirmation is center-anchored, unaffected). Regression test: `src/components/tags/__tests__/TagModal.test.tsx`.
+
+---
+
+### HT-036: Duplicate Import Failure Message Is Imprecise
+
+**Severity:** Low
+**Category:** UX / Messaging
+**Found During:** Test plan A1.3
+
+**Observed:** Re-importing an already-imported file is correctly rejected (no duplicate data), but the failure message doesn't say *why* the import failed. Tester: "technically fine, will confuse apes."
+
+**Expected:** Message should distinguish "already in your library" from an actual import error.
+
+**Status:** Fixed 2026-08-23 — import service classifies UNIQUE file_path violations as `reason: 'duplicate'` with message "Already in your library"; Library toast now says "N skipped — already in your library" separately from real failures. Tests: `src/services/import/__tests__/import.test.ts`.
+
+---
+
+### HT-037: Tags Screen Header Under Status Bar — Safe-Area Whack-a-Mole
+
+**Severity:** Medium
+**Category:** UI / Safe Area
+**Found During:** Test plan A2 (tag creation)
+
+**Observed:** On the Tags screen, the "+ New" button and header render up under the status bar icons (battery/wifi) — mis-taps likely. Screenshot provided by tester, who also noted "general UI over/underlaps" beyond this one spot. The same screenshot shows the Create Tag modal's submit button clipped by the nav bar (HT-035's bottom-inset issue, so that one affects both Create and Edit modes).
+
+**Root Cause (Confirmed):** `app/(tabs)/tags.tsx` contains no `SafeAreaView` at all. Board (HT-022) and Library (HT-030) were each fixed individually when their bugs were reported; Tags was never touched.
+
+**Systemic Note (for the fix round):** Stop fixing these one screen at a time. Audit in one sweep:
+- **Top insets:** every screen — Board ✓, Library ✓, Tags ✗, About/Settings ?
+- **Bottom insets:** every bottom-anchored overlay — TagModal ✗ (HT-035), TrackDetailModal ?, ButtonContextMenu ?, DeleteConfirmation ?, sort menu ?
+
+A shared `ScreenContainer` / modal wrapper component would prevent recurrence.
+
+**Status:** Fixed 2026-08-23 — SafeAreaView (top) added to all three tags.tsx branches; sweep executed: Board ✓, Library ✓, Tags ✓ (this fix); bottom sheets TagModal/TrackDetailModal/BulkTagModal fixed under HT-035, ButtonContextMenu already handled insets. Shared wrapper deferred to whiteboard.
+
+---
+
+### HT-038: Library Preview Button Doesn't Reflect Playing State
+
+**Severity:** Low
+**Category:** UX / Affordance
+**Found During:** Free exploration (not a plan row)
+
+**Observed:** Tapping the play button on a Library track row starts playback, and re-tapping stops it — but the icon stays a static ▶ the whole time. Nothing in the UI signals that a track is playing from this screen or that re-tap stops it.
+
+**Expected:** The row's icon should switch to a stop (or pause) glyph while that track is playing, matching the toggle behavior it already has.
+
+**Root Cause (Confirmed):** `src/components/library/TrackRow.tsx:121` hardcodes `<FontAwesome name="play" />`. The component receives no playing-state input; it would need to know whether it is the currently playing track (e.g., from `usePlayerStore` `currentTrack`/`isPlaying`) and swap the glyph.
+
+**Status:** Fixed 2026-08-23 — TrackRow takes `isPlaying`; Library derives it from `usePlayerStore` (`isPlaying` + `currentTrack.id`), so the glyph tracks real playback state including stops from the Board bar. Tests: `src/components/library/__tests__/TrackRow.test.tsx`.
+
+---
+

@@ -19,38 +19,38 @@
 ### A1: Track Import
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
-| A1.1 | Import single audio file | Track appears in Library | | |
-| A1.2 | Import multiple files at once | All tracks appear | | |
-| A1.3 | Import duplicate file | Handled gracefully (skip or warn) | | |
-| A1.4 | Cancel import picker | No crash, no orphan data | | |
+| A1.1 | Import single audio file | Track appears in Library | PASS | 2026-08-23 fresh install |
+| A1.2 | Import multiple files at once | All tracks appear | PASS | |
+| A1.3 | Import duplicate file | Handled gracefully (skip or warn) | PASS | Usability note: failure message imprecise, confusing (HT-036) |
+| A1.4 | Cancel import picker | No crash, no orphan data | PASS | |
 
 ### A2: Tag Management
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
-| A2.1 | Create new tag | Tag appears in list, button auto-created on Board | | |
-| A2.2 | Rename tag | Tag updates, button updates (HT-025 regression) | | |
-| A2.3 | Change tag color | Color updates on tag AND button | | |
-| A2.4 | Delete tag | Tag removed, button removed (HT-001 regression) | | |
-| A2.5 | Assign track to tag | Track appears in tag's pool | | |
-| A2.6 | Remove track from tag | Track no longer in pool | | |
+| A2.1 | Create new tag | Tag appears in list, button auto-created on Board | PASS | HT-035/HT-037 UI insets noted, logic correct |
+| A2.2 | Rename tag | Tag updates, button updates (HT-025 regression) | PASS | Also verified programmatically 2026-08-23 |
+| A2.3 | Change tag color | Color updates on tag AND button | PASS | Also verified programmatically 2026-08-23 |
+| A2.4 | Delete tag | Tag removed, button removed (HT-001 regression) | PASS | |
+| A2.5 | Assign track to tag | Track appears in tag's pool | PASS | |
+| A2.6 | Remove track from tag | Track no longer in pool | PASS | |
 
 ### A3: Button Board Basics
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
-| A3.1 | Tap tag button | Random unplayed track from tag plays | | |
-| A3.2 | Exhaust tag pool | Pool auto-resets, continues playing | | |
-| A3.3 | Create direct button | Button plays specific track | | |
-| A3.4 | Pin button | Button marked persistent | | |
-| A3.5 | Unpin button | Button removed from board | | |
-| A3.6 | Reset All | All played flags cleared | | |
+| A3.1 | Tap tag button | Random unplayed track from tag plays | PASS | |
+| A3.2 | Exhaust tag pool | Pool auto-resets, continues playing | PASS | |
+| A3.3 | Create direct button | Button plays specific track | PASS | |
+| A3.4 | Pin button | Button marked persistent | PASS | |
+| A3.5 | Unpin button | Button removed from board | PASS | |
+| A3.6 | Reset All | All played flags cleared | PASS | |
 
 ### A4: Playback Basics
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
 | A4.1 | Play track | Audio plays, playback bar shows | PASS | |
 | A4.2 | Stop playback | Audio stops, bar hides | PASS | |
-| A4.3 | Background playback | Audio continues when app backgrounded | | |
-| A4.4 | Return from background | UI syncs with playback state | | |
+| A4.3 | Background playback | Audio continues when app backgrounded | PASS | |
+| A4.4 | Return from background | UI syncs with playback state | PASS | |
 
 ---
 
@@ -154,25 +154,25 @@
 ### C1: Data Integrity
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
-| C1.1 | Delete track with direct button | Button removed or marked invalid | | |
-| C1.2 | Delete all tracks from tag | Tag button handles empty pool | | |
-| C1.3 | App kill during playback | Clean recovery on restart | | |
-| C1.4 | App kill during import | No corrupted data | | |
+| C1.1 | Delete track with direct button | Button removed or marked invalid | PASS | |
+| C1.2 | Delete all tracks from tag | Tag button handles empty pool | PASS | |
+| C1.3 | App kill during playback | Clean recovery on restart | PASS | |
+| C1.4 | App kill during import | No corrupted data | PASS | |
 
 ### C2: UI Stress
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
-| C2.1 | Rapid button taps | No crashes, queues or ignores | | |
-| C2.2 | Rotate device (if supported) | UI adapts or locks orientation | | |
-| C2.3 | Tag modal keyboard (HT-003) | No flicker on input focus | | |
-| C2.4 | Many buttons on board (20+) | Scrolling smooth, all tappable | | |
+| C2.1 | Rapid button taps | No crashes, queues or ignores | PASS | |
+| C2.2 | Rotate device (if supported) | UI adapts or locks orientation | PASS | |
+| C2.3 | Tag modal keyboard (HT-003) | No flicker on input focus | PASS | |
+| C2.4 | Many buttons on board (20+) | Scrolling smooth, all tappable | PASS | |
 
 ### C3: Persistence
 | # | Test | Expected | Pass/Fail | Notes |
 |---|------|----------|-----------|-------|
-| C3.1 | Full app kill and restart | All data preserved | | |
-| C3.2 | Tracks survive restart (SAF) | Imported tracks still playable | | |
-| C3.3 | Button positions persist | Board layout unchanged | | |
+| C3.1 | Full app kill and restart | All data preserved | PASS | |
+| C3.2 | Tracks survive restart (SAF) | Imported tracks still playable | PASS | |
+| C3.3 | Button positions persist | Board layout unchanged | PASS | |
 
 ---
 
@@ -180,11 +180,11 @@
 
 | Bug | Description | Test | Pass/Fail | Notes |
 |-----|-------------|------|-----------|-------|
-| HT-001 | Orphaned buttons on tag delete | A2.4 | | |
-| HT-002 | VolumeSlider pageX crash | B2.5 | | |
-| HT-003 | Tag modal keyboard flicker | C2.3 | | |
-| HT-004 | Import fails (content:// URI) | A1.1 | | |
-| HT-025 | Tag rename doesn't update button | A2.2, A2.3 | | |
+| HT-001 | Orphaned buttons on tag delete | A2.4 | PASS | |
+| HT-002 | VolumeSlider pageX crash | B2.5 | PASS | Moot — slider replaced by steppers (HT-033) |
+| HT-003 | Tag modal keyboard flicker | C2.3 | PASS | |
+| HT-004 | Import fails (content:// URI) | A1.1 | PASS | |
+| HT-025 | Tag rename doesn't update button | A2.2, A2.3 | PASS | Fixed + verified 2026-08-23 |
 
 ---
 
@@ -389,16 +389,17 @@ When pausing:
 
 | Section | Total | Pass | Fail | Skip |
 |---------|-------|------|------|------|
-| A: Core Flows | 16 | 2 | 0 | 0 |
+| A: Core Flows | 16 | 16 | 0 | 0 |
 | B: New Features | 35 | 32 | 0 | 3 |
-| C: Edge Cases | 11 | 0 | 0 | 0 |
-| D: Regressions | 5 | 0 | 0 | 0 |
-| **TOTAL** | **67** | **34** | **0** | **3** |
+| C: Edge Cases | 11 | 11 | 0 | 0 |
+| D: Regressions | 5 | 5 | 0 | 0 |
+| **TOTAL** | **67** | **64** | **0** | **3** |
 
-**Release Recommendation:** [PASS / FAIL / CONDITIONAL]
+**Release Recommendation:** CONDITIONAL — no functional failures; ship after the 2026-08-23 polish round lands and a physical-device smoke test
 
 **Notes:**
-- Section B complete: All 1.1.0 features tested
-- Bugs found and fixed: HT-026 through HT-033 (8 bugs)
-- Skipped tests: B4.3 (device-only), B8.5 (redundant), B10.7 (stretch goal)
+- Section B completed 2026-01-14; Sections A/C/D completed 2026-08-23 on a fresh install (HT-034 pre-flight verified)
+- Bugs found and fixed in Jan round: HT-026 through HT-033 (8 bugs)
+- Open polish items from Aug round (none blocking, none functional): HT-035 modal bottom insets, HT-036 duplicate-import message, HT-037 Tags top inset + safe-area sweep, HT-038 library play-state glyph, splash screen rebrand
+- Skipped tests: B4.3 (device-only — run on physical phone before release), B8.5 (redundant), B10.7 (stretch goal)
 
