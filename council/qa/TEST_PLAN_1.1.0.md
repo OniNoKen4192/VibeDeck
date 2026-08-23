@@ -87,7 +87,7 @@
 |---|------|----------|-----------|-------|
 | B4.1 | Play track (bar appears) | Bottom buttons not occluded | PASS | |
 | B4.2 | Stop track (bar hides) | Padding removed, buttons fill space | PASS | |
-| B4.3 | Scroll to bottom row | All buttons fully tappable | SKIP | Deferred to device testing |
+| B4.3 | Scroll to bottom row | All buttons fully tappable | PASS | 2026-08-23 physical device (SM-S948U) |
 
 ### B5: Track List Sorting
 | # | Test | Expected | Pass/Fail | Notes |
@@ -390,12 +390,12 @@ When pausing:
 | Section | Total | Pass | Fail | Skip |
 |---------|-------|------|------|------|
 | A: Core Flows | 16 | 16 | 0 | 0 |
-| B: New Features | 35 | 32 | 0 | 3 |
+| B: New Features | 35 | 33 | 0 | 2 |
 | C: Edge Cases | 11 | 11 | 0 | 0 |
 | D: Regressions | 5 | 5 | 0 | 0 |
-| **TOTAL** | **67** | **64** | **0** | **3** |
+| **TOTAL** | **67** | **65** | **0** | **2** |
 
-**Release Recommendation:** CONDITIONAL — no functional failures; ship after the 2026-08-23 polish round lands and a physical-device smoke test
+**Release Recommendation:** PASS — polish round (HT-035–HT-041) landed and verified; physical-device smoke test passed 2026-08-23 on SM-S948U under final package id com.redwolfmedia.vibedeck (import → tag → board → playback end-to-end)
 
 **Notes:**
 - Section B completed 2026-01-14; Sections A/C/D completed 2026-08-23 on a fresh install (HT-034 pre-flight verified)
