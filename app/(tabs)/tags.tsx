@@ -13,6 +13,7 @@ import {
   ListRenderItem,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import {
   TagsHeader,
@@ -143,17 +144,17 @@ export default function TagsScreen() {
   // Loading state
   if (isLoadingTags) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView edges={['top']} style={styles.loadingContainer}>
         <StatusBar style="light" />
         <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Empty state
   if (tags.length === 0) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.container} testID="tags-screen-safe-area">
         <StatusBar style="light" />
         <EmptyTags onCreate={handleNewTag} />
         <TagModal
@@ -170,12 +171,12 @@ export default function TagsScreen() {
           onDismiss={() => setToastVisible(false)}
           position="top"
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container} testID="tags-screen-safe-area">
       <StatusBar style="light" />
 
       {/* Header */}
@@ -207,7 +208,7 @@ export default function TagsScreen() {
         onDismiss={() => setToastVisible(false)}
         position="top"
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

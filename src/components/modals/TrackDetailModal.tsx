@@ -15,6 +15,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { Layout } from '../../constants/layout';
 import { TagChipPicker } from './TagChipPicker';
@@ -71,6 +72,7 @@ export function TrackDetailModal({
   onUpdateVolume,
   testID,
 }: TrackDetailModalProps) {
+  const insets = useSafeAreaInsets();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
 
@@ -166,7 +168,8 @@ export function TrackDetailModal({
         testID={testID}
       >
         <View style={styles.overlay}>
-          <View style={styles.modal}>
+          {/* HT-035: bottom-anchored sheet must clear the system nav bar */}
+          <View style={[styles.modal, { paddingBottom: insets.bottom }]}>
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Track Details</Text>

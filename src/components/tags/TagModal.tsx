@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { Layout } from '../../constants/layout';
 import { ColorPicker } from './ColorPicker';
@@ -45,6 +46,7 @@ export function TagModal({
   testID,
 }: TagModalProps) {
   const isEditMode = tag !== null;
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [color, setColor] = useState(Colors.tagColors[0]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -108,7 +110,11 @@ export function TagModal({
           style={styles.overlay}
           behavior="padding"
         >
-          <View style={styles.modal}>
+          {/* HT-035: bottom-anchored sheet must clear the system nav bar */}
+          <View
+            style={[styles.modal, { paddingBottom: insets.bottom }]}
+            testID="tag-modal-sheet"
+          >
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.title}>
