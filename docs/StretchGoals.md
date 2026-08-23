@@ -33,6 +33,10 @@ See [1.1.0_Goals.md](../council/1.1.0_Goals.md)
    - Direct buttons: visual dimming + warning badge, toast on tap
    - No modals or interruptions during game day
 5. Track `fileStatus` field (`valid` | `missing` | `unchecked`) for persistent validation state
+6. Device scan for audio files — discover playable files on the device without manual picking (graduated from whiteboard 2026-08-23)
+
+### Hardware
+1. External button awareness — USB/Bluetooth hardware buttons mapped to board actions, e.g. a dedicated goal-horn button (graduated from whiteboard 2026-08-23)
 
 ### Technical Debt & Architecture
 1. React Native New Architecture (TurboModules) — Re-enable when `react-native-track-player` adds compatibility
