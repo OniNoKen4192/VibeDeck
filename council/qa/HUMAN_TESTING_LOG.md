@@ -358,3 +358,49 @@ A shared `ScreenContainer` / modal wrapper component would prevent recurrence.
 
 ---
 
+### HT-039: Device Migration Restores Ghost Library (Metadata Without Files)
+
+**Severity:** Medium
+**Category:** Data Integrity / Device Migration
+**Found During:** Physical-device smoke test (Samsung restore from S23 to S948U)
+
+**Observed:** Installing on a new phone restored the old phone's app data via Android/Samsung backup — tags, library entries, and buttons all present — but the audio files and their SAF permissions do not migrate. Every restored track is unplayable ("ghost library"). Restored older-schema DB migrated cleanly on first launch (bonus real-world migration test: PASS).
+
+**Root Cause:** Android app-data backup includes VibeDeck's SQLite DB, but tracks reference `content://` URIs on the old device; neither files nor persisted URI permissions transfer.
+
+**Ruling (Project Lead):** Ship 1.1.0 as-is with improved failure messaging (see HT-040). Missing-file detection + cleanup promoted to 1.2 as part of the Utilities screen. `allowBackup=false` rejected — same-device restore is the only backup an offline-only app has.
+
+**Status:** Documented — deferred to 1.2 (Utilities screen)
+
+---
+
+### HT-040: Failure Messages Are Not Ape-Friendly
+
+**Severity:** Low
+**Category:** UX / Messaging
+**Found During:** Physical-device smoke test (surfaced by HT-039's unhelpful playback toast)
+
+**Observed:** Failure toasts across the app state what failed in developer terms ("Invalid file path format", "Failed to play track. Please try again.") without telling a non-technical user mid-game what to do next.
+
+**Fix Applied (2026-08-23):** Full copy pass over all ~25 user-facing failure messages (player service userMessages, Board/Library/Tags toasts, name validation, import validation, TagModal inline errors). Convention: plain words, what happened + what to do ("Can't find this track's audio file. Delete the track, or import it again."). Copy-only change; no logic touched.
+
+**Status:** Fixed — pending human verification
+
+---
+
+### HT-041: Ghost Tracks Bypass the Missing-File Check; Library Fails Silently
+
+**Severity:** Medium
+**Category:** Error Handling / Playback
+**Found During:** HT-040 verification on physical device (ghost tracks showed the generic playback message on Board and nothing at all in Library)
+
+**Observed:** Tapping a ghost track showed "Playback stopped unexpectedly…" on the Board instead of the missing-file message, and produced no toast at all from the Library.
+
+**Root Cause (Confirmed via logcat):** `validateTrackFile` returned `true` unconditionally for `content://` URIs, so `playTrack` reported success and the failure surfaced later as an async ExoPlayer source error (`SecurityException: Permission Denial … requires ACTION_OPEN_DOCUMENT`) — routed to the generic error message, whose toast callback is registered only by the Board screen (hence Library silence). Since every SAF-imported track is a `content://` URI, the friendly `file_not_found` path was effectively unreachable.
+
+**Fix Applied (2026-08-23):** `validateTrackFile` now checks the persisted SAF grant via the existing `expo-saf-uri-permission` `hasPermission()` (built in 1.0, never wired in). Missing grant → synchronous `file_not_found` with the ape-friendly message on both Board and Library. Fails open if the native check itself errors. Tests: `src/services/player/__tests__/player.test.ts` (+ fuller track-player mock in jest.setup).
+
+**Status:** Fixed — pending human verification
+
+---
+
