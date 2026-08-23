@@ -41,6 +41,8 @@ export interface ImportResult {
   filePath: string;
   /** Error message (only present on failure) */
   error?: string;
+  /** Failure classification (HT-036): 'duplicate' = file already in library */
+  reason?: 'duplicate';
 }
 
 /**
@@ -208,10 +210,23 @@ export async function importFromPath(
       filePath,
     };
   } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to add track to library';
+
+    // HT-036: a UNIQUE violation on file_path means this exact file was
+    // imported before — surface it as a duplicate, not a generic failure
+    if (/UNIQUE constraint failed:.*file_path/i.test(message)) {
+      return {
+        success: false,
+        filePath,
+        error: 'Already in your library',
+        reason: 'duplicate',
+      };
+    }
+
     return {
       success: false,
       filePath,
-      error: err instanceof Error ? err.message : 'Failed to add track to library',
+      error: message,
     };
   }
 }

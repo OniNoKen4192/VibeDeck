@@ -34,6 +34,8 @@ interface TrackRowProps {
   onPress?: (track: Track) => void;
   /** Called when track row is long-pressed (enters selection mode) */
   onLongPress?: (track: Track) => void;
+  /** Whether this track is currently playing (HT-038: preview button shows stop) */
+  isPlaying?: boolean;
   /** Called when preview button is tapped */
   onPreview?: (track: Track) => void;
   /** Called when selection checkbox is toggled */
@@ -47,6 +49,7 @@ export function TrackRow({
   tags,
   selectionMode = false,
   isSelected = false,
+  isPlaying = false,
   onPress,
   onLongPress,
   onPreview,
@@ -115,10 +118,10 @@ export function TrackRow({
         <Pressable
           style={styles.previewButton}
           onPress={handlePreview}
-          accessibilityLabel={`Preview ${displayTitle}`}
+          accessibilityLabel={`${isPlaying ? 'Stop' : 'Preview'} ${displayTitle}`}
           accessibilityRole="button"
         >
-          <FontAwesome name="play" size={16} color={Colors.text} />
+          <FontAwesome name={isPlaying ? 'stop' : 'play'} size={16} color={Colors.text} />
         </Pressable>
       )}
 

@@ -65,6 +65,11 @@ export default function LibraryScreen() {
 
   const addDirectButton = useButtonStore((state) => state.addDirectButton);
 
+  // HT-038: id of the track currently playing (null when stopped/paused)
+  const playingTrackId = usePlayerStore((state) =>
+    state.isPlaying ? state.currentTrack?.id ?? null : null
+  );
+
   // Local state
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('recent');
@@ -189,8 +194,14 @@ export default function LibraryScreen() {
       if (result.succeeded > 0) {
         showToast(`Imported ${result.succeeded} track${result.succeeded !== 1 ? 's' : ''}`, 'success');
       }
-      if (result.failed > 0) {
-        showToast(`${result.failed} file${result.failed !== 1 ? 's' : ''} failed to import`, 'warning');
+      // HT-036: tell apes WHY — duplicates are skipped, not broken
+      const duplicates = result.results.filter((r) => r.reason === 'duplicate').length;
+      const failures = result.failed - duplicates;
+      if (duplicates > 0) {
+        showToast(`${duplicates} file${duplicates !== 1 ? 's' : ''} skipped — already in your library`, 'info');
+      }
+      if (failures > 0) {
+        showToast(`${failures} file${failures !== 1 ? 's' : ''} failed to import`, 'warning');
       }
     } catch (err) {
       console.error('[LibraryScreen] Import failed:', err);
@@ -485,6 +496,7 @@ export default function LibraryScreen() {
         tags={trackTagsMap.get(track.id) || []}
         selectionMode={selectionMode}
         isSelected={selectedTrackIds.has(track.id)}
+        isPlaying={playingTrackId === track.id}
         onPress={handleTrackPress}
         onLongPress={handleTrackLongPress}
         onPreview={handlePreview}
@@ -495,6 +507,7 @@ export default function LibraryScreen() {
       trackTagsMap,
       selectionMode,
       selectedTrackIds,
+      playingTrackId,
       handleTrackPress,
       handleTrackLongPress,
       handlePreview,
