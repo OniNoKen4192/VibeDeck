@@ -48,3 +48,6 @@ modules/**/android/build/
 
 # release binaries (APKs are too large for git history)
 ReleaseFiles/
+
+# Release signing credentials — backed up externally, never committed
+credentials/
