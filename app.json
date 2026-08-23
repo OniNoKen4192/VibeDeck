@@ -14,7 +14,8 @@
       "backgroundColor": "#000000"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.redwolfmedia.vibedeck"
     },
     "android": {
       "versionCode": 2,
@@ -24,7 +25,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.VibeDeck"
+      "package": "com.redwolfmedia.vibedeck"
     },
     "web": {
       "bundler": "metro",
