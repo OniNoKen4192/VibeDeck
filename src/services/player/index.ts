@@ -11,6 +11,7 @@ import TrackPlayer, {
 } from 'react-native-track-player';
 import type { EmitterSubscription } from 'react-native';
 import { File } from 'expo-file-system/next';
+import { hasPermission } from '../../../modules/expo-saf-uri-permission/src';
 import type { Track } from '../../types';
 import { useTrackStore } from '../../stores/useTrackStore';
 
@@ -225,10 +226,16 @@ export function isReady(): boolean {
  * @returns True if file exists and is accessible
  */
 async function validateTrackFile(track: Track): Promise<boolean> {
-  // content:// URIs from Android document picker are trusted
-  // The expo-file-system/next File class doesn't support content:// URIs
+  // HT-039: content:// URIs can't be probed with the File class, but we can
+  // check for the persisted SAF grant — it's missing exactly when the track
+  // came from a device migration/restore and the file never followed.
+  // Fail open on native-module errors so a broken check can't block playback.
   if (track.filePath.startsWith('content://')) {
-    return true;
+    try {
+      return await hasPermission(track.filePath);
+    } catch {
+      return true;
+    }
   }
 
   // For file:// URIs, validate existence
@@ -264,7 +271,7 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
   if (!isPlayerInitialized) {
     const error: PlaybackError = {
       code: 'not_initialized',
-      userMessage: 'Audio player is not ready. Please try again.',
+      userMessage: 'Player is still warming up — wait a second and tap again.',
     };
     onPlaybackError?.(error);
     return { success: false, error };
@@ -275,7 +282,7 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
   if (!fileExists) {
     const error: PlaybackError = {
       code: 'file_not_found',
-      userMessage: 'Track file not found. It may have been moved or deleted.',
+      userMessage: "Can't find this track's audio file. Delete the track, or import it again.",
       track,
     };
     onPlaybackError?.(error);
@@ -338,7 +345,7 @@ export async function playTrack(track: Track): Promise<PlaybackResult> {
   } catch (error) {
     const playbackError: PlaybackError = {
       code: 'playback_error',
-      userMessage: 'Failed to play track. Please try again.',
+      userMessage: "Couldn't play this track. Tap again — if it keeps failing, re-import it.",
       details: error instanceof Error ? error.message : String(error),
       track,
     };
@@ -361,7 +368,7 @@ export async function pause(): Promise<void> {
     console.error('Error pausing:', error);
     onPlaybackError?.({
       code: 'playback_error',
-      userMessage: 'Failed to pause playback. Please try again.',
+      userMessage: "Couldn't pause. Tap pause again.",
       details: error instanceof Error ? error.message : String(error),
     });
   }
@@ -381,7 +388,7 @@ export async function resume(): Promise<void> {
     console.error('Error resuming:', error);
     onPlaybackError?.({
       code: 'playback_error',
-      userMessage: 'Failed to resume playback. Please try again.',
+      userMessage: "Couldn't resume. Tap play again.",
       details: error instanceof Error ? error.message : String(error),
     });
   }
@@ -563,7 +570,7 @@ function registerEventListeners(): void {
     (event) => {
       const error: PlaybackError = {
         code: 'playback_error',
-        userMessage: 'An error occurred during playback.',
+        userMessage: 'Playback stopped unexpectedly. Tap a button to start it again.',
         details: event.message,
         track: currentTrackRef ?? undefined,
       };

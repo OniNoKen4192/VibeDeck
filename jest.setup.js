@@ -18,6 +18,7 @@ jest.mock('react-native-track-player', () => ({
   __esModule: true,
   default: {
     setupPlayer: jest.fn().mockResolvedValue(undefined),
+    updateOptions: jest.fn().mockResolvedValue(undefined),
     destroy: jest.fn().mockResolvedValue(undefined),
     add: jest.fn().mockResolvedValue(undefined),
     reset: jest.fn().mockResolvedValue(undefined),
@@ -36,6 +37,11 @@ jest.mock('react-native-track-player', () => ({
     PlaybackState: 'playback-state',
     PlaybackError: 'playback-error',
     PlaybackActiveTrackChanged: 'playback-active-track-changed',
+    PlaybackProgressUpdated: 'playback-progress-updated',
+  },
+  AppKilledPlaybackBehavior: {
+    StopPlaybackAndRemoveNotification: 'stop-playback-and-remove-notification',
+    ContinuePlayback: 'continue-playback',
   },
   State: {
     None: 0,
