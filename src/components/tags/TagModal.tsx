@@ -71,11 +71,11 @@ export function TagModal({
 
     // Validate name
     if (!trimmedName) {
-      setNameError('Tag name is required');
+      setNameError('Give the tag a name first.');
       return;
     }
     if (trimmedName.length > 50) {
-      setNameError('Tag name must be 50 characters or less');
+      setNameError('Tag name is too long — 50 characters max.');
       return;
     }
 

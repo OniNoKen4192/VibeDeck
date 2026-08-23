@@ -47,7 +47,7 @@ export async function validateFilePath(
 ): Promise<ValidationResult> {
   // Check path length
   if (filePath.length > MAX_PATH_LENGTH) {
-    return { isValid: false, error: 'File path is too long' };
+    return { isValid: false, error: "That file's path is too long. Move it to a shorter folder and try again." };
   }
 
   // Path traversal defense (CR-09)
@@ -62,10 +62,10 @@ export async function validateFilePath(
     normalized = decodeURIComponent(pathWithoutScheme).replace(/\\/g, '/');
   } catch {
     // Malformed URI encoding is suspicious
-    return { isValid: false, error: 'Invalid file path format' };
+    return { isValid: false, error: "Couldn't read that file's location. Try picking it again." };
   }
   if (normalized.includes('..') || normalized.includes('//')) {
-    return { isValid: false, error: 'Invalid file path format' };
+    return { isValid: false, error: "Couldn't read that file's location. Try picking it again." };
   }
 
   // Validate file extension against allowed formats
@@ -77,7 +77,7 @@ export async function validateFilePath(
     const supported = Audio.supportedFormats.join(', ');
     return {
       isValid: false,
-      error: `Unsupported audio format. Supported: ${supported}`,
+      error: `VibeDeck can't play this file type. Use: ${supported}.`,
     };
   }
 
@@ -89,11 +89,11 @@ export async function validateFilePath(
     try {
       const file = new File(filePath);
       if (!file.exists) {
-        return { isValid: false, error: 'File not found' };
+        return { isValid: false, error: "Couldn't find that file. It may have moved — pick it again." };
       }
       // File class .exists returns false for directories, so no separate check needed
     } catch {
-      return { isValid: false, error: 'Unable to access file' };
+      return { isValid: false, error: "Couldn't open that file. Pick it again, or check it plays in another app." };
     }
   }
   // content:// URIs: trust the picker, validate at playback time if file is moved/deleted

@@ -201,11 +201,11 @@ export default function LibraryScreen() {
         showToast(`${duplicates} file${duplicates !== 1 ? 's' : ''} skipped — already in your library`, 'info');
       }
       if (failures > 0) {
-        showToast(`${failures} file${failures !== 1 ? 's' : ''} failed to import`, 'warning');
+        showToast(`Couldn't import ${failures} file${failures !== 1 ? 's' : ''}. Check they're audio files and try again.`, 'warning');
       }
     } catch (err) {
       console.error('[LibraryScreen] Import failed:', err);
-      showToast('Import failed', 'error');
+      showToast("Import didn't work. Try picking the files again.", 'error');
     } finally {
       setIsImporting(false);
     }
@@ -242,7 +242,7 @@ export default function LibraryScreen() {
         setIsPreviewPlaying(true);
         usePlayerStore.getState().play(track);
       } else {
-        showToast(result.error?.userMessage || 'Playback failed', 'error');
+        showToast(result.error?.userMessage || "Couldn't play this track.", 'error');
       }
     }
   }, [isPreviewPlaying, showToast]);
@@ -317,7 +317,7 @@ export default function LibraryScreen() {
       handleCancelSelection();
     } catch (err) {
       console.error('[LibraryScreen] Bulk tag failed:', err);
-      showToast('Failed to add tag', 'error');
+      showToast("Couldn't add the tag. Try again.", 'error');
     }
   }, [selectedTrackIds, addTagToTracks, tags, showToast, handleCancelSelection]);
 
@@ -336,7 +336,7 @@ export default function LibraryScreen() {
       handleCancelSelection();
     } catch (err) {
       console.error('[LibraryScreen] Bulk delete failed:', err);
-      showToast('Failed to delete tracks', 'error');
+      showToast("Couldn't delete those tracks. Try again.", 'error');
     }
   }, [selectedTrackIds, deleteTrack, showToast, handleCancelSelection]);
 
@@ -357,7 +357,7 @@ export default function LibraryScreen() {
       setTrackTagsMap((prev) => new Map(prev).set(trackId, updatedTags));
     } catch (err) {
       console.error('[LibraryScreen] Toggle tag failed:', err);
-      showToast('Failed to update tags', 'error');
+      showToast("Couldn't save the tag changes. Try again.", 'error');
     }
   }, [addTagToTrack, removeTagFromTrack, getTagsForTrack, showToast]);
 
@@ -372,7 +372,7 @@ export default function LibraryScreen() {
       setDetailTrack(null);
     } catch (err) {
       console.error('[LibraryScreen] Add to board failed:', err);
-      showToast('Failed to add to board', 'error');
+      showToast("Couldn't add the button to the board. Try again.", 'error');
     }
   }, [addDirectButton, showToast]);
 
@@ -390,7 +390,7 @@ export default function LibraryScreen() {
       showToast('Track deleted', 'success');
     } catch (err) {
       console.error('[LibraryScreen] Delete track failed:', err);
-      showToast('Failed to delete track', 'error');
+      showToast("Couldn't delete the track. Try again.", 'error');
     }
   }, [deleteTrack, showToast, isPreviewPlaying]);
 
@@ -412,7 +412,7 @@ export default function LibraryScreen() {
       showToast('Track updated', 'success');
     } catch (err) {
       console.error('[LibraryScreen] Rename track failed:', err);
-      showToast('Failed to update track', 'error');
+      showToast("Couldn't save the track changes. Try again.", 'error');
     }
   }, [showToast]);
 
@@ -437,7 +437,7 @@ export default function LibraryScreen() {
       );
     } catch (err) {
       console.error('[LibraryScreen] Update cue points failed:', err);
-      showToast('Failed to update cue points', 'error');
+      showToast("Couldn't save the start/end times. Try again.", 'error');
     }
   }, [showToast]);
 
@@ -458,7 +458,7 @@ export default function LibraryScreen() {
       );
     } catch (err) {
       console.error('[LibraryScreen] Update volume adjustment failed:', err);
-      showToast('Failed to update volume', 'error');
+      showToast("Couldn't save the volume. Try again.", 'error');
     }
   }, [showToast]);
 

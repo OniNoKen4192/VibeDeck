@@ -216,7 +216,7 @@ export default function BoardScreen() {
         console.error('[BoardScreen] No track returned for tag:', button.tagId, result);
         triggerShake(button.id);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        showToast('Could not select track. Try again.', 'error');
+        showToast("Couldn't pick a track from this tag. Tap again.", 'error');
         return;
       }
 
@@ -228,7 +228,7 @@ export default function BoardScreen() {
         await refreshButtons();
       } else {
         console.error('[BoardScreen] Playback failed:', playResult.error?.userMessage);
-        showToast(playResult.error?.userMessage || 'Playback failed', 'error');
+        showToast(playResult.error?.userMessage || "Couldn't play this track.", 'error');
       }
     } else if (button.type === 'direct' && button.track) {
       // Direct button: play specific track
@@ -238,7 +238,7 @@ export default function BoardScreen() {
         usePlayerStore.getState().play(button.track);
       } else {
         console.error('[BoardScreen] Playback failed:', playResult.error?.userMessage);
-        showToast(playResult.error?.userMessage || 'Playback failed', 'error');
+        showToast(playResult.error?.userMessage || "Couldn't play this track.", 'error');
       }
     }
   }, [playingButtonId, markPlayed, refreshButtons, triggerShake, showToast]);
@@ -261,7 +261,7 @@ export default function BoardScreen() {
       await refreshButtons();
     } catch (err) {
       console.error('[BoardScreen] Failed to toggle pin:', err);
-      showToast('Failed to update button', 'error');
+      showToast("Couldn't save the button change. Try again.", 'error');
     }
     setContextMenuVisible(false);
   }, [updateButton, refreshButtons, showToast]);
@@ -279,7 +279,7 @@ export default function BoardScreen() {
       showToast(color ? 'Color updated' : 'Color reset', 'success');
     } catch (err) {
       console.error('[BoardScreen] Failed to change color:', err);
-      showToast('Failed to update color', 'error');
+      showToast("Couldn't save the color. Try again.", 'error');
     }
   }, [updateButton, refreshButtons, showToast]);
 
@@ -303,7 +303,7 @@ export default function BoardScreen() {
       showToast('Button removed', 'info');
     } catch (err) {
       console.error('[BoardScreen] Failed to remove button:', err);
-      showToast('Failed to remove button', 'error');
+      showToast("Couldn't remove the button. Try again.", 'error');
     }
     setRemoveConfirmVisible(false);
     setSelectedButton(null);
@@ -327,7 +327,7 @@ export default function BoardScreen() {
       showToast('All tracks reset', 'success');
     } catch (err) {
       console.error('[BoardScreen] Failed to reset pools:', err);
-      showToast('Failed to reset tracks', 'error');
+      showToast("Couldn't reset the played tracks. Try again.", 'error');
     }
     setResetConfirmVisible(false);
   }, [refreshButtons, showToast]);

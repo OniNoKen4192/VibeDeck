@@ -26,11 +26,11 @@ export function validateTagName(name: string): ValidationResult {
   const trimmed = name.trim();
 
   if (trimmed.length === 0) {
-    return { isValid: false, error: 'Tag name cannot be empty' };
+    return { isValid: false, error: 'Give the tag a name first.' };
   }
 
   if (trimmed.length > MAX_TAG_NAME_LENGTH) {
-    return { isValid: false, error: `Tag name must be ${MAX_TAG_NAME_LENGTH} characters or less` };
+    return { isValid: false, error: `Tag name is too long — ${MAX_TAG_NAME_LENGTH} characters max.` };
   }
 
   return { isValid: true };
@@ -45,11 +45,11 @@ export function validateButtonName(name: string): ValidationResult {
   const trimmed = name.trim();
 
   if (trimmed.length === 0) {
-    return { isValid: false, error: 'Button name cannot be empty' };
+    return { isValid: false, error: 'Give the button a name first.' };
   }
 
   if (trimmed.length > MAX_BUTTON_NAME_LENGTH) {
-    return { isValid: false, error: `Button name must be ${MAX_BUTTON_NAME_LENGTH} characters or less` };
+    return { isValid: false, error: `Button name is too long — ${MAX_BUTTON_NAME_LENGTH} characters max.` };
   }
 
   return { isValid: true };

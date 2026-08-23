@@ -6,7 +6,6 @@
 
 import React, { useState, useCallback } from 'react';
 import {
-  View,
   FlatList,
   StyleSheet,
   ActivityIndicator,
@@ -122,7 +121,7 @@ export default function TagsScreen() {
       showToast(`Deleted "${tag.name}"`, 'success');
     } catch (err) {
       console.error('[TagsScreen] Delete tag failed:', err);
-      showToast('Failed to delete tag', 'error');
+      showToast("Couldn't delete the tag. Try again.", 'error');
     }
   }, [deleteTag, showToast]);
 
