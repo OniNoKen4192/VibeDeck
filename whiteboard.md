@@ -33,10 +33,12 @@ no promises, no priority order. Graduate items to [docs/StretchGoals.md](docs/St
   Needs: registered LLC, D-U-N-S number (free, up to 30 days), physical-address proof.
   Apps can be transferred to an org account later.
 
-- **Dev environment: N: drive is slow for Metro** — Metro's Windows file-watcher must walk the
-  whole project in under 4 minutes; with N:\ under load (2026-08-23: 13k-file mp3 sweep + AV scan)
-  it times out ("Failed to start watch mode"). Options: move the project to S:\ (Ken open to this),
-  install Watchman, or just avoid hammering N:\ during dev sessions.
+- ~~**Dev environment: N: drive is slow for Metro**~~ — **RESOLVED 2026-08-24: project moved to
+  `S:\VibeDeck`.** N: racked up four build failures in one day (stale Kotlin snapshots, locked
+  build dirs, CMake access-denied). S: verified: clean bundleRelease, tests 2× faster (22s vs 49s).
+  The move also exposed and fixed an unparseable hand-written track-player patch (now automated
+  via postinstall). `N:\VibeDeck` is now a stale copy — delete after a comfort period; all work
+  happens on S:.
 
 ## Parked From This Cycle
 
