@@ -36,7 +36,11 @@
 
 ---
 
-### Task 1: Play Console account (Ken)
+### Task 1: Play Console account — ✅ DONE 2026-08-24
+
+**Result:** Personal account live as "Redwolf Media" (ID 6874027601518693407); app created
+(VibeDeck, com.redwolfmedia.vibedeck, App, Free). Watch the "Android developer verification"
+sidebar item — release rollout may stay locked until identity verification clears.
 
 - [ ] **Step 1:** Sign up at https://play.google.com/console — choose **Personal** account type. Use the Google account you want to own this long-term. $25 one-time fee.
 - [ ] **Step 2:** Complete identity verification (government ID + address). Google may take 1–3 days to verify. Note: the verified legal name becomes the public developer name.
