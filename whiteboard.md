@@ -10,13 +10,28 @@ no promises, no priority order. Graduate items to [docs/StretchGoals.md](docs/St
   insets, so new screens/modals can't regress HT-022/030/035/037 (from the 2026-08-23
   safe-area sweep) — 1.2 engineering item
 
+- wave form with slider for adjusting start time/end time
+
+- filter/search for library screen.
+
+- attach kofi link?
+
 ## Noticed from usage
 
 - duration unknown → how do we fix? — Answered: duration is discovered on first playback today;
   the fix (extract via expo-av at import time) is already catalogued as StretchGoals
   "UX Enhancements #4". Candidate for 1.2.
 
+- Volume adjustment doesn't seem to do anything
+
 ## Open Decisions
+
+- **Redwolf Media LLC / Play Console org account** — deferred 2026-08-23 in favor of a
+  personal account + 12-tester closed test (plan: docs/superpowers/plans/2026-08-23-play-store-closed-test.md).
+  Revisit if: developer name should read "Redwolf Media" instead of Ken's legal name,
+  Ko-fi/monetization gets real, or a second app would face its own 12-tester gate.
+  Needs: registered LLC, D-U-N-S number (free, up to 30 days), physical-address proof.
+  Apps can be transferred to an org account later.
 
 - **Dev environment: N: drive is slow for Metro** — Metro's Windows file-watcher must walk the
   whole project in under 4 minutes; with N:\ under load (2026-08-23: 13k-file mp3 sweep + AV scan)
