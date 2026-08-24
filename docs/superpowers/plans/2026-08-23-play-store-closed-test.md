@@ -44,20 +44,25 @@
 
 **Blocker note:** Nothing else in Console can proceed until verification clears. Tasks 2–4 can run in parallel with the wait.
 
-### Task 2: Release build (agent or Ken)
+### Task 2: Release build — ✅ DONE 2026-08-23
+
+**Result:** `ReleaseFiles\VibeDeck-1.1.0-vc3.aab` (56 MB, versionCode 3), built via prebuild +
+`gradlew bundleRelease` in 4m 25s. Signature verified: `CN=Red Wolf Media, OU=VibeDeck` release
+cert (valid to 2056), not the debug key. Optional Step 5 smoke test skipped — the internal-testing
+track (Task 6 Step 1) covers Play-delivered install verification. **This is the file to upload in Task 6.**
 
 **Files:**
 - Modify: `app.json` (`expo.android.versionCode` 2 → 3)
 
-- [ ] **Step 1:** Bump versionCode:
+- [x] **Step 1:** Bump versionCode:
 
 ```json
 "android": {
   "versionCode": 3,
 ```
 
-- [ ] **Step 2:** Commit: `git commit -am "chore(release): bump versionCode to 3 for Play Store upload"`
-- [ ] **Step 3:** Build the AAB (watch for N:-drive slowness; gradle doesn't use Metro's watcher, but if it crawls, consider the S:\ move first):
+- [x] **Step 2:** Commit: `git commit -am "chore(release): bump versionCode to 3 for Play Store upload"` (commit 1416558)
+- [x] **Step 3:** Build the AAB (watch for N:-drive slowness; gradle doesn't use Metro's watcher, but if it crawls, consider the S:\ move first):
 
 ```powershell
 npx expo prebuild --platform android
@@ -65,7 +70,7 @@ cd android
 .\gradlew bundleRelease
 ```
 
-- [ ] **Step 4:** Verify output exists and is release-signed:
+- [x] **Step 4:** Verify output exists and is release-signed:
 
 ```powershell
 # AAB present
@@ -78,7 +83,16 @@ Expected: cert CN matches the release keystore identity from the `withReleaseSig
 
 - [ ] **Step 5:** Smoke-test the exact bytes Play will serve (optional but cheap): `bundletool build-apks --bundle=app-release.aab --output=vd.apks --mode=universal`, install on the S948U, launch, play a track. (Skip if bundletool isn't installed; internal-testing track in Task 6 covers this too.)
 
-### Task 3: Privacy policy page (agent drafts, Ken publishes)
+### Task 3: Privacy policy page — ✅ DONE (via redwolfmedia.com relaunch)
+
+**Resolved:** Ken relaunched https://redwolfmedia.com/ as its own project. Verified live:
+- Privacy policy: **https://redwolfmedia.com/vibedeck/privacy/** ← use this URL in Console (Task 5)
+- Developer website: **https://redwolfmedia.com/** (also for the signup/listing website field)
+- VibeDeck pitch + "become a tester" page: https://redwolfmedia.com/vibedeck/ (opt-in link is a
+  placeholder — update it after Task 6 Step 5)
+- Contact email on site: **ken@redwolfmedia.com** (use consistently in Console contact fields)
+
+Original steps below kept for reference; the GitHub Pages fallback is no longer needed.
 
 **Files:**
 - Create: `docs/privacy-policy.md` (source of truth, in-repo)
