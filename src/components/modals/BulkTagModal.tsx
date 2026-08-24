@@ -79,7 +79,7 @@ export function BulkTagModal({
               </Text>
             </View>
           ) : (
-            <ScrollView style={styles.tagList}>
+            <ScrollView style={styles.tagListScroll} contentContainerStyle={styles.tagList}>
               {tags.map((tag) => (
                 <Pressable
                   key={tag.id}
@@ -142,6 +142,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.spacing.xl,
     paddingTop: Layout.spacing.lg,
     paddingBottom: Layout.spacing.md,
+  },
+  // HT-042: see TrackDetailModal.scrollArea — keeps the list inside the
+  // sheet's safe-area padding when it exceeds maxHeight.
+  tagListScroll: {
+    flexGrow: 0,
+    flexShrink: 1,
   },
   tagList: {
     paddingHorizontal: Layout.spacing.lg,

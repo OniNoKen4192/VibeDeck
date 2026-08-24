@@ -183,7 +183,7 @@ export function TrackDetailModal({
               </Pressable>
             </View>
 
-            <ScrollView style={styles.content}>
+            <ScrollView style={styles.scrollArea} contentContainerStyle={styles.content}>
               {/* Track info */}
               <View style={styles.trackInfo}>
                 <FontAwesome
@@ -374,6 +374,15 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: Layout.spacing.xs,
   },
+  // HT-042: flexGrow 0 + flexShrink 1 keep the ScrollView inside the sheet's
+  // padded box when content exceeds maxHeight — without them Yoga lets the
+  // ScrollView overflow past the safe-area padding and under the nav bar.
+  scrollArea: {
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  // Padding lives on the content container (not the ScrollView frame) so the
+  // last row stays inside the scrollable extent on Android.
   content: {
     padding: Layout.spacing.xl,
   },

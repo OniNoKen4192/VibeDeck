@@ -404,3 +404,21 @@ A shared `ScreenContainer` / modal wrapper component would prevent recurrence.
 
 ---
 
+### HT-042: Track Details Sheet Bottom Hidden Under System Nav Bar; Delete Unreachable
+
+**Severity:** High (Delete inaccessible; worse with two-line titles)
+**Category:** Layout / Safe Area
+**Found During:** First Play-delivered internal-testing install on physical device (S948U, 3-button navigation), 2026-08-24
+
+**Observed:** Track Details could not scroll far enough to bring the bottom of the sheet above the system nav bar. "Add to Board" sat half-buried under the nav buttons; "Delete Track" was fully hidden — completely so when the title wrapped to two lines.
+
+**Root Cause (Confirmed via adb view-bounds measurement):** The sheet combines `maxHeight` with a child `ScrollView`. Yoga sizes the ScrollView against its own content rather than the clamped sheet, so it overflows the sheet's `paddingBottom: insets.bottom` box — its frame ran to the physical screen bottom (y=2340) instead of the nav-bar top (y=2205), and its scroll extent came up short by the same amount. The HT-035 inset padding was present but ineffective for this structure. TagModal (no maxHeight/ScrollView) measured correct on the same build, isolating the trigger. BulkTagModal shared the same latent structure.
+
+**Fix Applied (2026-08-24):** `flexGrow: 0, flexShrink: 1` on the ScrollView (constrains it to the sheet's padded box) and content padding moved from `style` to `contentContainerStyle` (keeps the last row inside the scrollable extent on Android). Applied to `TrackDetailModal` and `BulkTagModal`. Verified by adb bounds measurement on emulator (3-button nav, release build): ScrollView frame ends exactly at the nav-bar line; Delete fully visible at max scroll.
+
+**Escaped 1.1.0 QA because:** emulator ran gesture nav (minimal bottom inset) and the physical-device pass never scrolled this sheet to the bottom with tall content.
+
+**Status:** Fixed — verified on emulator; ships in 1.1.0 (versionCode 4) via internal testing track
+
+---
+
